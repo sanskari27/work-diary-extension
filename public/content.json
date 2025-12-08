@@ -1,0 +1,19 @@
+{
+	"greeting": {
+		"hello": "Hello",
+		"userName": "Sanskar"
+	},
+	"features": {
+		"title": "Features",
+		"items": [
+			{
+				"id": "releases",
+				"name": "Releases",
+				"description": "Track and manage your project releases with version control",
+				"icon": "rocket",
+				"color": "from-purple-600 via-purple-500 to-pink-500"
+			}
+		]
+	}
+}
+
