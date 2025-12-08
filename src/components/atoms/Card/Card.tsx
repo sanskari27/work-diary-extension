@@ -1,11 +1,13 @@
-import { HTMLAttributes, ReactNode } from 'react'
+import { ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 import { motion } from 'framer-motion'
 
-interface CardProps extends HTMLAttributes<HTMLDivElement> {
+interface CardProps {
   children: ReactNode
   hover?: boolean
   gradient?: string
+  className?: string
+  onClick?: () => void
 }
 
 const Card = ({ 
@@ -13,7 +15,7 @@ const Card = ({
   className, 
   hover = true,
   gradient,
-  ...props 
+  onClick,
 }: CardProps) => {
   return (
     <motion.div
@@ -24,6 +26,7 @@ const Card = ({
         transition: { duration: 0.2 } 
       } : undefined}
       whileTap={hover ? { scale: 0.98 } : undefined}
+      onClick={onClick}
       className={cn(
         'relative rounded-2xl p-6 backdrop-blur-sm',
         'border border-white/20 shadow-xl',
@@ -32,7 +35,6 @@ const Card = ({
         !gradient && 'bg-white/10',
         className
       )}
-      {...props}
     >
       {children}
     </motion.div>
