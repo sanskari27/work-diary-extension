@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { useAppSelector } from '@/store/hooks';
 import { ReleaseItem } from '@/store/slices/releasesSlice';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
@@ -54,11 +55,21 @@ const ReleaseItemCard = ({
 	onDelete,
 	onToggleStatus,
 }: ReleaseItemCardProps) => {
+	// Get appearance settings from Redux store
+	const appearance = useAppSelector((state) => state.settings.appearanceSettings);
+	const customStatuses = useAppSelector((state) => state.settings.customStatuses);
+
 	const [isExpanded, setIsExpanded] = useState(false);
 
-	const completedStatuses = item.statuses.filter((s) => s.checked).length;
-	const totalStatuses = item.statuses.length;
-	const progress = (completedStatuses / totalStatuses) * 100;
+	// Filter statuses to only show visible ones based on settings
+	const visibleStatuses = item.statuses.filter((status) => {
+		const customStatus = customStatuses.find((cs) => cs.name === status.name);
+		return customStatus ? customStatus.isVisible : true;
+	});
+
+	const completedStatuses = visibleStatuses.filter((s) => s.checked).length;
+	const totalStatuses = visibleStatuses.length;
+	const progress = totalStatuses > 0 ? (completedStatuses / totalStatuses) * 100 : 0;
 
 	return (
 		<motion.div
@@ -88,7 +99,7 @@ const ReleaseItemCard = ({
 								<ExternalLink className='w-3 h-3' />
 								<span>Repository</span>
 							</a>
-							{item.prLink && (
+							{appearance.showPRLinkField && item.prLink && (
 								<a
 									href={item.prLink}
 									target='_blank'
@@ -102,7 +113,7 @@ const ReleaseItemCard = ({
 						</div>
 
 						{/* Lead Name */}
-						{item.leadName && (
+						{appearance.showLeadSection && item.leadName && (
 							<div className='flex items-center gap-2 text-sm text-white/60'>
 								<User className='w-3 h-3' />
 								<span>{item.leadName}</span>
@@ -170,7 +181,7 @@ const ReleaseItemCard = ({
 					>
 						<div className='p-4 space-y-4'>
 							{/* Description */}
-							{item.description && (
+							{appearance.showDescriptionSection && item.description && (
 								<div className='space-y-2'>
 									<div className='flex items-center gap-2 text-sm text-white/60'>
 										<FileText className='w-4 h-4' />
@@ -183,36 +194,38 @@ const ReleaseItemCard = ({
 							)}
 
 							{/* Statuses */}
-							<div className='space-y-2'>
-								<div className='text-sm text-white/60 font-medium'>Status Checklist</div>
-								<div className='grid grid-cols-1 sm:grid-cols-2 gap-2'>
-									{item.statuses.map((status) => (
-										<Button
-											key={status.name}
-											onClick={() => onToggleStatus(eventId, item.id, status.name)}
-											variant='ghost'
-											className={`flex items-center gap-3 p-3 rounded-lg justify-start h-auto ${
-												status.checked
-													? 'bg-green-500/20 border border-green-500/30 hover:bg-green-500/30'
-													: 'bg-white/5 border border-white/10 hover:bg-white/10'
-											}`}
-										>
-											{status.checked ? (
-												<CheckCircle2 className='w-5 h-5 text-green-400 flex-shrink-0' />
-											) : (
-												<Circle className='w-5 h-5 text-white/40 flex-shrink-0' />
-											)}
-											<span
-												className={`text-sm ${
-													status.checked ? 'text-green-300 font-medium' : 'text-white/70'
+							{appearance.showStatusCheckboxes && visibleStatuses.length > 0 && (
+								<div className='space-y-2'>
+									<div className='text-sm text-white/60 font-medium'>Status Checklist</div>
+									<div className='grid grid-cols-1 sm:grid-cols-2 gap-2'>
+										{visibleStatuses.map((status) => (
+											<Button
+												key={status.name}
+												onClick={() => onToggleStatus(eventId, item.id, status.name)}
+												variant='ghost'
+												className={`flex items-center gap-3 p-3 rounded-lg justify-start h-auto ${
+													status.checked
+														? 'bg-green-500/20 border border-green-500/30 hover:bg-green-500/30'
+														: 'bg-white/5 border border-white/10 hover:bg-white/10'
 												}`}
 											>
-												{status.name}
-											</span>
-										</Button>
-									))}
+												{status.checked ? (
+													<CheckCircle2 className='w-5 h-5 text-green-400 flex-shrink-0' />
+												) : (
+													<Circle className='w-5 h-5 text-white/40 flex-shrink-0' />
+												)}
+												<span
+													className={`text-sm ${
+														status.checked ? 'text-green-300 font-medium' : 'text-white/70'
+													}`}
+												>
+													{status.name}
+												</span>
+											</Button>
+										))}
+									</div>
 								</div>
-							</div>
+							)}
 						</div>
 					</motion.div>
 				)}

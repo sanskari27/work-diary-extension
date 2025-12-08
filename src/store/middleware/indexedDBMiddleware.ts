@@ -26,6 +26,7 @@ const ACTIONS_TO_PERSIST = [
 	'ui/toggleSidebar',
 	'ui/setSidebarOpen',
 	'releases/',
+	'settings/',
 ];
 
 // Create debounced save function
@@ -36,6 +37,7 @@ const debouncedSave = debounce(
 			saveStateToIndexedDB('content', state.content),
 			saveStateToIndexedDB('ui', state.ui),
 			saveStateToIndexedDB('releases', state.releases),
+			saveStateToIndexedDB('settings', state.settings),
 		]);
 	},
 	500 // Wait 500ms after the last action before saving

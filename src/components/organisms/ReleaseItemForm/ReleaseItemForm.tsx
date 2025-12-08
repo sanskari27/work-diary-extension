@@ -1,8 +1,16 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { FileText, Github, Link as LinkIcon, User } from 'lucide-react';
+import { useAppSelector } from '@/store/hooks';
+import { FileText, Github, Link as LinkIcon, Sparkles, User } from 'lucide-react';
 import { useState } from 'react';
 
 interface ReleaseItemFormProps {
@@ -17,11 +25,37 @@ interface ReleaseItemFormProps {
 }
 
 const ReleaseItemForm = ({ onSubmit, onCancel }: ReleaseItemFormProps) => {
+	// Get templates and appearance settings from Redux store
+	const templates = useAppSelector((state) => state.settings.templates);
+	const appearance = useAppSelector((state) => state.settings.appearanceSettings);
+
+	const [selectedTemplate, setSelectedTemplate] = useState<string>('');
 	const [repoName, setRepoName] = useState('');
 	const [repoLink, setRepoLink] = useState('');
 	const [prLink, setPrLink] = useState('');
 	const [leadName, setLeadName] = useState('');
 	const [description, setDescription] = useState('');
+
+	// Handle template selection
+	const handleTemplateSelect = (templateId: string) => {
+		setSelectedTemplate(templateId);
+		if (templateId === 'none') {
+			// Clear all fields
+			setRepoName('');
+			setRepoLink('');
+			setPrLink('');
+			setLeadName('');
+			return;
+		}
+
+		const template = templates.find((t) => t.id === templateId);
+		if (template) {
+			setRepoName(template.repoName);
+			setRepoLink(template.repoLink);
+			setPrLink(template.prLinkFormat || '');
+			setLeadName(template.leadName || '');
+		}
+	};
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
@@ -38,6 +72,29 @@ const ReleaseItemForm = ({ onSubmit, onCancel }: ReleaseItemFormProps) => {
 
 	return (
 		<form onSubmit={handleSubmit} className='space-y-5'>
+			{/* Template Selector */}
+			{templates.length > 0 && (
+				<div className='space-y-2'>
+					<Label className='text-sm font-medium text-white/80 flex items-center gap-2'>
+						<Sparkles className='w-4 h-4' />
+						Use Template (Optional)
+					</Label>
+					<Select value={selectedTemplate} onValueChange={handleTemplateSelect}>
+						<SelectTrigger className='w-full bg-white/10 border-white/20 text-white'>
+							<SelectValue placeholder='Select a template...' />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectItem value='none'>None - Enter manually</SelectItem>
+							{templates.map((template) => (
+								<SelectItem key={template.id} value={template.id}>
+									{template.name}
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
+				</div>
+			)}
+
 			{/* Repo Name */}
 			<div className='space-y-2'>
 				<Label className='text-sm font-medium text-white/80 flex items-center gap-2'>
@@ -71,49 +128,55 @@ const ReleaseItemForm = ({ onSubmit, onCancel }: ReleaseItemFormProps) => {
 			</div>
 
 			{/* PR Link */}
-			<div className='space-y-2'>
-				<Label className='text-sm font-medium text-white/80 flex items-center gap-2'>
-					<LinkIcon className='w-4 h-4' />
-					PR Link (Optional)
-				</Label>
-				<Input
-					type='url'
-					value={prLink}
-					onChange={(e) => setPrLink(e.target.value)}
-					placeholder='https://github.com/username/repo/pull/123'
-					className='w-full bg-white/10 border-white/20 text-white placeholder:text-white/40'
-				/>
-			</div>
+			{appearance.showPRLinkField && (
+				<div className='space-y-2'>
+					<Label className='text-sm font-medium text-white/80 flex items-center gap-2'>
+						<LinkIcon className='w-4 h-4' />
+						PR Link (Optional)
+					</Label>
+					<Input
+						type='url'
+						value={prLink}
+						onChange={(e) => setPrLink(e.target.value)}
+						placeholder='https://github.com/username/repo/pull/123'
+						className='w-full bg-white/10 border-white/20 text-white placeholder:text-white/40'
+					/>
+				</div>
+			)}
 
 			{/* Lead Name */}
-			<div className='space-y-2'>
-				<Label className='text-sm font-medium text-white/80 flex items-center gap-2'>
-					<User className='w-4 h-4' />
-					Lead / Contact Person (Optional)
-				</Label>
-				<Input
-					type='text'
-					value={leadName}
-					onChange={(e) => setLeadName(e.target.value)}
-					placeholder='e.g., John Doe'
-					className='w-full bg-white/10 border-white/20 text-white placeholder:text-white/40'
-				/>
-			</div>
+			{appearance.showLeadSection && (
+				<div className='space-y-2'>
+					<Label className='text-sm font-medium text-white/80 flex items-center gap-2'>
+						<User className='w-4 h-4' />
+						Lead / Contact Person (Optional)
+					</Label>
+					<Input
+						type='text'
+						value={leadName}
+						onChange={(e) => setLeadName(e.target.value)}
+						placeholder='e.g., John Doe'
+						className='w-full bg-white/10 border-white/20 text-white placeholder:text-white/40'
+					/>
+				</div>
+			)}
 
 			{/* Description */}
-			<div className='space-y-2'>
-				<Label className='text-sm font-medium text-white/80 flex items-center gap-2'>
-					<FileText className='w-4 h-4' />
-					Description / Notes (Optional)
-				</Label>
-				<Textarea
-					value={description}
-					onChange={(e) => setDescription(e.target.value)}
-					placeholder='Add any context, notes, or important details...'
-					rows={4}
-					className='w-full bg-white/10 border-white/20 text-white placeholder:text-white/40 resize-none'
-				/>
-			</div>
+			{appearance.showDescriptionSection && (
+				<div className='space-y-2'>
+					<Label className='text-sm font-medium text-white/80 flex items-center gap-2'>
+						<FileText className='w-4 h-4' />
+						Description / Notes (Optional)
+					</Label>
+					<Textarea
+						value={description}
+						onChange={(e) => setDescription(e.target.value)}
+						placeholder='Add any context, notes, or important details...'
+						rows={4}
+						className='w-full bg-white/10 border-white/20 text-white placeholder:text-white/40 resize-none'
+					/>
+				</div>
+			)}
 
 			{/* Action Buttons */}
 			<div className='flex gap-3 pt-4'>

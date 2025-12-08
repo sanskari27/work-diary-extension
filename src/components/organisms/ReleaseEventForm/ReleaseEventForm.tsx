@@ -8,9 +8,10 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select';
+import { useAppSelector } from '@/store/hooks';
 import { motion } from 'framer-motion';
 import { Bell, BellOff, Calendar } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface ReleaseEventFormProps {
 	onSubmit: (data: {
@@ -23,16 +24,30 @@ interface ReleaseEventFormProps {
 }
 
 const ReleaseEventForm = ({ onSubmit, onCancel }: ReleaseEventFormProps) => {
+	// Get settings from Redux store
+	const settings = useAppSelector((state) => state.settings.releaseEventDefaults);
+
 	const [title, setTitle] = useState('');
 	const [date, setDate] = useState('');
-	const [reminderEnabled, setReminderEnabled] = useState(false);
-	const [reminderDelta, setReminderDelta] = useState('1d');
+	const [reminderEnabled, setReminderEnabled] = useState(settings.defaultReminderEnabled);
+	const [reminderDelta, setReminderDelta] = useState(settings.defaultDelta);
+
+	// Update defaults when settings change
+	useEffect(() => {
+		setReminderEnabled(settings.defaultReminderEnabled);
+		setReminderDelta(settings.defaultDelta);
+	}, [settings.defaultReminderEnabled, settings.defaultDelta]);
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
 		if (title.trim() && date) {
+			// Apply title prefix if not already present
+			const finalTitle = title.trim().startsWith(settings.titlePrefix)
+				? title.trim()
+				: `${settings.titlePrefix}${title.trim()}`;
+
 			onSubmit({
-				title: title.trim(),
+				title: finalTitle,
 				date,
 				reminderEnabled,
 				reminderDelta: reminderEnabled ? reminderDelta : undefined,
@@ -52,7 +67,7 @@ const ReleaseEventForm = ({ onSubmit, onCancel }: ReleaseEventFormProps) => {
 					type='text'
 					value={title}
 					onChange={(e) => setTitle(e.target.value)}
-					placeholder='e.g., Q1 2025 Production Release'
+					placeholder={`e.g., ${settings.titlePrefix}Q1 2025`}
 					className='w-full bg-white/10 border-white/20 text-white placeholder:text-white/40'
 					required
 				/>
@@ -116,14 +131,13 @@ const ReleaseEventForm = ({ onSubmit, onCancel }: ReleaseEventFormProps) => {
 								<SelectValue placeholder='Select days' />
 							</SelectTrigger>
 							<SelectContent>
-								<SelectItem value='1d'>1 day</SelectItem>
-								<SelectItem value='2d'>2 days</SelectItem>
-								<SelectItem value='3d'>3 days</SelectItem>
-								<SelectItem value='5d'>5 days</SelectItem>
-								<SelectItem value='7d'>7 days (1 week)</SelectItem>
-								<SelectItem value='14d'>14 days (2 weeks)</SelectItem>
-								<SelectItem value='21d'>21 days (3 weeks)</SelectItem>
-								<SelectItem value='30d'>30 days (1 month)</SelectItem>
+								<SelectItem value='1d'>1 day before</SelectItem>
+								<SelectItem value='2d'>2 days before</SelectItem>
+								<SelectItem value='3d'>3 days before</SelectItem>
+								<SelectItem value='4d'>4 days before</SelectItem>
+								<SelectItem value='5d'>5 days before</SelectItem>
+								<SelectItem value='6d'>6 days before</SelectItem>
+								<SelectItem value='7d'>7 days before</SelectItem>
 							</SelectContent>
 						</Select>
 					</motion.div>

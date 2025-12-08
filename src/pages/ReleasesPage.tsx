@@ -22,6 +22,7 @@ import { useMemo, useState } from 'react';
 const ReleasesPage = () => {
 	const dispatch = useAppDispatch();
 	const events = useAppSelector((state) => state.releases.events);
+	const customStatuses = useAppSelector((state) => state.settings.customStatuses);
 	const [showReleaseForm, setShowReleaseForm] = useState(false);
 
 	// Group and sort releases
@@ -86,7 +87,13 @@ const ReleasesPage = () => {
 	};
 
 	const handleAddItem = (eventId: string, item: any) => {
-		dispatch(addReleaseItem({ eventId, item }));
+		// Get visible custom status names from settings
+		const statusNames = customStatuses
+			.filter((status) => status.isVisible)
+			.sort((a, b) => a.order - b.order)
+			.map((status) => status.name);
+
+		dispatch(addReleaseItem({ eventId, item, customStatuses: statusNames }));
 	};
 
 	const handleUpdateItem = (eventId: string, itemId: string, updates: any) => {

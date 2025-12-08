@@ -2,22 +2,25 @@ import { configureStore } from '@reduxjs/toolkit';
 import { loadStateFromIndexedDB } from './indexedDB';
 import { indexedDBMiddleware } from './middleware/indexedDBMiddleware';
 import contentReducer from './slices/contentSlice';
-import uiReducer from './slices/uiSlice';
 import releasesReducer from './slices/releasesSlice';
+import settingsReducer from './slices/settingsSlice';
+import uiReducer from './slices/uiSlice';
 
 // Load persisted state from IndexedDB
 export const loadPersistedState = async () => {
 	try {
-		const [content, ui, releases] = await Promise.all([
+		const [content, ui, releases, settings] = await Promise.all([
 			loadStateFromIndexedDB('content'),
 			loadStateFromIndexedDB('ui'),
 			loadStateFromIndexedDB('releases'),
+			loadStateFromIndexedDB('settings'),
 		]);
 
 		return {
 			content: content || undefined,
 			ui: ui || undefined,
 			releases: releases || undefined,
+			settings: settings || undefined,
 		};
 	} catch (error) {
 		console.error('Error loading persisted state:', error);
@@ -33,6 +36,7 @@ export const createStore = (preloadedState?: any) => {
 			content: contentReducer,
 			ui: uiReducer,
 			releases: releasesReducer,
+			settings: settingsReducer,
 		},
 		preloadedState,
 		middleware: (getDefaultMiddleware) =>

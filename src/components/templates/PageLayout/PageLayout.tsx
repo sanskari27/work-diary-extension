@@ -1,7 +1,8 @@
+import SettingsModal from '@/components/organisms/SettingsModal/SettingsModal';
 import { motion } from 'framer-motion';
-import { ReactNode } from 'react';
+import { Home, Settings } from 'lucide-react';
+import { ReactNode, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Home } from 'lucide-react';
 
 interface PageLayoutProps {
 	children: ReactNode;
@@ -10,11 +11,12 @@ interface PageLayoutProps {
 
 const PageLayout = ({ children, showHomeButton = true }: PageLayoutProps) => {
 	const navigate = useNavigate();
+	const [settingsOpen, setSettingsOpen] = useState(false);
 
 	return (
-		<div className='min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900'>
+		<div className='min-h-screen relative bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900'>
 			{/* Animated Background Orbs */}
-			<div className='absolute inset-0 overflow-hidden'>
+			<div className='absolute inset-0 overflow-hidden pointer-events-none'>
 				<motion.div
 					animate={{
 						x: [0, 100, 0],
@@ -71,22 +73,21 @@ const PageLayout = ({ children, showHomeButton = true }: PageLayoutProps) => {
 				{children}
 			</div>
 
-			{/* Floating Work Diary Badge */}
-			<motion.div
+			{/* Floating Settings Button */}
+			<motion.button
 				initial={{ opacity: 0, scale: 0.8 }}
 				animate={{ opacity: 1, scale: 1 }}
 				transition={{ duration: 0.5, delay: 0.8 }}
-				className='fixed bottom-8 right-8 z-20'
+				onClick={() => setSettingsOpen(true)}
+				className='fixed bottom-8 right-8 z-20 glass-strong rounded-2xl p-4 hover:bg-white/30 transition-all duration-300 group shadow-2xl'
 			>
-				<div className='glass-strong rounded-3xl px-6 py-4 shadow-2xl'>
-					<p className='text-sm font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent'>
-						Work Diary
-					</p>
-				</div>
-			</motion.div>
+				<Settings className='w-6 h-6 text-purple-300 group-hover:text-white transition-colors group-hover:rotate-90 duration-300' />
+			</motion.button>
+
+			{/* Settings Modal */}
+			<SettingsModal open={settingsOpen} onOpenChange={setSettingsOpen} />
 		</div>
 	);
 };
 
 export default PageLayout;
-

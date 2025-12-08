@@ -92,14 +92,20 @@ const releasesSlice = createSlice({
 		// ReleaseItem Actions
 		addReleaseItem: (
 			state,
-			action: PayloadAction<{ eventId: string; item: Omit<ReleaseItem, 'id' | 'statuses'> }>
+			action: PayloadAction<{
+				eventId: string;
+				item: Omit<ReleaseItem, 'id' | 'statuses'>;
+				customStatuses?: string[];
+			}>
 		) => {
 			const event = state.events.find((e) => e.id === action.payload.eventId);
 			if (event) {
+				// Use custom statuses if provided, otherwise fall back to default statuses
+				const statusNames = action.payload.customStatuses || state.defaultStatuses;
 				const newItem: ReleaseItem = {
 					...action.payload.item,
 					id: nanoid(),
-					statuses: state.defaultStatuses.map((name) => ({ name, checked: false })),
+					statuses: statusNames.map((name) => ({ name, checked: false })),
 				};
 				event.items.push(newItem);
 			}
