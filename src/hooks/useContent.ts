@@ -1,38 +1,17 @@
-import { useEffect, useState } from 'react';
-
-interface Content {
-	greeting: {
-		hello: string;
-		userName: string;
-	};
-	features: {
-		title: string;
-		items: Array<{
-			id: string;
-			name: string;
-			description: string;
-			icon: string;
-			color: string;
-		}>;
-	};
-}
+import { useEffect } from 'react';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { fetchContent } from '../store/slices/contentSlice';
 
 export const useContent = () => {
-	const [content, setContent] = useState<Content | null>(null);
-	const [loading, setLoading] = useState(true);
+	const dispatch = useAppDispatch();
+	const { content, loading, error } = useAppSelector((state) => state.content);
 
 	useEffect(() => {
-		fetch('/content.json')
-			.then((res) => res.json())
-			.then((data) => {
-				setContent(data);
-				setLoading(false);
-			})
-			.catch((err) => {
-				console.error('Failed to load content:', err);
-				setLoading(false);
-			});
-	}, []);
+		// Only fetch if we don't have content yet
+		if (!content && !loading) {
+			dispatch(fetchContent());
+		}
+	}, [dispatch, content, loading]);
 
-	return { content, loading };
+	return { content, loading, error };
 };
