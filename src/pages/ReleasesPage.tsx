@@ -5,6 +5,8 @@ import ReleaseEventForm from '@/components/organisms/ReleaseEventForm/ReleaseEve
 import PageLayout from '@/components/templates/PageLayout/PageLayout';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { getCurrentMonth, getCurrentYear, getDateStart, getTodayStart } from '@/lib/dateUtils';
+import { sortDescending, sortThisMonthReleases } from '@/lib/sortingUtils';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
 	addReleaseEvent,
@@ -28,12 +30,9 @@ const ReleasesPage = () => {
 
 	// Group and sort releases
 	const groupedReleases = useMemo(() => {
-		const now = new Date();
-		const currentYear = now.getFullYear();
-		const currentMonth = now.getMonth();
-
-		// Reset time to start of day for accurate comparison
-		const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+		const currentYear = getCurrentYear();
+		const currentMonth = getCurrentMonth();
+		const todayStart = getTodayStart();
 
 		const thisMonth: ReleaseEvent[] = [];
 		const upcoming: ReleaseEvent[] = [];
@@ -41,11 +40,7 @@ const ReleasesPage = () => {
 
 		events.forEach((event) => {
 			const releaseDate = new Date(event.date);
-			const releaseDateStart = new Date(
-				releaseDate.getFullYear(),
-				releaseDate.getMonth(),
-				releaseDate.getDate()
-			);
+			const releaseDateStart = getDateStart(event.date);
 
 			if (releaseDate.getFullYear() === currentYear && releaseDate.getMonth() === currentMonth) {
 				// This month
@@ -59,43 +54,8 @@ const ReleasesPage = () => {
 			}
 		});
 
-		// Sort descending (newest/furthest first)
-		const sortDescending = (a: ReleaseEvent, b: ReleaseEvent) => {
-			return new Date(b.date).getTime() - new Date(a.date).getTime();
-		};
-
-		// Sort ascending (soonest first)
-		const sortAscending = (a: ReleaseEvent, b: ReleaseEvent) => {
-			return new Date(a.date).getTime() - new Date(b.date).getTime();
-		};
-
-		// Special sorting for "This Month" - future releases first (ascending), then past releases (descending)
-		const sortThisMonth = (releases: ReleaseEvent[]) => {
-			const futureReleases: ReleaseEvent[] = [];
-			const pastReleases: ReleaseEvent[] = [];
-
-			releases.forEach((release) => {
-				const releaseDateStart = new Date(
-					new Date(release.date).getFullYear(),
-					new Date(release.date).getMonth(),
-					new Date(release.date).getDate()
-				);
-				if (releaseDateStart >= todayStart) {
-					futureReleases.push(release);
-				} else {
-					pastReleases.push(release);
-				}
-			});
-
-			// Sort future ascending (soonest first), past descending (most recent past first)
-			futureReleases.sort(sortAscending);
-			pastReleases.sort(sortDescending);
-
-			return [...futureReleases, ...pastReleases];
-		};
-
 		return {
-			thisMonth: sortThisMonth(thisMonth),
+			thisMonth: sortThisMonthReleases(thisMonth),
 			upcoming: upcoming.sort(sortDescending),
 			previous: previous.sort(sortDescending),
 		};

@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { formatDate, formatReminderDelta, isDateInCurrentMonth } from '@/lib/dateUtils';
 import { useAppSelector } from '@/store/hooks';
 import { ReleaseEvent } from '@/store/slices/releasesSlice';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -28,13 +29,7 @@ const ReleaseCard = ({
 	const appearance = useAppSelector((state) => state.settings.appearanceSettings);
 
 	// Auto-expand if the event is in the current month
-	const isThisMonth = () => {
-		const eventDate = new Date(event.date);
-		const now = new Date();
-		return eventDate.getMonth() === now.getMonth() && eventDate.getFullYear() === now.getFullYear();
-	};
-
-	const [isExpanded, setIsExpanded] = useState(isThisMonth());
+	const [isExpanded, setIsExpanded] = useState(isDateInCurrentMonth(event.date));
 	const [showItemForm, setShowItemForm] = useState(false);
 
 	// Get size-based styles
@@ -71,26 +66,6 @@ const ReleaseCard = ({
 	};
 
 	const sizeStyles = getSizeStyles();
-
-	const formatDate = (dateString: string) => {
-		const date = new Date(dateString);
-		return date.toLocaleDateString('en-US', {
-			month: 'short',
-			day: 'numeric',
-			year: 'numeric',
-		});
-	};
-
-	const formatReminderDelta = (delta?: string) => {
-		if (!delta) return '';
-		const value = parseInt(delta.slice(0, -1));
-		if (value === 1) return '1 day';
-		if (value === 7) return '1 week';
-		if (value === 14) return '2 weeks';
-		if (value === 21) return '3 weeks';
-		if (value === 30) return '1 month';
-		return `${value} days`;
-	};
 
 	const completedStatuses = event.items.reduce(
 		(acc, item) => acc + item.statuses.filter((s) => s.checked).length,
