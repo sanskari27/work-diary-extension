@@ -32,7 +32,7 @@ const CollapsibleSection = ({
 					{icon && <div className='text-purple-400'>{icon}</div>}
 					<div className='flex items-center gap-3'>
 						<h2 className='text-xl font-bold text-white'>{title}</h2>
-						<span className='px-2.5 py-1 rounded-full bg-purple-500/20 text-purple-300 text-sm font-medium'>
+						<span className='px-2.5 py-1 rounded-full bg-purple-500/20 text-purple-300 text-xs font-medium'>
 							{count}
 						</span>
 					</div>

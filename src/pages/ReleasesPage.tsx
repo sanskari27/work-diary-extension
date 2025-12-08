@@ -23,6 +23,7 @@ const ReleasesPage = () => {
 	const dispatch = useAppDispatch();
 	const events = useAppSelector((state) => state.releases.events);
 	const customStatuses = useAppSelector((state) => state.settings.customStatuses);
+	const appearance = useAppSelector((state) => state.settings.appearanceSettings);
 	const [showReleaseForm, setShowReleaseForm] = useState(false);
 
 	// Group and sort releases
@@ -63,8 +64,38 @@ const ReleasesPage = () => {
 			return new Date(b.date).getTime() - new Date(a.date).getTime();
 		};
 
+		// Sort ascending (soonest first)
+		const sortAscending = (a: ReleaseEvent, b: ReleaseEvent) => {
+			return new Date(a.date).getTime() - new Date(b.date).getTime();
+		};
+
+		// Special sorting for "This Month" - future releases first (ascending), then past releases (descending)
+		const sortThisMonth = (releases: ReleaseEvent[]) => {
+			const futureReleases: ReleaseEvent[] = [];
+			const pastReleases: ReleaseEvent[] = [];
+
+			releases.forEach((release) => {
+				const releaseDateStart = new Date(
+					new Date(release.date).getFullYear(),
+					new Date(release.date).getMonth(),
+					new Date(release.date).getDate()
+				);
+				if (releaseDateStart >= todayStart) {
+					futureReleases.push(release);
+				} else {
+					pastReleases.push(release);
+				}
+			});
+
+			// Sort future ascending (soonest first), past descending (most recent past first)
+			futureReleases.sort(sortAscending);
+			pastReleases.sort(sortDescending);
+
+			return [...futureReleases, ...pastReleases];
+		};
+
 		return {
-			thisMonth: thisMonth.sort(sortDescending),
+			thisMonth: sortThisMonth(thisMonth),
 			upcoming: upcoming.sort(sortDescending),
 			previous: previous.sort(sortDescending),
 		};
@@ -87,13 +118,24 @@ const ReleasesPage = () => {
 	};
 
 	const handleAddItem = (eventId: string, item: any) => {
-		// Get visible custom status names from settings
-		const statusNames = customStatuses
-			.filter((status) => status.isVisible)
-			.sort((a, b) => a.order - b.order)
-			.map((status) => status.name);
+		// Use custom statuses from the item if provided, otherwise use global defaults
+		let statusNames: string[];
 
-		dispatch(addReleaseItem({ eventId, item, customStatuses: statusNames }));
+		if (item.customStatuses && item.customStatuses.length > 0) {
+			// Item has custom statuses selected in the form
+			statusNames = item.customStatuses;
+		} else {
+			// Fall back to visible global custom statuses
+			statusNames = customStatuses
+				.filter((status) => status.isVisible)
+				.sort((a, b) => a.order - b.order)
+				.map((status) => status.name);
+		}
+
+		// Remove customStatuses from item before passing to Redux (it's not part of the ReleaseItem structure)
+		const { customStatuses: _, ...itemData } = item;
+
+		dispatch(addReleaseItem({ eventId, item: itemData, customStatuses: statusNames }));
 	};
 
 	const handleUpdateItem = (eventId: string, itemId: string, updates: any) => {
@@ -110,10 +152,48 @@ const ReleasesPage = () => {
 		dispatch(toggleItemStatus({ eventId, itemId, statusName }));
 	};
 
+	// Get spacing based on appearance settings
+	const getSpacing = () => {
+		if (appearance.compactMode) {
+			return {
+				padding: 'p-4 md:p-6 lg:p-8',
+				sectionGap: 'space-y-4',
+				headerMargin: 'mb-4',
+				iconSize: 'w-6 h-6',
+				titleSize: 'text-4xl md:text-5xl',
+			};
+		} else if (appearance.cardSize === 'large') {
+			return {
+				padding: 'p-8 md:p-16 lg:p-20',
+				sectionGap: 'space-y-10',
+				headerMargin: 'mb-10',
+				iconSize: 'w-10 h-10',
+				titleSize: 'text-6xl md:text-7xl',
+			};
+		} else if (appearance.cardSize === 'small') {
+			return {
+				padding: 'p-4 md:p-8 lg:p-12',
+				sectionGap: 'space-y-4',
+				headerMargin: 'mb-6',
+				iconSize: 'w-6 h-6',
+				titleSize: 'text-3xl md:text-4xl',
+			};
+		}
+		return {
+			padding: 'p-6 md:p-12 lg:p-16',
+			sectionGap: 'space-y-8',
+			headerMargin: 'mb-8',
+			iconSize: 'w-8 h-8',
+			titleSize: 'text-5xl md:text-6xl',
+		};
+	};
+
+	const spacing = getSpacing();
+
 	return (
 		<>
 			<PageLayout>
-				<div className='min-h-screen p-6 md:p-12 lg:p-16 flex flex-col'>
+				<div className={`min-h-screen ${spacing.padding} flex flex-col`}>
 					<motion.div
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
@@ -125,26 +205,30 @@ const ReleasesPage = () => {
 							initial={{ opacity: 0, y: -20 }}
 							animate={{ opacity: 1, y: 0 }}
 							transition={{ duration: 0.6 }}
-							className='mb-8 flex items-center justify-between'
+							className={`${spacing.headerMargin} flex items-center justify-between`}
 						>
 							<div className='flex items-center gap-4'>
-								<motion.div
-									animate={{
-										rotate: [0, 10, -10, 0],
-										scale: [1, 1.1, 1],
-									}}
-									transition={{
-										duration: 3,
-										repeat: Infinity,
-										ease: 'easeInOut',
-									}}
-									className='p-4 rounded-2xl bg-gradient-to-br from-purple-600 via-purple-500 to-pink-500'
-								>
-									<Rocket className='w-8 h-8 text-white' />
-								</motion.div>
+								{!appearance.minimalMode && (
+									<motion.div
+										animate={{
+											rotate: [0, 10, -10, 0],
+											scale: [1, 1.1, 1],
+										}}
+										transition={{
+											duration: 3,
+											repeat: Infinity,
+											ease: 'easeInOut',
+										}}
+										className={`${
+											appearance.compactMode ? 'p-3' : 'p-4'
+										} rounded-2xl bg-gradient-to-br from-purple-600 via-purple-500 to-pink-500`}
+									>
+										<Rocket className={spacing.iconSize + ' text-white'} />
+									</motion.div>
+								)}
 								<Text
 									variant='h1'
-									className='text-5xl md:text-6xl font-black bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent'
+									className={`${spacing.titleSize} font-black bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent`}
 								>
 									Releases
 								</Text>
@@ -158,10 +242,12 @@ const ReleasesPage = () => {
 							>
 								<Button
 									onClick={() => setShowReleaseForm(true)}
-									className='flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium shadow-lg shadow-purple-500/30'
+									className={`flex items-center gap-2 ${
+										appearance.compactMode ? 'px-4 py-2' : 'px-6 py-3'
+									} rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium shadow-lg shadow-purple-500/30`}
 								>
-									<Plus className='w-5 h-5' />
-									<span>New Release</span>
+									<Plus className={appearance.compactMode ? 'w-4 h-4' : 'w-5 h-5'} />
+									<span className={appearance.compactMode ? 'text-sm' : ''}>New Release</span>
 								</Button>
 							</motion.div>
 						</motion.div>
@@ -171,10 +257,10 @@ const ReleasesPage = () => {
 							initial={{ opacity: 0, y: 20 }}
 							animate={{ opacity: 1, y: 0 }}
 							transition={{ duration: 0.6, delay: 0.2 }}
-							className='flex-1 pb-8'
+							className={`flex-1 ${appearance.compactMode ? 'pb-4' : 'pb-8'}`}
 						>
 							{events.length > 0 ? (
-								<div className='space-y-8'>
+								<div className={spacing.sectionGap}>
 									{/* This Month Section */}
 									{groupedReleases.thisMonth.length > 0 && (
 										<CollapsibleSection
@@ -183,7 +269,7 @@ const ReleasesPage = () => {
 											icon={<Calendar className='w-5 h-5' />}
 											defaultOpen={true}
 										>
-											<div className='space-y-4'>
+											<div className={appearance.compactMode ? 'space-y-2' : 'space-y-4'}>
 												{groupedReleases.thisMonth.map((event, index) => (
 													<motion.div
 														key={event.id}
@@ -213,7 +299,7 @@ const ReleasesPage = () => {
 											icon={<Clock className='w-5 h-5' />}
 											defaultOpen={true}
 										>
-											<div className='space-y-4'>
+											<div className={appearance.compactMode ? 'space-y-2' : 'space-y-4'}>
 												{groupedReleases.upcoming.map((event, index) => (
 													<motion.div
 														key={event.id}
@@ -243,7 +329,7 @@ const ReleasesPage = () => {
 											icon={<History className='w-5 h-5' />}
 											defaultOpen={false}
 										>
-											<div className='space-y-4'>
+											<div className={appearance.compactMode ? 'space-y-2' : 'space-y-4'}>
 												{groupedReleases.previous.map((event, index) => (
 													<motion.div
 														key={event.id}

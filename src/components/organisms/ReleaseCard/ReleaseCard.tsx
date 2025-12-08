@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useAppSelector } from '@/store/hooks';
 import { ReleaseEvent } from '@/store/slices/releasesSlice';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Bell, Calendar, ChevronDown, ChevronUp, Package, Plus, Trash2 } from 'lucide-react';
@@ -24,8 +25,52 @@ const ReleaseCard = ({
 	onDeleteItem,
 	onToggleStatus,
 }: ReleaseCardProps) => {
-	const [isExpanded, setIsExpanded] = useState(false);
+	const appearance = useAppSelector((state) => state.settings.appearanceSettings);
+
+	// Auto-expand if the event is in the current month
+	const isThisMonth = () => {
+		const eventDate = new Date(event.date);
+		const now = new Date();
+		return eventDate.getMonth() === now.getMonth() && eventDate.getFullYear() === now.getFullYear();
+	};
+
+	const [isExpanded, setIsExpanded] = useState(isThisMonth());
 	const [showItemForm, setShowItemForm] = useState(false);
+
+	// Get size-based styles
+	const getSizeStyles = () => {
+		switch (appearance.cardSize) {
+			case 'small':
+				return {
+					padding: appearance.compactMode ? 'p-3' : 'p-4',
+					titleSize: 'text-lg',
+					metaSize: 'text-xs',
+					iconSize: 'w-3.5 h-3.5',
+					spacing: 'space-y-2',
+					buttonPadding: 'p-1.5',
+				};
+			case 'large':
+				return {
+					padding: appearance.compactMode ? 'p-6' : 'p-8',
+					titleSize: 'text-3xl',
+					metaSize: 'text-base',
+					iconSize: 'w-5 h-5',
+					spacing: 'space-y-4',
+					buttonPadding: 'p-3',
+				};
+			default: // medium
+				return {
+					padding: appearance.compactMode ? 'p-4' : 'p-6',
+					titleSize: 'text-2xl',
+					metaSize: 'text-sm',
+					iconSize: 'w-4 h-4',
+					spacing: 'space-y-3',
+					buttonPadding: 'p-2',
+				};
+		}
+	};
+
+	const sizeStyles = getSizeStyles();
 
 	const formatDate = (dateString: string) => {
 		const date = new Date(dateString);
@@ -59,53 +104,41 @@ const ReleaseCard = ({
 			<motion.div
 				initial={{ opacity: 0, y: 20 }}
 				animate={{ opacity: 1, y: 0 }}
-				className='glass-strong rounded-2xl overflow-hidden border border-white/20'
+				className={`glass-strong rounded-2xl overflow-hidden border border-white/20 flex flex-col ${
+					appearance.minimalMode ? 'shadow-sm' : 'shadow-lg'
+				}`}
 			>
 				{/* Card Header */}
-				<div className='p-6'>
+				<div className={sizeStyles.padding}>
 					<div className='flex items-start justify-between gap-4'>
-						<div className='flex-1 space-y-3'>
+						<div className={`flex-1 ${sizeStyles.spacing}`}>
 							{/* Title */}
-							<h3 className='text-2xl font-bold text-white'>{event.title}</h3>
+							<h3 className={`${sizeStyles.titleSize} font-bold text-white`}>{event.title}</h3>
 
 							{/* Meta Info */}
-							<div className='flex flex-wrap gap-4 text-sm'>
-								<div className='flex items-center gap-2 text-white/70'>
-									<Calendar className='w-4 h-4' />
-									<span>{formatDate(event.date)}</span>
-								</div>
-
-								{event.reminderEnabled && event.reminderDelta && (
-									<div className='flex items-center gap-2 text-purple-400'>
-										<Bell className='w-4 h-4' />
-										<span>{formatReminderDelta(event.reminderDelta)} before</span>
+							{!appearance.minimalMode && (
+								<div
+									className={`flex flex-wrap gap-${appearance.compactMode ? '2' : '4'} ${
+										sizeStyles.metaSize
+									}`}
+								>
+									<div className='flex items-center gap-2 text-white/70'>
+										<Calendar className={sizeStyles.iconSize} />
+										<span>{formatDate(event.date)}</span>
 									</div>
-								)}
 
-								<div className='flex items-center gap-2 text-white/70'>
-									<Package className='w-4 h-4' />
-									<span>
-										{event.items.length} {event.items.length === 1 ? 'item' : 'items'}
-									</span>
-								</div>
-							</div>
+									{event.reminderEnabled && event.reminderDelta && (
+										<div className='flex items-center gap-2 text-purple-400'>
+											<Bell className={sizeStyles.iconSize} />
+											<span>{formatReminderDelta(event.reminderDelta)} before</span>
+										</div>
+									)}
 
-							{/* Progress Bar */}
-							{totalStatuses > 0 && (
-								<div className='space-y-2'>
-									<div className='flex items-center justify-between text-xs text-white/60'>
-										<span>Progress</span>
+									<div className='flex items-center gap-2 text-white/70'>
+										<Package className={sizeStyles.iconSize} />
 										<span>
-											{completedStatuses} / {totalStatuses} completed
+											{event.items.length} {event.items.length === 1 ? 'item' : 'items'}
 										</span>
-									</div>
-									<div className='w-full h-2 bg-white/10 rounded-full overflow-hidden'>
-										<motion.div
-											initial={{ width: 0 }}
-											animate={{ width: `${progress}%` }}
-											transition={{ duration: 0.5 }}
-											className='h-full bg-gradient-to-r from-purple-500 to-pink-500'
-										/>
 									</div>
 								</div>
 							)}
@@ -117,22 +150,26 @@ const ReleaseCard = ({
 								variant='ghost'
 								size='icon'
 								onClick={() => setIsExpanded(!isExpanded)}
-								className='p-2 rounded-xl hover:bg-white/10'
+								className={`${sizeStyles.buttonPadding} rounded-xl hover:bg-white/10`}
 							>
 								{isExpanded ? (
-									<ChevronUp className='w-5 h-5 text-white/70' />
+									<ChevronUp className={`${sizeStyles.iconSize} text-white/70`} />
 								) : (
-									<ChevronDown className='w-5 h-5 text-white/70' />
+									<ChevronDown className={`${sizeStyles.iconSize} text-white/70`} />
 								)}
 							</Button>
-							<Button
-								variant='ghost'
-								size='icon'
-								onClick={() => onDelete(event.id)}
-								className='p-2 rounded-xl hover:bg-red-500/20 group'
-							>
-								<Trash2 className='w-5 h-5 text-white/70 group-hover:text-red-400' />
-							</Button>
+							{!appearance.minimalMode && (
+								<Button
+									variant='ghost'
+									size='icon'
+									onClick={() => onDelete(event.id)}
+									className={`${sizeStyles.buttonPadding} rounded-xl hover:bg-red-500/20 group`}
+								>
+									<Trash2
+										className={`${sizeStyles.iconSize} text-white/70 group-hover:text-red-400`}
+									/>
+								</Button>
+							)}
 						</div>
 					</div>
 				</div>
@@ -147,15 +184,25 @@ const ReleaseCard = ({
 							transition={{ duration: 0.2 }}
 							className='border-t border-white/20'
 						>
-							<div className='p-6 space-y-4'>
+							<div
+								className={`${sizeStyles.padding} ${
+									appearance.compactMode ? 'space-y-2' : 'space-y-4'
+								}`}
+							>
 								{/* Add Item Button */}
 								<Button
 									onClick={() => setShowItemForm(true)}
 									variant='ghost'
-									className='w-full flex items-center justify-center gap-2 p-4 rounded-xl bg-white/10 hover:bg-white/15 border border-dashed border-white/30 group'
+									className={`w-full flex items-center justify-center gap-2 ${
+										appearance.compactMode ? 'p-3' : 'p-4'
+									} rounded-xl bg-white/10 hover:bg-white/15 border border-dashed border-white/30 group`}
 								>
-									<Plus className='w-5 h-5 text-purple-400 group-hover:scale-110 transition-transform' />
-									<span className='text-white/80 font-medium'>Add Item</span>
+									<Plus
+										className={`${sizeStyles.iconSize} text-purple-400 group-hover:scale-110 transition-transform`}
+									/>
+									<span className={`text-white/80 font-medium ${sizeStyles.metaSize}`}>
+										Add Item
+									</span>
 								</Button>
 
 								{/* Items List */}
@@ -169,21 +216,61 @@ const ReleaseCard = ({
 									/>
 								)}
 
-								{event.items.length === 0 && (
-									<div className='text-center py-8 text-white/40'>
-										<Package className='w-12 h-12 mx-auto mb-2 opacity-50' />
-										<p>No items yet. Add your first item to get started.</p>
+								{event.items.length === 0 && !appearance.minimalMode && (
+									<div
+										className={`text-center ${
+											appearance.compactMode ? 'py-4' : 'py-8'
+										} text-white/40`}
+									>
+										<Package
+											className={`${
+												appearance.compactMode ? 'w-8 h-8' : 'w-12 h-12'
+											} mx-auto mb-2 opacity-50`}
+										/>
+										<p className={sizeStyles.metaSize}>
+											No items yet. Add your first item to get started.
+										</p>
 									</div>
 								)}
 							</div>
 						</motion.div>
 					)}
 				</AnimatePresence>
+
+				{/* Progress Bar - Full Width at Bottom */}
+				{totalStatuses > 0 && (
+					<div className='mt-auto border-t border-white/20 bg-white/5'>
+						<div
+							className={`px-${appearance.compactMode ? '4' : '6'} py-${
+								appearance.compactMode ? '2' : '3'
+							} space-y-${appearance.compactMode ? '1' : '2'}`}
+						>
+							<div className={`flex items-center justify-between text-xs text-white/60`}>
+								<span>Progress</span>
+								<span>
+									{completedStatuses} / {totalStatuses} completed
+								</span>
+							</div>
+							<div
+								className={`w-full ${
+									appearance.compactMode ? 'h-1.5' : 'h-2'
+								} bg-white/10 rounded-full overflow-hidden`}
+							>
+								<motion.div
+									initial={{ width: 0 }}
+									animate={{ width: `${progress}%` }}
+									transition={{ duration: 0.5 }}
+									className='h-full bg-gradient-to-r from-purple-500 to-pink-500'
+								/>
+							</div>
+						</div>
+					</div>
+				)}
 			</motion.div>
 
 			{/* Item Form Dialog */}
 			<Dialog open={showItemForm} onOpenChange={setShowItemForm}>
-				<DialogContent className='glass-strong border-white/30 text-white max-w-2xl'>
+				<DialogContent className='glass-strong border-white/30 text-white max-w-2xl max-h-[90vh] overflow-y-auto'>
 					<DialogHeader>
 						<DialogTitle className='text-2xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent'>
 							Add New Item
