@@ -1,0 +1,15 @@
+{
+	"manifest_version": 3,
+	"name": "Work Diary",
+	"version": "1.0.0",
+	"description": "Work Diary is a Chrome extension that helps you track your work hours and projects.",
+	"icons": {
+		"128": "icon-128.png"
+	},
+	"chrome_url_overrides": {
+		"newtab": "index.html"
+	},
+	"permissions": [
+		"storage"
+	]
+}
