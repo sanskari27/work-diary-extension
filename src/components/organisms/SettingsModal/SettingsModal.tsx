@@ -105,23 +105,6 @@ const SettingsModal = ({ open, onOpenChange }: SettingsModalProps) => {
 						</motion.div>
 					</div>
 				</Tabs>
-
-				<style>{`
-					.custom-scrollbar::-webkit-scrollbar {
-						width: 8px;
-					}
-					.custom-scrollbar::-webkit-scrollbar-track {
-						background: rgba(100, 116, 139, 0.1);
-						border-radius: 4px;
-					}
-					.custom-scrollbar::-webkit-scrollbar-thumb {
-						background: rgba(168, 85, 247, 0.4);
-						border-radius: 4px;
-					}
-					.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-						background: rgba(168, 85, 247, 0.6);
-					}
-				`}</style>
 			</DialogContent>
 		</Dialog>
 	);

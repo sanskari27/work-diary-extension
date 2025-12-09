@@ -37,6 +37,7 @@ const AppearanceSection = () => {
 								<p className='text-sm text-slate-400 mt-1'>Choose your preferred color theme</p>
 							</div>
 							<Select
+								disabled
 								value={appearance.theme}
 								onValueChange={(value: any) => handleUpdate({ theme: value })}
 							>
