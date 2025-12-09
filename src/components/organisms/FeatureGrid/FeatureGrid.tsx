@@ -32,11 +32,7 @@ const FeatureGrid = ({ features }: FeatureGridProps) => {
 		>
 			{_.map(features, (feature) => (
 				<motion.div key={feature.id} variants={item}>
-					<FeatureTile
-						name={feature.name}
-						icon={feature.icon}
-						route={feature.route}
-					/>
+					<FeatureTile name={feature.name} icon={feature.icon} route={feature.route} />
 				</motion.div>
 			))}
 		</motion.div>

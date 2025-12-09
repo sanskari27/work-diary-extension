@@ -38,7 +38,10 @@ const ReleasesPage = () => {
 		const upcoming: ReleaseEvent[] = [];
 		const previous: ReleaseEvent[] = [];
 
-		events.forEach((event) => {
+		// Filter out archived releases
+		const activeEvents = events.filter((event) => !event.isArchived);
+
+		activeEvents.forEach((event) => {
 			const releaseDate = new Date(event.date);
 			const releaseDateStart = getDateStart(event.date);
 

@@ -24,6 +24,7 @@ export interface ReleaseEvent {
 	reminderDelta?: string;
 	items: ReleaseItem[];
 	createdAt: number;
+	isArchived?: boolean;
 }
 
 export interface Template {
@@ -82,6 +83,13 @@ const releasesSlice = createSlice({
 					...state.events[index],
 					...action.payload.updates,
 				};
+			}
+		},
+
+		markReleaseAsArchived: (state, action: PayloadAction<string>) => {
+			const index = state.events.findIndex((e) => e.id === action.payload);
+			if (index !== -1) {
+				state.events[index].isArchived = true;
 			}
 		},
 
@@ -190,6 +198,7 @@ export const {
 	addReleaseEvent,
 	updateReleaseEvent,
 	deleteReleaseEvent,
+	markReleaseAsArchived,
 	addReleaseItem,
 	updateReleaseItem,
 	deleteReleaseItem,

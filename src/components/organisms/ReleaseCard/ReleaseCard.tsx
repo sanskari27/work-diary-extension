@@ -6,8 +6,8 @@ import { ReleaseEvent } from '@/store/slices/releasesSlice';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Bell, Calendar, ChevronDown, ChevronUp, Package, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
-import ReleaseItemForm from '../ReleaseItemForm/ReleaseItemForm';
-import ReleaseItemList from '../ReleaseItemList/ReleaseItemList';
+import ReleaseItemForm from '@/components/organisms/ReleaseItemForm/ReleaseItemForm';
+import ReleaseItemList from '@/components/organisms/ReleaseItemList/ReleaseItemList';
 
 interface ReleaseCardProps {
 	event: ReleaseEvent;
