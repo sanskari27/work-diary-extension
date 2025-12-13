@@ -1,9 +1,7 @@
-import Text from '@/components/atoms/Text/Text';
-import CollapsibleSection from '@/components/molecules/CollapsibleSection/CollapsibleSection';
-import TodoCard from '@/components/organisms/TodoCard/TodoCard';
-import TodoDetailsPanel from '@/components/organisms/TodoDetailsPanel/TodoDetailsPanel';
-import TodoForm from '@/components/organisms/TodoForm/TodoForm';
-import PageLayout from '@/components/templates/PageLayout/PageLayout';
+import { Text } from '@/components/atoms';
+import { CollapsibleSection } from '@/components/molecules';
+import { TodoCard, TodoDetailsPanel, TodoForm } from '@/components/organisms';
+import { PageLayout } from '@/components/templates';
 import { Button } from '@/components/ui/button';
 import {
 	getActiveTodos,

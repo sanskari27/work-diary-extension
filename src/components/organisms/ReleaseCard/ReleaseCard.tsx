@@ -1,5 +1,4 @@
-import ReleaseItemForm from '@/components/organisms/ReleaseItemForm/ReleaseItemForm';
-import ReleaseItemList from '@/components/organisms/ReleaseItemList/ReleaseItemList';
+import { ReleaseItemForm, ReleaseItemList } from '@/components/organisms';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';

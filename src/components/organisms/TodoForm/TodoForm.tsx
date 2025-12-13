@@ -1,6 +1,4 @@
-import DatePicker from '@/components/atoms/DatePicker/DatePicker';
-import ReminderInput from '@/components/atoms/ReminderInput/ReminderInput';
-import ReminderToggle from '@/components/atoms/ReminderToggle/ReminderToggle';
+import { DatePicker, ReminderInput, ReminderToggle } from '@/components/atoms';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -16,7 +14,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { addTodo, Todo, updateTodo } from '@/store/slices/todosSlice';
 import { RootState } from '@/store/store';
 import { motion } from 'framer-motion';
-import { AlignLeft, Bell, BellOff, CheckSquare } from 'lucide-react';
+import { AlignLeft, CheckSquare } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -198,7 +196,10 @@ export default function TodoForm({ isOpen, onClose, todoToEdit }: TodoFormProps)
 
 					{/* Reminder Toggle */}
 					<div className='space-y-3'>
-						<ReminderToggle isEnable={reminderEnabled} onClick={() => setReminderEnabled(!reminderEnabled)} />
+						<ReminderToggle
+							isEnable={reminderEnabled}
+							onClick={() => setReminderEnabled(!reminderEnabled)}
+						/>
 
 						{/* Reminder Delta */}
 						{reminderEnabled && (

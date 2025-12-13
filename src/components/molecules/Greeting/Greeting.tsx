@@ -1,4 +1,4 @@
-import Text from '@/components/atoms/Text/Text';
+import { Text } from '@/components/atoms';
 import { getGreeting, getGreetingIcon } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import _ from 'lodash';
@@ -43,4 +43,3 @@ const Greeting = ({ userName }: GreetingProps) => {
 };
 
 export default Greeting;
-

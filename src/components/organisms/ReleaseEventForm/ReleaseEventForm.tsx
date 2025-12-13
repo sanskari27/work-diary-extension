@@ -1,11 +1,10 @@
-import ReminderInput from '@/components/atoms/ReminderInput/ReminderInput';
-import ReminderToggle from '@/components/atoms/ReminderToggle/ReminderToggle';
+import { ReminderInput, ReminderToggle } from '@/components/atoms';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAppSelector } from '@/store/hooks';
 import { motion } from 'framer-motion';
-import { Bell, BellOff, Calendar } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface ReleaseEventFormProps {
@@ -85,7 +84,10 @@ const ReleaseEventForm = ({ onSubmit, onCancel }: ReleaseEventFormProps) => {
 
 			{/* Reminder Toggle */}
 			<div className='space-y-3'>
-				<ReminderToggle isEnable={reminderEnabled} onClick={() => setReminderEnabled(!reminderEnabled)} />
+				<ReminderToggle
+					isEnable={reminderEnabled}
+					onClick={() => setReminderEnabled(!reminderEnabled)}
+				/>
 
 				{/* Reminder Delta */}
 				{reminderEnabled && (

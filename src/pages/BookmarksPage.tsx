@@ -1,7 +1,6 @@
-import SearchBar from '@/components/atoms/SearchBar/SearchBar';
-import Text from '@/components/atoms/Text/Text';
-import BookmarkCard from '@/components/organisms/BookmarkCard/BookmarkCard';
-import PageLayout from '@/components/templates/PageLayout/PageLayout';
+import { SearchBar, Text } from '@/components/atoms';
+import { BookmarkCard } from '@/components/organisms';
+import { PageLayout } from '@/components/templates';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Bookmark, deleteBookmark, updateBookmark } from '@/store/slices/bookmarksSlice';
 import { motion } from 'framer-motion';

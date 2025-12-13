@@ -1,8 +1,6 @@
-import Greeting from '@/components/molecules/Greeting/Greeting';
-import FeatureGrid from '@/components/organisms/FeatureGrid/FeatureGrid';
-import HomePageSearch from '@/components/organisms/HomePageSearch/HomePageSearch';
-import NotificationPanel from '@/components/organisms/NotificationPanel/NotificationPanel';
-import PageLayout from '@/components/templates/PageLayout/PageLayout';
+import { Greeting } from '@/components/molecules';
+import { FeatureGrid, HomePageSearch, NotificationPanel } from '@/components/organisms';
+import { PageLayout } from '@/components/templates';
 import { FEATURES } from '@/config/features';
 import { useContent } from '@/hooks/useContent';
 import { useAppSelector } from '@/store/hooks';

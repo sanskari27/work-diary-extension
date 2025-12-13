@@ -1,4 +1,4 @@
-import ReminderInput from '@/components/atoms/ReminderInput/ReminderInput';
+import { ReminderInput } from '@/components/atoms';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';

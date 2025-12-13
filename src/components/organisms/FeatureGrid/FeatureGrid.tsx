@@ -1,4 +1,4 @@
-import FeatureTile from '@/components/molecules/FeatureTile/FeatureTile';
+import { FeatureTile } from '@/components/molecules';
 import { Feature } from '@/config/features';
 import { motion } from 'framer-motion';
 import _ from 'lodash';

@@ -1,5 +1,5 @@
-import SearchBar from '@/components/atoms/SearchBar/SearchBar';
-import MasterSearchBadge from '@/components/organisms/MasterSearchBadge/MasterSearchBadge';
+import { SearchBar } from '@/components/atoms';
+import { MasterSearchBadge } from '@/components/organisms';
 import { MasterSearchResult, useMasterSearch } from '@/hooks/useMasterSearch';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Bookmark } from '@/store/slices/bookmarksSlice';

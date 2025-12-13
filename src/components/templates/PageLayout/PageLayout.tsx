@@ -1,4 +1,4 @@
-import SettingsModal from '@/components/organisms/SettingsModal/SettingsModal';
+import { SettingsModal } from '@/components/organisms';
 import { motion } from 'framer-motion';
 import { Home, Settings } from 'lucide-react';
 import { ReactNode, useState } from 'react';

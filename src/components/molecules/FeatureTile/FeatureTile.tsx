@@ -1,5 +1,4 @@
-import Icon from '@/components/atoms/Icon/Icon';
-import Text from '@/components/atoms/Text/Text';
+import { Icon, Text } from '@/components/atoms';
 import { motion } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';

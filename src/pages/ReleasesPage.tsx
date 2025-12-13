@@ -1,8 +1,7 @@
-import Text from '@/components/atoms/Text/Text';
-import CollapsibleSection from '@/components/molecules/CollapsibleSection/CollapsibleSection';
-import ReleaseCard from '@/components/organisms/ReleaseCard/ReleaseCard';
-import ReleaseEventForm from '@/components/organisms/ReleaseEventForm/ReleaseEventForm';
-import PageLayout from '@/components/templates/PageLayout/PageLayout';
+import { Text } from '@/components/atoms';
+import { CollapsibleSection } from '@/components/molecules';
+import { ReleaseCard, ReleaseEventForm } from '@/components/organisms';
+import { PageLayout } from '@/components/templates';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { getCurrentMonth, getCurrentYear, getDateStart, getTodayStart } from '@/lib/dateUtils';

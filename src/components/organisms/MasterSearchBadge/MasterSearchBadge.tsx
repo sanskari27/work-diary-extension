@@ -1,6 +1,4 @@
-import BookmarkSearchBadge from '@/components/molecules/BookmarkSearchBadge/BookmarkSearchBadge';
-import ReleaseSearchBadge from '@/components/molecules/ReleaseSearchBadge/ReleaseSearchBadge';
-import TodoSearchBadge from '@/components/molecules/TodoSearchBadge/TodoSearchBadge';
+import { BookmarkSearchBadge, ReleaseSearchBadge, TodoSearchBadge } from '@/components/molecules';
 import { MasterSearchResult } from '@/hooks/useMasterSearch';
 import { cn } from '@/lib/utils';
 import { useAppSelector } from '@/store/hooks';
@@ -16,7 +14,12 @@ interface MasterSearchBadgeProps {
 	onClick?: () => void;
 }
 
-const MasterSearchBadge = ({ result, index = 0, className, onClick = () => {} }: MasterSearchBadgeProps) => {
+const MasterSearchBadge = ({
+	result,
+	index = 0,
+	className,
+	onClick = () => {},
+}: MasterSearchBadgeProps) => {
 	const { type, result: data } = result;
 	const compactMode = useAppSelector((state) => state.settings.appearanceSettings.compactMode);
 
