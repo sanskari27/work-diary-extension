@@ -99,6 +99,10 @@ const todosSlice = createSlice({
 				todo.isUrgent = !todo.isUrgent;
 			}
 		},
+
+		setTodos: (state, action: PayloadAction<Todo[]>) => {
+			state.todos = action.payload;
+		},
 	},
 });
 
@@ -111,6 +115,7 @@ export const {
 	linkTodoToRelease,
 	unlinkTodoFromRelease,
 	toggleTodoUrgent,
+	setTodos,
 } = todosSlice.actions;
 
 export default todosSlice.reducer;

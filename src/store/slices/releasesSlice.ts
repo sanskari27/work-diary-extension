@@ -191,6 +191,12 @@ const releasesSlice = createSlice({
 		removeDefaultStatus: (state, action: PayloadAction<string>) => {
 			state.defaultStatuses = state.defaultStatuses.filter((s) => s !== action.payload);
 		},
+
+		setReleases: (state, action: PayloadAction<ReleasesState>) => {
+			state.events = action.payload.events;
+			state.templates = action.payload.templates;
+			state.defaultStatuses = action.payload.defaultStatuses;
+		},
 	},
 });
 
@@ -208,6 +214,7 @@ export const {
 	deleteTemplate,
 	addDefaultStatus,
 	removeDefaultStatus,
+	setReleases,
 } = releasesSlice.actions;
 
 export default releasesSlice.reducer;

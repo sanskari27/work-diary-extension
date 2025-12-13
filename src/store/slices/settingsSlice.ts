@@ -208,6 +208,11 @@ const settingsSlice = createSlice({
 
 		// Reset to Defaults
 		resetSettings: () => initialState,
+
+		// Set entire settings state (for import)
+		setSettings: (_state, action: PayloadAction<SettingsState>) => {
+			return action.payload;
+		},
 	},
 });
 
@@ -224,6 +229,7 @@ export const {
 	updateReleaseEventDefaults,
 	updateAppearanceSettings,
 	resetSettings,
+	setSettings,
 } = settingsSlice.actions;
 
 export default settingsSlice.reducer;

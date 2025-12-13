@@ -71,9 +71,14 @@ const contentSlice = createSlice({
 				(f) => f.id !== action.payload
 			);
 		},
+
+		setContent: (state, action: PayloadAction<Content>) => {
+			state.content = action.payload;
+		},
 	},
 });
 
-export const { updateGreeting, addFeature, updateFeature, deleteFeature } = contentSlice.actions;
+export const { updateGreeting, addFeature, updateFeature, deleteFeature, setContent } =
+	contentSlice.actions;
 
 export default contentSlice.reducer;
