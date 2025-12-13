@@ -6,14 +6,7 @@ export type { AppDispatch, RootState } from './store';
 export { useAppDispatch, useAppSelector } from './hooks';
 
 // Export content slice actions and types
-export {
-	addFeature,
-	clearError,
-	deleteFeature,
-	fetchContent,
-	updateFeature,
-	updateGreeting,
-} from './slices/contentSlice';
+export { addFeature, deleteFeature, updateFeature, updateGreeting } from './slices/contentSlice';
 export type { Content, Feature } from './slices/contentSlice';
 
 // Export UI slice actions

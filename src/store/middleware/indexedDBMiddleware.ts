@@ -16,20 +16,7 @@ const debounce = <T extends (...args: any[]) => void>(
 
 // List of action types that should trigger a save to IndexedDB
 // Add more action types here as needed
-const ACTIONS_TO_PERSIST = [
-	'content/fetchContent/fulfilled',
-	'content/updateGreeting',
-	'content/addFeature',
-	'content/updateFeature',
-	'content/deleteFeature',
-	'ui/setTheme',
-	'ui/toggleSidebar',
-	'ui/setSidebarOpen',
-	'releases/',
-	'settings/',
-	'todos/',
-	'bookmarks/',
-];
+const ACTIONS_TO_PERSIST = ['content/', 'ui/', 'releases/', 'settings/', 'todos/', 'bookmarks/'];
 
 // Create debounced save function
 const debouncedSave = debounce(

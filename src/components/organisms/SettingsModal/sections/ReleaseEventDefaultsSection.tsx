@@ -30,7 +30,7 @@ const ReleaseEventDefaultsSection = () => {
 
 			<div className='space-y-6'>
 				{/* Title Prefix */}
-				<div className='glass-strong rounded-xl p-5 border border-purple-500/20'>
+				<div className='glass rounded-xl p-5 border border-purple-500/20'>
 					<div className='flex items-start gap-3'>
 						<Calendar className='w-5 h-5 text-purple-400 mt-0.5' />
 						<div className='flex-1 space-y-3'>
@@ -54,7 +54,7 @@ const ReleaseEventDefaultsSection = () => {
 				</div>
 
 				{/* Default Reminder Enabled */}
-				<div className='glass-strong rounded-xl p-5 border border-purple-500/20'>
+				<div className='glass rounded-xl p-5 border border-purple-500/20'>
 					<div className='flex items-center justify-between'>
 						<div className='flex-1'>
 							<Label className='text-purple-200 font-medium'>Enable Reminders by Default</Label>
@@ -70,7 +70,7 @@ const ReleaseEventDefaultsSection = () => {
 				</div>
 
 				{/* Default Delta Time */}
-				<div className='glass-strong rounded-xl p-5 border border-purple-500/20'>
+				<div className='glass rounded-xl p-5 border border-purple-500/20'>
 					<div className='flex items-start gap-3'>
 						<Clock className='w-5 h-5 text-purple-400 mt-0.5' />
 						<div className='flex-1 space-y-3'>
@@ -90,7 +90,7 @@ const ReleaseEventDefaultsSection = () => {
 				</div>
 
 				{/* Default Sorting */}
-				<div className='glass-strong rounded-xl p-5 border border-purple-500/20'>
+				<div className='glass rounded-xl p-5 border border-purple-500/20'>
 					<div className='flex items-start gap-3'>
 						<SortAsc className='w-5 h-5 text-purple-400 mt-0.5' />
 						<div className='flex-1 space-y-3'>

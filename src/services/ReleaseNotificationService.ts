@@ -138,7 +138,7 @@ export class ReleaseNotificationService {
 			} else if (daysSinceRelease <= 7) {
 				// Show for up to 7 days after release
 				return {
-					message: `Release "${event.title}" was ${daysSinceRelease} day${
+					message: `🚀 Release "${event.title}" was ${daysSinceRelease} day${
 						daysSinceRelease > 1 ? 's' : ''
 					} ago - check status`,
 					type: 'info',

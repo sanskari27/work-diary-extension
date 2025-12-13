@@ -77,7 +77,7 @@ const TemplatesSection = () => {
 
 			{/* Add New Template Form */}
 			{isAdding && (
-				<div className='glass-strong rounded-xl p-4 space-y-3 border border-purple-500/30'>
+				<div className='glass rounded-xl p-4 space-y-3 border border-purple-500/30'>
 					<h4 className='font-medium text-purple-300'>New Template</h4>
 					<div className='grid grid-cols-2 gap-3'>
 						<div>
@@ -175,7 +175,7 @@ const TemplatesSection = () => {
 				{templates.map((template) => (
 					<div
 						key={template.id}
-						className='glass-strong rounded-xl p-4 border border-purple-500/20 hover:border-purple-500/40 transition-colors'
+						className='glass rounded-xl p-4 border border-purple-500/20 hover:border-purple-500/40 transition-colors'
 					>
 						{editingId === template.id ? (
 							<div className='space-y-3'>

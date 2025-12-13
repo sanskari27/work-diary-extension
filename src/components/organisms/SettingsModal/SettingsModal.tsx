@@ -20,7 +20,7 @@ const SettingsModal = ({ open, onOpenChange }: SettingsModalProps) => {
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
-			<DialogContent className='max-w-5xl h-[85vh] bg-slate-900/95 backdrop-blur-xl border-purple-500/30 text-white flex flex-col'>
+			<DialogContent className='max-w-5xl h-[85vh] bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 backdrop-blur-xl border-purple-500/30 text-white flex flex-col'>
 				<DialogHeader className='flex-shrink-0'>
 					<DialogTitle className='flex items-center gap-3 text-2xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent'>
 						<Settings className='w-7 h-7 text-purple-400' />

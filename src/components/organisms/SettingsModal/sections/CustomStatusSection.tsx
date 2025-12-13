@@ -119,7 +119,7 @@ const CustomStatusSection = () => {
 				{statuses.map((status) => (
 					<div
 						key={status.id}
-						className={`glass-strong rounded-xl p-4 border transition-colors ${
+						className={`glass rounded-xl p-4 border transition-colors ${
 							status.isVisible
 								? 'border-purple-500/20 hover:border-purple-500/40'
 								: 'border-slate-700/50 opacity-60'

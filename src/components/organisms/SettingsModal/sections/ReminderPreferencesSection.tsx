@@ -24,7 +24,7 @@ const ReminderPreferencesSection = () => {
 
 			<div className='space-y-6'>
 				{/* Default Reminder Delta */}
-				<div className='glass-strong rounded-xl p-5 border border-purple-500/20'>
+				<div className='glass rounded-xl p-5 border border-purple-500/20'>
 					<div className='flex items-start gap-3'>
 						<Clock className='w-5 h-5 text-purple-400 mt-0.5' />
 						<div className='flex-1 space-y-3'>
@@ -44,7 +44,7 @@ const ReminderPreferencesSection = () => {
 				</div>
 
 				{/* Default Reminder Enabled */}
-				<div className='glass-strong rounded-xl p-5 border border-purple-500/20'>
+				<div className='glass rounded-xl p-5 border border-purple-500/20'>
 					<div className='flex items-center justify-between'>
 						<div className='flex-1'>
 							<Label className='text-purple-200 font-medium'>Enable Reminders by Default</Label>
@@ -60,7 +60,7 @@ const ReminderPreferencesSection = () => {
 				</div>
 
 				{/* Info Box */}
-				<div className='glass-strong rounded-xl p-4 border border-blue-500/30 bg-blue-500/5'>
+				<div className='glass rounded-xl p-4 border border-blue-500/30 bg-blue-500/5'>
 					<p className='text-sm text-blue-300'>
 						<strong>Tip:</strong> Reminders will be displayed in-app when the release date
 						approaches based on your configured delta time.

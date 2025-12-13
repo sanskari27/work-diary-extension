@@ -34,7 +34,7 @@ const BackupSyncSection = () => {
 				</div>
 
 				{/* Placeholder UI for Export */}
-				<div className='glass-strong rounded-xl p-5 border border-purple-500/20 opacity-50 cursor-not-allowed'>
+				<div className='glass rounded-xl p-5 border border-purple-500/20 opacity-50 cursor-not-allowed'>
 					<div className='flex items-start gap-3'>
 						<Download className='w-5 h-5 text-purple-400 mt-0.5' />
 						<div className='flex-1 space-y-3'>
@@ -53,7 +53,7 @@ const BackupSyncSection = () => {
 				</div>
 
 				{/* Placeholder UI for Import */}
-				<div className='glass-strong rounded-xl p-5 border border-purple-500/20 opacity-50 cursor-not-allowed'>
+				<div className='glass rounded-xl p-5 border border-purple-500/20 opacity-50 cursor-not-allowed'>
 					<div className='flex items-start gap-3'>
 						<Upload className='w-5 h-5 text-purple-400 mt-0.5' />
 						<div className='flex-1 space-y-3'>
@@ -72,7 +72,7 @@ const BackupSyncSection = () => {
 				</div>
 
 				{/* Placeholder UI for Cloud Sync */}
-				<div className='glass-strong rounded-xl p-5 border border-purple-500/20 opacity-50 cursor-not-allowed'>
+				<div className='glass rounded-xl p-5 border border-purple-500/20 opacity-50 cursor-not-allowed'>
 					<div className='flex items-start gap-3'>
 						<Cloud className='w-5 h-5 text-purple-400 mt-0.5' />
 						<div className='flex-1 space-y-3'>

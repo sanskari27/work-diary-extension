@@ -2,27 +2,12 @@ import { Greeting } from '@/components/molecules';
 import { FeatureGrid, HomePageSearch, NotificationPanel } from '@/components/organisms';
 import { PageLayout } from '@/components/templates';
 import { FEATURES } from '@/config/features';
-import { useContent } from '@/hooks/useContent';
 import { useAppSelector } from '@/store/hooks';
 import { motion } from 'framer-motion';
 
 const HomePage = () => {
-	const { content, loading } = useContent();
+	const content = useAppSelector((state) => state.content.content);
 	const appearance = useAppSelector((state) => state.settings.appearanceSettings);
-
-	if (loading || !content) {
-		return (
-			<PageLayout showHomeButton={false}>
-				<div className='min-h-screen flex items-center justify-center'>
-					<motion.div
-						animate={{ rotate: 360 }}
-						transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-						className='w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full'
-					/>
-				</div>
-			</PageLayout>
-		);
-	}
 
 	const greetingName = (appearance.greetingName || '').trim() || content.greeting.userName;
 

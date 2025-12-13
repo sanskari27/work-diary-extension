@@ -1,4 +1,3 @@
-export { default as Card } from './Card/Card';
 export { default as DatePicker } from './DatePicker/DatePicker';
 export { default as Icon } from './Icon/Icon';
 export { default as ReminderInput } from './ReminderInput/ReminderInput';

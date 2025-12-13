@@ -29,7 +29,7 @@ const AppearanceSection = () => {
 
 			<div className='space-y-6'>
 				{/* Theme Selection */}
-				<div className='glass-strong rounded-xl p-5 border border-purple-500/20'>
+				<div className='glass rounded-xl p-5 border border-purple-500/20'>
 					<div className='flex items-start gap-3'>
 						<Palette className='w-5 h-5 text-purple-400 mt-0.5' />
 						<div className='flex-1 space-y-3'>
@@ -56,7 +56,7 @@ const AppearanceSection = () => {
 				</div>
 
 				{/* Greeting Name */}
-				<div className='glass-strong rounded-xl p-5 border border-purple-500/20'>
+				<div className='glass rounded-xl p-5 border border-purple-500/20'>
 					<div className='flex items-start gap-3'>
 						<User className='w-5 h-5 text-purple-400 mt-0.5' />
 						<div className='flex-1 space-y-3'>
@@ -80,7 +80,7 @@ const AppearanceSection = () => {
 				</div>
 
 				{/* Compact Mode */}
-				<div className='glass-strong rounded-xl p-5 border border-purple-500/20'>
+				<div className='glass rounded-xl p-5 border border-purple-500/20'>
 					<div className='flex items-center justify-between'>
 						<div className='flex-1 flex items-start gap-3'>
 							<Layout className='w-5 h-5 text-purple-400 mt-0.5' />
@@ -99,7 +99,7 @@ const AppearanceSection = () => {
 				</div>
 
 				{/* Card Size */}
-				<div className='glass-strong rounded-xl p-5 border border-purple-500/20'>
+				<div className='glass rounded-xl p-5 border border-purple-500/20'>
 					<div className='flex items-start gap-3'>
 						<Maximize2 className='w-5 h-5 text-purple-400 mt-0.5' />
 						<div className='flex-1 space-y-3'>
@@ -125,7 +125,7 @@ const AppearanceSection = () => {
 				</div>
 
 				{/* Visibility Toggles */}
-				<div className='glass-strong rounded-xl p-5 border border-purple-500/20 space-y-4'>
+				<div className='glass rounded-xl p-5 border border-purple-500/20 space-y-4'>
 					<div className='flex items-center gap-2 mb-3'>
 						<Eye className='w-5 h-5 text-purple-400' />
 						<Label className='text-purple-200 font-medium'>Show/Hide Elements</Label>
@@ -179,7 +179,7 @@ const AppearanceSection = () => {
 				</div>
 
 				{/* Minimal Mode */}
-				<div className='glass-strong rounded-xl p-5 border border-purple-500/20'>
+				<div className='glass rounded-xl p-5 border border-purple-500/20'>
 					<div className='flex items-center justify-between'>
 						<div className='flex-1'>
 							<Label className='text-purple-200 font-medium'>Minimal Mode for Homepage</Label>
