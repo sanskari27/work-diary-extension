@@ -4,14 +4,32 @@ import { Switch } from '@/components/ui/switch';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { updateReminderPreferences } from '@/store/slices/settingsSlice';
 import { Clock } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 const ReminderPreferencesSection = () => {
 	const dispatch = useAppDispatch();
 	const preferences = useAppSelector((state) => state.settings.reminderPreferences);
+	const [notificationPermission, setNotificationPermission] = useState<
+		'granted' | 'denied' | 'default'
+	>('default');
+
+	useEffect(() => {
+		// Check Chrome notifications permission (for extensions)
+		if (typeof chrome !== 'undefined' && chrome.notifications) {
+			// Chrome extensions with "notifications" permission in manifest have permission granted
+			// We can check if the API is available
+			setNotificationPermission('granted');
+		} else if (typeof window !== 'undefined' && 'Notification' in window) {
+			// Fallback to standard Notification API
+			setNotificationPermission(Notification.permission);
+		}
+	}, []);
 
 	const handleUpdate = (updates: any) => {
 		dispatch(updateReminderPreferences(updates));
 	};
+
+	const isNotificationDisabled = notificationPermission === 'denied';
 
 	return (
 		<div className='space-y-6'>
@@ -67,10 +85,16 @@ const ReminderPreferencesSection = () => {
 							<p className='text-sm text-slate-400 mt-1'>
 								Receive browser notifications at 12:00 PM for active reminders (once per day)
 							</p>
+							{isNotificationDisabled && (
+								<p className='text-sm text-amber-400 mt-2'>
+									Notification permission rejected. Turn on manually in browser settings.
+								</p>
+							)}
 						</div>
 						<Switch
 							checked={preferences.enableBrowserNotification}
 							onCheckedChange={(checked) => handleUpdate({ enableBrowserNotification: checked })}
+							disabled={isNotificationDisabled}
 						/>
 					</div>
 				</div>

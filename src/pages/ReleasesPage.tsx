@@ -27,7 +27,7 @@ const ReleasesPage = () => {
 	const customStatuses = useAppSelector((state) => state.settings.customStatuses);
 	const appearance = useAppSelector((state) => state.settings.appearanceSettings);
 	const [showReleaseForm, setShowReleaseForm] = useState(false);
-	const [searchParams, setSearchParams] = useSearchParams();
+	const [searchParams] = useSearchParams();
 	const expandReleaseId = searchParams.get('expand');
 	const expandItemId = searchParams.get('itemId');
 

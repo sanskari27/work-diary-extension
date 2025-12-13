@@ -4,40 +4,50 @@ import { Store } from '@reduxjs/toolkit';
 /**
  * Service to manage browser notifications at 12:00 PM
  * Shows notifications once per day for active reminders
+ * Uses Chrome Notifications API and Alarms API to work even when extension is closed
  */
 export class BrowserNotificationService {
 	private store: Store<RootState>;
-	private checkInterval: number | null = null;
-	private dailyCheckTimeout: number | null = null;
+	private unsubscribe: (() => void) | null = null;
 
 	constructor(store: Store<RootState>) {
 		this.store = store;
 	}
 
 	/**
-	 * Initialize the service - sets up 12:00 PM check
+	 * Initialize the service - sets up 12:00 PM check using Chrome Alarms
 	 */
 	public initialize() {
 		// Request notification permission if not already granted
 		BrowserNotificationService.requestNotificationPermission();
 
-		// Set up the 12:00 PM check
-		this.scheduleDailyCheck();
+		// Sync state to chrome.storage so background worker can access it
+		this.syncStateToChromeStorage();
 
-		// Check every minute to see if we've reached 12:00 PM
-		this.checkInterval = window.setInterval(() => {
-			this.checkAndShowNotifications();
-		}, 60000); // Check every minute
+		// Subscribe to store changes to keep chrome.storage in sync
+		this.unsubscribe = this.store.subscribe(() => {
+			this.syncStateToChromeStorage();
+		});
+
+		// Schedule the daily check using Chrome Alarms (works even when extension is closed)
+		this.scheduleDailyCheck();
 
 		// Also check immediately in case we're already past 12:00 PM
 		this.checkAndShowNotifications();
 	}
 
 	/**
-	 * Request browser notification permission
+	 * Request Chrome notification permission
 	 */
 	public static async requestNotificationPermission() {
-		if ('Notification' in window && Notification.permission === 'default') {
+		// Chrome extensions with "notifications" permission don't need explicit permission request
+		// The permission is granted automatically when the extension is installed
+		// However, we can check if chrome.notifications is available
+		if (typeof chrome !== 'undefined' && chrome.notifications) {
+			// Permission is automatically granted with manifest permission
+			console.log('Chrome notifications API available');
+		} else if ('Notification' in window && Notification.permission === 'default') {
+			// Fallback to standard Notification API if chrome.notifications is not available
 			try {
 				setTimeout(async () => {
 					await Notification.requestPermission();
@@ -49,9 +59,37 @@ export class BrowserNotificationService {
 	}
 
 	/**
-	 * Schedule the daily check at 12:00 PM
+	 * Sync relevant state to chrome.storage.local for background worker access
+	 */
+	private syncStateToChromeStorage() {
+		if (typeof chrome === 'undefined' || !chrome.storage) {
+			return;
+		}
+
+		const state = this.store.getState();
+		const dataToSync = {
+			reminderPreferences: state.settings.reminderPreferences,
+			notifications: state.ui.notifications,
+		};
+
+		chrome.storage.local.set(dataToSync, () => {
+			if (chrome.runtime.lastError) {
+				console.error('Error syncing state to chrome.storage:', chrome.runtime.lastError);
+			}
+		});
+	}
+
+	/**
+	 * Schedule the daily check at 12:00 PM using Chrome Alarms API
+	 * This works even when the extension is closed
 	 */
 	private scheduleDailyCheck() {
+		if (typeof chrome === 'undefined' || !chrome.alarms) {
+			// Fallback to setTimeout if chrome.alarms is not available
+			this.scheduleDailyCheckFallback();
+			return;
+		}
+
 		const now = new Date();
 		const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 		const noon = new Date(today);
@@ -62,18 +100,38 @@ export class BrowserNotificationService {
 			noon.setDate(noon.getDate() + 1);
 		}
 
-		const msUntilNoon = noon.getTime() - now.getTime();
+		// Clear any existing alarm
+		chrome.alarms.clear('daily-reminder-check', () => {
+			// Create a one-time alarm for 12:00 PM
+			chrome.alarms.create('daily-reminder-check', {
+				when: noon.getTime(),
+			});
 
-		// Clear any existing timeout
-		if (this.dailyCheckTimeout !== null) {
-			window.clearTimeout(this.dailyCheckTimeout);
+			// Also send message to background worker to schedule
+			if (chrome.runtime && chrome.runtime.sendMessage) {
+				chrome.runtime.sendMessage({ type: 'SCHEDULE_DAILY_CHECK' });
+			}
+		});
+	}
+
+	/**
+	 * Fallback scheduling using setTimeout (for non-extension contexts)
+	 */
+	private scheduleDailyCheckFallback() {
+		const now = new Date();
+		const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+		const noon = new Date(today);
+		noon.setHours(12, 0, 0, 0);
+
+		if (now >= noon) {
+			noon.setDate(noon.getDate() + 1);
 		}
 
-		// Set timeout to check at 12:00 PM
-		this.dailyCheckTimeout = window.setTimeout(() => {
+		const msUntilNoon = noon.getTime() - now.getTime();
+
+		setTimeout(() => {
 			this.checkAndShowNotifications();
-			// Schedule next day's check
-			this.scheduleDailyCheck();
+			this.scheduleDailyCheckFallback();
 		}, msUntilNoon);
 	}
 
@@ -86,16 +144,6 @@ export class BrowserNotificationService {
 
 		// Only proceed if browser notifications are enabled
 		if (!enableBrowserNotification) {
-			return;
-		}
-
-		// Check if notifications are supported
-		if (!('Notification' in window)) {
-			return;
-		}
-
-		// Check if permission is granted
-		if (Notification.permission !== 'granted') {
 			return;
 		}
 
@@ -113,31 +161,62 @@ export class BrowserNotificationService {
 		const today = this.getTodayDateString();
 
 		// Check if we've already shown notifications today
-		const hasShownToday = this.hasShownNotificationsToday(today);
-		if (hasShownToday) {
-			return;
-		}
+		this.hasShownNotificationsToday(today).then((hasShownToday) => {
+			if (hasShownToday) {
+				return;
+			}
 
-		// Get all current notifications from the store
-		const notifications = state.ui.notifications;
+			// Get all current notifications from the store
+			const notifications = state.ui.notifications;
 
-		if (notifications.length === 0) {
-			return;
-		}
+			if (notifications.length === 0) {
+				return;
+			}
 
-		// Show browser notifications for each notification
-		notifications.forEach((notification) => {
-			this.showBrowserNotification(notification.message);
+			// Show browser notifications for each notification
+			notifications.forEach((notification, index) => {
+				setTimeout(() => {
+					this.showBrowserNotification(notification.message, index);
+				}, index * 500); // Stagger notifications by 500ms
+			});
+
+			// Mark that we've shown notifications today
+			this.markNotificationsShownToday(today);
 		});
-
-		// Mark that we've shown notifications today
-		this.markNotificationsShownToday(today);
 	}
 
 	/**
-	 * Show a browser notification
+	 * Show a browser notification using Chrome Notifications API
 	 */
-	private showBrowserNotification(message: string) {
+	private showBrowserNotification(message: string, _index: number) {
+		// Prefer Chrome Notifications API (works even when extension is closed)
+		if (typeof chrome !== 'undefined' && chrome.notifications) {
+			chrome.notifications.create(
+				{
+					type: 'basic',
+					iconUrl: chrome.runtime.getURL('icon-128.png'),
+					title: 'Release Reminder',
+					message: message,
+					priority: 1,
+				},
+				(_notificationId) => {
+					if (chrome.runtime.lastError) {
+						console.error('Error showing Chrome notification:', chrome.runtime.lastError);
+						// Fallback to standard Notification API
+						this.showBrowserNotificationFallback(message);
+					}
+				}
+			);
+		} else {
+			// Fallback to standard Notification API
+			this.showBrowserNotificationFallback(message);
+		}
+	}
+
+	/**
+	 * Fallback to standard Notification API
+	 */
+	private showBrowserNotificationFallback(message: string) {
 		if (!('Notification' in window) || Notification.permission !== 'granted') {
 			return;
 		}
@@ -171,10 +250,23 @@ export class BrowserNotificationService {
 
 	/**
 	 * Check if notifications have been shown today
+	 * Uses chrome.storage for extension context, falls back to localStorage
 	 */
-	private hasShownNotificationsToday(today: string): boolean {
+	private async hasShownNotificationsToday(today: string): Promise<boolean> {
+		const key = `browserNotificationsShown_${today}`;
+
+		// Prefer chrome.storage (accessible by background worker)
+		if (typeof chrome !== 'undefined' && chrome.storage) {
+			return new Promise((resolve) => {
+				chrome.storage.local.get(['browserNotificationsShown'], (data) => {
+					const shownData = data.browserNotificationsShown || {};
+					resolve(shownData[key] === true);
+				});
+			});
+		}
+
+		// Fallback to localStorage
 		try {
-			const key = `browserNotificationsShown_${today}`;
 			const stored = localStorage.getItem(key);
 			return stored === 'true';
 		} catch (error) {
@@ -185,12 +277,31 @@ export class BrowserNotificationService {
 
 	/**
 	 * Mark that notifications have been shown today
+	 * Uses chrome.storage for extension context, falls back to localStorage
 	 */
 	private markNotificationsShownToday(today: string) {
-		try {
-			const key = `browserNotificationsShown_${today}`;
-			localStorage.setItem(key, 'true');
+		const key = `browserNotificationsShown_${today}`;
 
+		// Prefer chrome.storage (accessible by background worker)
+		if (typeof chrome !== 'undefined' && chrome.storage) {
+			chrome.storage.local.get(['browserNotificationsShown'], (data) => {
+				const shownData = data.browserNotificationsShown || {};
+				shownData[key] = true;
+				chrome.storage.local.set({ browserNotificationsShown: shownData }, () => {
+					if (chrome.runtime.lastError) {
+						console.error('Error saving to chrome.storage:', chrome.runtime.lastError);
+					} else {
+						// Clean up old entries (older than 7 days)
+						this.cleanupOldEntries();
+					}
+				});
+			});
+			return;
+		}
+
+		// Fallback to localStorage
+		try {
+			localStorage.setItem(key, 'true');
 			// Clean up old entries (older than 7 days)
 			this.cleanupOldEntries();
 		} catch (error) {
@@ -199,14 +310,35 @@ export class BrowserNotificationService {
 	}
 
 	/**
-	 * Clean up localStorage entries older than 7 days
+	 * Clean up old entries older than 7 days
+	 * Uses chrome.storage for extension context, falls back to localStorage
 	 */
 	private cleanupOldEntries() {
+		const sevenDaysAgo = new Date();
+		sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+		// Prefer chrome.storage
+		if (typeof chrome !== 'undefined' && chrome.storage) {
+			chrome.storage.local.get(['browserNotificationsShown'], (data) => {
+				const shownData = data.browserNotificationsShown || {};
+				const cleanedData: Record<string, boolean> = {};
+
+				Object.keys(shownData).forEach((key) => {
+					const dateString = key.replace('browserNotificationsShown_', '');
+					const entryDate = new Date(dateString);
+					if (entryDate >= sevenDaysAgo) {
+						cleanedData[key] = shownData[key];
+					}
+				});
+
+				chrome.storage.local.set({ browserNotificationsShown: cleanedData });
+			});
+			return;
+		}
+
+		// Fallback to localStorage
 		try {
 			const keysToRemove: string[] = [];
-			const sevenDaysAgo = new Date();
-			sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-
 			for (let i = 0; i < localStorage.length; i++) {
 				const key = localStorage.key(i);
 				if (key && key.startsWith('browserNotificationsShown_')) {
@@ -225,16 +357,24 @@ export class BrowserNotificationService {
 	}
 
 	/**
-	 * Cleanup intervals and timeouts
+	 * Cleanup alarms and subscriptions
 	 */
 	public cleanup() {
-		if (this.checkInterval !== null) {
-			window.clearInterval(this.checkInterval);
-			this.checkInterval = null;
+		// Unsubscribe from store changes
+		if (this.unsubscribe) {
+			this.unsubscribe();
+			this.unsubscribe = null;
 		}
-		if (this.dailyCheckTimeout !== null) {
-			window.clearTimeout(this.dailyCheckTimeout);
-			this.dailyCheckTimeout = null;
+
+		// Clear Chrome alarms
+		if (typeof chrome !== 'undefined' && chrome.alarms) {
+			chrome.alarms.clear('daily-reminder-check');
+			chrome.alarms.clear('daily-reminder-check-repeating');
+
+			// Notify background worker to clear alarms
+			if (chrome.runtime && chrome.runtime.sendMessage) {
+				chrome.runtime.sendMessage({ type: 'CLEAR_DAILY_CHECK' });
+			}
 		}
 	}
 }

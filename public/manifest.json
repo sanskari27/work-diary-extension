@@ -15,8 +15,14 @@
 	},
 	"permissions": [
 		"storage",
-		"tabs"
+		"tabs",
+		"notifications",
+		"alarms"
 	],
+	"background": {
+		"service_worker": "src/background.ts",
+		"type": "module"
+	},
 	"host_permissions": [
 		"http://localhost:*/*"
 	]
