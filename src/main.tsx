@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
 import App from './App.tsx';
 import './index.css';
+import { initializeBrowserNotifications } from './services/BrowserNotificationService';
 import { initializeReleaseNotifications } from './services/ReleaseNotificationService';
 import { initializeTodoNotifications } from './services/TodoNotificationService';
 import { createStore, loadPersistedState } from './store/store';
@@ -18,6 +19,7 @@ const initApp = async () => {
 	// Initialize notification services (runs once on app load)
 	initializeReleaseNotifications(store);
 	initializeTodoNotifications(store);
+	initializeBrowserNotifications(store);
 
 	// Render the app
 	ReactDOM.createRoot(document.getElementById('root')!).render(

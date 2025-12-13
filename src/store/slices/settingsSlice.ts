@@ -25,6 +25,7 @@ export interface CustomStatus {
 export interface ReminderPreferences {
 	defaultReminderDelta: string; // e.g., "1d", "2h"
 	defaultReminderEnabled: boolean;
+	enableBrowserNotification: boolean;
 }
 
 // Release Event Defaults
@@ -80,6 +81,7 @@ const initialState: SettingsState = {
 	reminderPreferences: {
 		defaultReminderDelta: '1d',
 		defaultReminderEnabled: true,
+		enableBrowserNotification: false,
 	},
 	releaseEventDefaults: {
 		titlePrefix: 'Release - ',

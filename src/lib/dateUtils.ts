@@ -2,7 +2,7 @@
  * Date utility functions for handling date operations across the application
  */
 
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow } from 'date-fns';
 
 /**
  * Check if a date is in the current month and year
@@ -95,8 +95,18 @@ export const getCurrentMonth = (): number => {
 	return new Date().getMonth();
 };
 
-
 export const formatRelativeTime = (dateString: string): string => {
 	if (!dateString) return '';
 	return formatDistanceToNow(new Date(dateString), { addSuffix: true });
+};
+
+/**
+ * Get a date after a number of days
+ * @param days - The number of days to add
+ * @returns A string in the format YYYY-MM-DD
+ */
+export const getDateAfterDays = (days: number): string => {
+	const date = new Date();
+	date.setDate(date.getDate() + days);
+	return date.toISOString().split('T')[0];
 };

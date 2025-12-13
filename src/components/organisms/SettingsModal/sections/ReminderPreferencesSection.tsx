@@ -59,6 +59,22 @@ const ReminderPreferencesSection = () => {
 					</div>
 				</div>
 
+				{/* Browser Notifications */}
+				<div className='glass rounded-xl p-5 border border-purple-500/20'>
+					<div className='flex items-center justify-between'>
+						<div className='flex-1'>
+							<Label className='text-purple-200 font-medium'>Enable Browser Notifications</Label>
+							<p className='text-sm text-slate-400 mt-1'>
+								Receive browser notifications at 12:00 PM for active reminders (once per day)
+							</p>
+						</div>
+						<Switch
+							checked={preferences.enableBrowserNotification}
+							onCheckedChange={(checked) => handleUpdate({ enableBrowserNotification: checked })}
+						/>
+					</div>
+				</div>
+
 				{/* Info Box */}
 				<div className='glass rounded-xl p-4 border border-blue-500/30 bg-blue-500/5'>
 					<p className='text-sm text-blue-300'>

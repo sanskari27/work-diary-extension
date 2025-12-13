@@ -11,6 +11,7 @@ import {
 	SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { getDateAfterDays } from '@/lib/dateUtils';
 import { addTodo, Todo, updateTodo } from '@/store/slices/todosSlice';
 import { RootState } from '@/store/store';
 import { motion } from 'framer-motion';
@@ -31,7 +32,7 @@ export default function TodoForm({ isOpen, onClose, todoToEdit }: TodoFormProps)
 
 	// Form state
 	const [title, setTitle] = useState('');
-	const [date, setDate] = useState('');
+	const [date, setDate] = useState(() => getDateAfterDays(5));
 	const [description, setDescription] = useState('');
 	const [isUrgent, setIsUrgent] = useState(false);
 	const [linkedReleaseId, setLinkedReleaseId] = useState<string>('__none__');
@@ -61,7 +62,7 @@ export default function TodoForm({ isOpen, onClose, todoToEdit }: TodoFormProps)
 
 	const resetForm = () => {
 		setTitle('');
-		setDate('');
+		setDate(getDateAfterDays(5));
 		setDescription('');
 		setIsUrgent(false);
 		setLinkedReleaseId('__none__');
