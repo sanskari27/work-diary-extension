@@ -30,6 +30,15 @@ const Popup = () => {
 	const handleBookmarkCurrentTab = () => {
 		if (!currentTab || isBookmarking) return;
 
+		// Check if bookmark already exists
+		const bookmarkExists = bookmarks.some(
+			(b) => b.pageUrl.toLowerCase() === currentTab.url.toLowerCase()
+		);
+
+		if (bookmarkExists) {
+			return;
+		}
+
 		setIsBookmarking(true);
 		dispatch(
 			addBookmark({
@@ -98,7 +107,7 @@ const Popup = () => {
 					{/* Bookmark Current Tab Feature */}
 					<div className='glass-strong rounded-xl p-4 border border-purple-400/30'>
 						<div className='flex items-start justify-between gap-3 mb-3'>
-							<div className='flex-1'>
+							<div className='flex-1 overflow-hidden'>
 								<h3 className='text-white font-semibold mb-1 flex items-center gap-2'>
 									<BookmarkPlus className='w-4 h-4 text-purple-400' />
 									Bookmark Current Tab
@@ -112,8 +121,14 @@ const Popup = () => {
 						</div>
 						<Button
 							onClick={handleBookmarkCurrentTab}
-							disabled={!currentTab || isBookmarking}
-							className='w-full bg-purple-600 hover:bg-purple-700 text-white'
+							disabled={
+								!currentTab ||
+								isBookmarking ||
+								bookmarks.some(
+									(b) => b.pageUrl.toLowerCase() === (currentTab?.url || '').toLowerCase()
+								)
+							}
+							className='w-full bg-purple-600 hover:bg-purple-700 text-white disabled:bg-purple-800/50 disabled:cursor-not-allowed'
 							size='sm'
 						>
 							{isBookmarking ? (
@@ -124,6 +139,13 @@ const Popup = () => {
 										className='w-4 h-4 border-2 border-white border-t-transparent rounded-full'
 									/>
 									Bookmarking...
+								</>
+							) : bookmarks.some(
+									(b) => b.pageUrl.toLowerCase() === (currentTab?.url || '').toLowerCase()
+							  ) ? (
+								<>
+									<Bookmark className='w-4 h-4' />
+									Already Bookmarked
 								</>
 							) : (
 								<>

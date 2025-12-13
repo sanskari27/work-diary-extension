@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { useFavicon } from '@/hooks/useFavicon';
 import { cn } from '@/lib/utils';
 import { Bookmark } from '@/store/slices/bookmarksSlice';
 import { motion } from 'framer-motion';
@@ -12,6 +13,7 @@ interface BookmarkCardProps {
 
 export default function BookmarkCard({ bookmark, onDelete }: BookmarkCardProps) {
 	const [isHovered, setIsHovered] = useState(false);
+	const faviconUrl = useFavicon(bookmark.pageUrl);
 
 	const handleOpenLink = (e: React.MouseEvent) => {
 		e.stopPropagation();
@@ -48,10 +50,21 @@ export default function BookmarkCard({ bookmark, onDelete }: BookmarkCardProps) 
 		>
 			{/* Content */}
 			<div className='flex-1 flex flex-col justify-between min-h-0'>
-				{/* Title */}
-				<div className='mb-1.5'>
+				{/* Favicon and Title */}
+				<div className='mb-1.5 flex items-start gap-1.5'>
+					{faviconUrl && (
+						<img
+							src={faviconUrl}
+							alt=''
+							className='w-3.5 h-3.5 rounded flex-shrink-0 mt-0.5'
+							onError={(e) => {
+								// Hide image on error
+								e.currentTarget.style.display = 'none';
+							}}
+						/>
+					)}
 					<h3
-						className='text-xs font-semibold text-white group-hover:text-purple-300 transition-colors line-clamp-2 leading-tight'
+						className='text-xs font-semibold text-white group-hover:text-purple-300 transition-colors line-clamp-2 leading-tight flex-1'
 						title={bookmark.name}
 					>
 						{bookmark.name}

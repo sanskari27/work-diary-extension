@@ -21,12 +21,20 @@ const bookmarksSlice = createSlice({
 	initialState,
 	reducers: {
 		addBookmark: (state, action: PayloadAction<Omit<Bookmark, 'id' | 'createdAt'>>) => {
-			const newBookmark: Bookmark = {
-				...action.payload,
-				id: nanoid(),
-				createdAt: Date.now(),
-			};
-			state.bookmarks.unshift(newBookmark);
+			// Check if a bookmark with the same URL already exists
+			const existingBookmark = state.bookmarks.find(
+				(b) => b.pageUrl.toLowerCase() === action.payload.pageUrl.toLowerCase()
+			);
+
+			// Only add if the URL doesn't already exist
+			if (!existingBookmark) {
+				const newBookmark: Bookmark = {
+					...action.payload,
+					id: nanoid(),
+					createdAt: Date.now(),
+				};
+				state.bookmarks.unshift(newBookmark);
+			}
 		},
 
 		updateBookmark: (state, action: PayloadAction<{ id: string; updates: Partial<Bookmark> }>) => {
