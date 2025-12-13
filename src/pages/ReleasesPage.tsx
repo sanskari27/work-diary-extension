@@ -20,6 +20,7 @@ import {
 import { motion } from 'framer-motion';
 import { Calendar, Clock, History, Package, Plus, Rocket } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 const ReleasesPage = () => {
 	const dispatch = useAppDispatch();
@@ -27,6 +28,9 @@ const ReleasesPage = () => {
 	const customStatuses = useAppSelector((state) => state.settings.customStatuses);
 	const appearance = useAppSelector((state) => state.settings.appearanceSettings);
 	const [showReleaseForm, setShowReleaseForm] = useState(false);
+	const [searchParams, setSearchParams] = useSearchParams();
+	const expandReleaseId = searchParams.get('expand');
+	const expandItemId = searchParams.get('itemId');
 
 	// Group and sort releases
 	const groupedReleases = useMemo(() => {
@@ -247,6 +251,8 @@ const ReleasesPage = () => {
 															onUpdateItem={handleUpdateItem}
 															onDeleteItem={handleDeleteItem}
 															onToggleStatus={handleToggleStatus}
+															expandItemId={expandItemId || ''}
+															expandReleaseId={expandReleaseId || ''}
 														/>
 													</motion.div>
 												))}
@@ -277,6 +283,8 @@ const ReleasesPage = () => {
 															onUpdateItem={handleUpdateItem}
 															onDeleteItem={handleDeleteItem}
 															onToggleStatus={handleToggleStatus}
+															expandItemId={expandItemId || ''}
+															expandReleaseId={expandReleaseId || ''}
 														/>
 													</motion.div>
 												))}
@@ -307,6 +315,8 @@ const ReleasesPage = () => {
 															onUpdateItem={handleUpdateItem}
 															onDeleteItem={handleDeleteItem}
 															onToggleStatus={handleToggleStatus}
+															expandItemId={expandItemId || ''}
+															expandReleaseId={expandReleaseId || ''}
 														/>
 													</motion.div>
 												))}

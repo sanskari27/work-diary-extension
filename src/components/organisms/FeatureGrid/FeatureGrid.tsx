@@ -28,10 +28,10 @@ const FeatureGrid = ({ features }: FeatureGridProps) => {
 			variants={container}
 			initial='hidden'
 			animate='show'
-			className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4'
+			className='flex flex-wrap gap-4 justify-center'
 		>
 			{_.map(features, (feature) => (
-				<motion.div key={feature.id} variants={item}>
+				<motion.div key={feature.id} variants={item} className='min-w-[16rem]'>
 					<FeatureTile name={feature.name} icon={feature.icon} route={feature.route} />
 				</motion.div>
 			))}

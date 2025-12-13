@@ -26,17 +26,38 @@ import {
 	Package,
 	Plus,
 } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useSearchParams } from 'react-router-dom';
 
 export default function TodosPage() {
 	const dispatch = useDispatch();
 	const todos = useSelector((state: RootState) => state.todos.todos);
 	const appearance = useAppSelector((state) => state.settings.appearanceSettings);
+	const [searchParams, setSearchParams] = useSearchParams();
 
 	const [isFormOpen, setIsFormOpen] = useState(false);
 	const [todoToEdit, setTodoToEdit] = useState<Todo | undefined>(undefined);
 	const [selectedTodo, setSelectedTodo] = useState<Todo | null>(null);
+
+	// Handle todoId from URL params
+	useEffect(() => {
+		const todoId = searchParams.get('todoId');
+		if (todoId) {
+			const todo = todos.find((t) => t.id === todoId);
+			if (todo) {
+				setSelectedTodo(todo);
+			}
+		}
+	}, [searchParams, todos]);
+
+	// Handler to close todo details and remove todoId from query params
+	const handleCloseTodoDetails = () => {
+		setSelectedTodo(null);
+		const newSearchParams = new URLSearchParams(searchParams);
+		newSearchParams.delete('todoId');
+		setSearchParams(newSearchParams, { replace: true });
+	};
 
 	// Get spacing based on appearance settings
 	const getSpacing = () => {
@@ -483,7 +504,7 @@ export default function TodosPage() {
 			{selectedTodo && (
 				<TodoDetailsPanel
 					todo={selectedTodo}
-					onClose={() => setSelectedTodo(null)}
+					onClose={handleCloseTodoDetails}
 					onEdit={handleEdit}
 					onDelete={handleDelete}
 				/>

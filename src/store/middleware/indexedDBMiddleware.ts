@@ -35,9 +35,11 @@ const ACTIONS_TO_PERSIST = [
 const debouncedSave = debounce(
 	async (state: RootState) => {
 		// Save each slice separately for better granularity
+		// Exclude searchQuery from ui slice when persisting
+		const { searchQuery, ...uiStateToPersist } = state.ui;
 		await Promise.all([
 			saveStateToIndexedDB('content', state.content),
-			saveStateToIndexedDB('ui', state.ui),
+			saveStateToIndexedDB('ui', uiStateToPersist),
 			saveStateToIndexedDB('releases', state.releases),
 			saveStateToIndexedDB('settings', state.settings),
 			saveStateToIndexedDB('todos', state.todos),

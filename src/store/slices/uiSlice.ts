@@ -3,6 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 interface UIState {
 	theme: 'light' | 'dark' | 'system';
 	sidebarOpen: boolean;
+	searchQuery: string;
 	notifications: Array<{
 		id: string;
 		message: string;
@@ -14,6 +15,7 @@ interface UIState {
 const initialState: UIState = {
 	theme: 'system',
 	sidebarOpen: false,
+	searchQuery: '',
 	notifications: [],
 };
 
@@ -50,6 +52,9 @@ const uiSlice = createSlice({
 		clearNotifications: (state) => {
 			state.notifications = [];
 		},
+		setSearchQuery: (state, action: PayloadAction<string>) => {
+			state.searchQuery = action.payload;
+		},
 	},
 });
 
@@ -60,6 +65,7 @@ export const {
 	addNotification,
 	removeNotification,
 	clearNotifications,
+	setSearchQuery,
 } = uiSlice.actions;
 
 export default uiSlice.reducer;

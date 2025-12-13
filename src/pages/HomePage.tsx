@@ -1,5 +1,6 @@
 import Greeting from '@/components/molecules/Greeting/Greeting';
 import FeatureGrid from '@/components/organisms/FeatureGrid/FeatureGrid';
+import HomePageSearch from '@/components/organisms/HomePageSearch/HomePageSearch';
 import NotificationPanel from '@/components/organisms/NotificationPanel/NotificationPanel';
 import PageLayout from '@/components/templates/PageLayout/PageLayout';
 import { FEATURES } from '@/config/features';
@@ -40,34 +41,14 @@ const HomePage = () => {
 					>
 						<Greeting userName={greetingName} />
 
-						{/* Center Piece Placeholder */}
+						{/* Center Piece - Search */}
 						<motion.div
 							initial={{ opacity: 0, scale: 0.9 }}
 							animate={{ opacity: 1, scale: 1 }}
 							transition={{ duration: 0.6, delay: 0.2 }}
-							className='flex-1 flex items-center justify-center mb-12'
+							className='flex-1 flex flex-col items-center justify-center mb-12'
 						>
-							<div className='glass-strong rounded-3xl p-12 w-full max-w-4xl min-h-[240px] flex items-center justify-center border-2 border-dashed border-purple-400/30'>
-								<div className='text-center space-y-3'>
-									<motion.div
-										animate={{
-											scale: [1, 1.05, 1],
-											opacity: [0.5, 0.8, 0.5],
-										}}
-										transition={{
-											duration: 3,
-											repeat: Infinity,
-											ease: 'easeInOut',
-										}}
-										className='text-purple-400/40 text-4xl font-black tracking-wider'
-									>
-										CENTER PIECE
-									</motion.div>
-									<p className='text-purple-300/30 text-xs font-medium'>
-										Your main content will go here
-									</p>
-								</div>
-							</div>
+							<HomePageSearch />
 						</motion.div>
 
 						{/* Features Section */}

@@ -13,7 +13,7 @@ import {
 	Trash2,
 	User,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface ReleaseItemListProps {
 	items: ReleaseItem[];
@@ -21,9 +21,16 @@ interface ReleaseItemListProps {
 	onUpdate: (eventId: string, itemId: string, updates: any) => void;
 	onDelete: (eventId: string, itemId: string) => void;
 	onToggleStatus: (eventId: string, itemId: string, statusName: string) => void;
+	expandItemId?: string;
 }
 
-const ReleaseItemList = ({ items, eventId, onDelete, onToggleStatus }: ReleaseItemListProps) => {
+const ReleaseItemList = ({
+	items,
+	eventId,
+	onDelete,
+	onToggleStatus,
+	expandItemId,
+}: ReleaseItemListProps) => {
 	return (
 		<div className='space-y-3'>
 			{items.map((item, index) => (
@@ -34,6 +41,7 @@ const ReleaseItemList = ({ items, eventId, onDelete, onToggleStatus }: ReleaseIt
 					index={index}
 					onDelete={onDelete}
 					onToggleStatus={onToggleStatus}
+					expanded={expandItemId === item.id}
 				/>
 			))}
 		</div>
@@ -46,6 +54,7 @@ interface ReleaseItemCardProps {
 	index: number;
 	onDelete: (eventId: string, itemId: string) => void;
 	onToggleStatus: (eventId: string, itemId: string, statusName: string) => void;
+	expanded?: boolean;
 }
 
 const ReleaseItemCard = ({
@@ -54,12 +63,20 @@ const ReleaseItemCard = ({
 	index,
 	onDelete,
 	onToggleStatus,
+	expanded,
 }: ReleaseItemCardProps) => {
 	// Get appearance settings from Redux store
 	const appearance = useAppSelector((state) => state.settings.appearanceSettings);
 	const customStatuses = useAppSelector((state) => state.settings.customStatuses);
 
-	const [isExpanded, setIsExpanded] = useState(false);
+	const [isExpanded, setIsExpanded] = useState(expanded || false);
+
+	// Update expanded state when prop changes
+	useEffect(() => {
+		if (expanded !== undefined) {
+			setIsExpanded(expanded);
+		}
+	}, [expanded]);
 
 	// Filter statuses to only show visible ones based on settings
 	const visibleStatuses = item.statuses.filter((status) => {

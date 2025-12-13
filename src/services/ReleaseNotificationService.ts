@@ -91,9 +91,7 @@ export class ReleaseNotificationService {
 		}
 
 		const releaseDate = new Date(event.date).getTime();
-		console.log('releaseDate', new Date(releaseDate).toISOString());
 		const reminderTime = this.calculateReminderTime(releaseDate, event.reminderDelta);
-		console.log('reminderTime', new Date(reminderTime).toISOString());
 
 		// Check if we should show a notification
 		// Show if current time is past the reminder time but before the release date

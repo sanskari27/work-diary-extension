@@ -3,7 +3,7 @@ import Text from '@/components/atoms/Text/Text';
 import BookmarkCard from '@/components/organisms/BookmarkCard/BookmarkCard';
 import PageLayout from '@/components/templates/PageLayout/PageLayout';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { deleteBookmark } from '@/store/slices/bookmarksSlice';
+import { Bookmark, deleteBookmark, updateBookmark } from '@/store/slices/bookmarksSlice';
 import { motion } from 'framer-motion';
 import { Bookmark as BookmarkIcon } from 'lucide-react';
 import { useMemo, useState } from 'react';
@@ -72,6 +72,10 @@ export default function BookmarksPage() {
 
 	const handleDelete = (bookmarkId: string) => {
 		dispatch(deleteBookmark(bookmarkId));
+	};
+
+	const handleUpdate = (bookmarkId: string, updates: Partial<Bookmark>) => {
+		dispatch(updateBookmark({ id: bookmarkId, updates }));
 	};
 
 	return (
@@ -164,15 +168,20 @@ export default function BookmarksPage() {
 						className={`flex-1 ${appearance.compactMode ? 'pb-4' : 'pb-8'}`}
 					>
 						{filteredBookmarks.length > 0 ? (
-							<div className='grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-3'>
+							<div className='flex flex-wrap gap-3'>
 								{filteredBookmarks.map((bookmark, index) => (
 									<motion.div
 										key={bookmark.id}
 										initial={{ opacity: 0, y: 20 }}
 										animate={{ opacity: 1, y: 0 }}
 										transition={{ delay: index * 0.02 }}
+										className='h-fill-available'
 									>
-										<BookmarkCard bookmark={bookmark} onDelete={handleDelete} />
+										<BookmarkCard
+											bookmark={bookmark}
+											onDelete={handleDelete}
+											onUpdate={handleUpdate}
+										/>
 									</motion.div>
 								))}
 							</div>

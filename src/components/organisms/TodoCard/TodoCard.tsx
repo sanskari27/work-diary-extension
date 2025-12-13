@@ -77,7 +77,12 @@ export default function TodoCard({ todo, onClick }: TodoCardProps) {
 		>
 			<div className='flex items-start gap-3'>
 				{/* Checkbox */}
-				<Checkbox checked={isCompleted} onCheckedChange={handleCheckboxChange} className='mt-1' />
+				<Checkbox
+					checked={isCompleted}
+					onClick={(e) => e.stopPropagation()}
+					onCheckedChange={handleCheckboxChange}
+					className='mt-1'
+				/>
 
 				{/* Content */}
 				<div className='flex-1 cursor-pointer' onClick={() => onClick(todo)}>

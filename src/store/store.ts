@@ -20,9 +20,12 @@ export const loadPersistedState = async () => {
 			loadStateFromIndexedDB('bookmarks'),
 		]);
 
+		// Ensure searchQuery is not persisted - always reset to empty string
+		const uiState = ui ? { ...ui, searchQuery: '' } : undefined;
+
 		return {
 			content: content || undefined,
-			ui: ui || undefined,
+			ui: uiState,
 			releases: releases || undefined,
 			settings: settings || undefined,
 			todos: todos || undefined,

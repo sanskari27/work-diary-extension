@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { useAppSelector } from '@/store/hooks';
 import { ReleaseEvent } from '@/store/slices/releasesSlice';
 import { AnimatePresence, motion } from 'framer-motion';
+import { isEmpty } from 'lodash';
 import {
 	Bell,
 	Calendar,
@@ -28,6 +29,8 @@ interface ReleaseCardProps {
 	onUpdateItem: (eventId: string, itemId: string, updates: any) => void;
 	onDeleteItem: (eventId: string, itemId: string) => void;
 	onToggleStatus: (eventId: string, itemId: string, statusName: string) => void;
+	expandItemId?: string;
+	expandReleaseId?: string;
 }
 
 const ReleaseCard = ({
@@ -37,12 +40,16 @@ const ReleaseCard = ({
 	onUpdateItem,
 	onDeleteItem,
 	onToggleStatus,
+	expandItemId,
+	expandReleaseId,
 }: ReleaseCardProps) => {
 	const appearance = useAppSelector((state) => state.settings.appearanceSettings);
 	const todos = useAppSelector((state) => state.todos.todos);
 
-	// Auto-expand if the event is in the current month
-	const [isExpanded, setIsExpanded] = useState(isDateInCurrentMonth(event.date));
+	// Auto-expand if the event is in the current month, or if expanded prop is true
+	const [isExpanded, setIsExpanded] = useState(() =>
+		!isEmpty(expandReleaseId) ? expandReleaseId === event.id : isDateInCurrentMonth(event.date)
+	);
 	const [showItemForm, setShowItemForm] = useState(false);
 
 	// Get todo stats for this release
@@ -213,6 +220,7 @@ const ReleaseCard = ({
 										onUpdate={onUpdateItem}
 										onDelete={onDeleteItem}
 										onToggleStatus={onToggleStatus}
+										expandItemId={expandItemId}
 									/>
 								)}
 
