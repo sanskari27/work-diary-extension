@@ -20,10 +20,12 @@ const FeatureTile = ({ name, icon, route }: FeatureTileProps) => {
 		>
 			<div className={`relative h-full rounded-2xl overflow-hidden min-h-[140px]`}>
 				{/* Gradient Background Layer */}
-				<div className={`absolute inset-0 bg-gradient-to-br opacity-70`} />
+				<div
+					className={`absolute inset-0 bg-gradient-to-br from-gradient-from/10 to-gradient-to/10 opacity-70`}
+				/>
 
 				{/* Strong Frosted Glass Layer */}
-				<div className='absolute inset-0 bg-white/15 backdrop-blur-3xl border-2 border-white/30 rounded-2xl shadow-2xl' />
+				<div className='absolute inset-0 border-2 border-glass-border rounded-2xl shadow-2xl' />
 
 				{/* Additional Frosted Overlay */}
 				<div className='absolute inset-0 bg-gradient-to-br from-white/15 via-white/5 to-transparent rounded-2xl' />
@@ -44,9 +46,9 @@ const FeatureTile = ({ name, icon, route }: FeatureTileProps) => {
 						<motion.div
 							whileHover={{ rotate: 15, scale: 1.15 }}
 							transition={{ type: 'spring', stiffness: 400, damping: 10 }}
-							className='p-2.5 rounded-xl bg-white/30 backdrop-blur-2xl border-2 border-white/50 shadow-xl'
+							className='p-2.5 rounded-xl bg-white/10 backdrop-blur-2xl border-2 border-glass-border shadow-xl'
 						>
-							<Icon name={icon} size={20} className='text-white drop-shadow-2xl' />
+							<Icon name={icon} size={20} className='text-primary drop-shadow-2xl' />
 						</motion.div>
 
 						<motion.div
@@ -54,14 +56,14 @@ const FeatureTile = ({ name, icon, route }: FeatureTileProps) => {
 							whileHover={{ x: 0, y: 0, opacity: 1 }}
 							transition={{ duration: 0.2 }}
 						>
-							<ArrowUpRight className='w-4 h-4 text-white/60' />
+							<ArrowUpRight className='w-4 h-4 text-secondary' />
 						</motion.div>
 					</div>
 
 					<div>
 						<Text
 							variant='h3'
-							className='text-white font-bold text-base group-hover:translate-x-1 transition-transform duration-200 drop-shadow-lg'
+							className='text-primary font-bold text-base group-hover:translate-x-1 transition-transform duration-200 drop-shadow-lg'
 						>
 							{name}
 						</Text>
@@ -73,20 +75,30 @@ const FeatureTile = ({ name, icon, route }: FeatureTileProps) => {
 					initial={{ scaleX: 0 }}
 					whileHover={{ scaleX: 1 }}
 					transition={{ duration: 0.4, ease: 'easeOut' }}
-					className='absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-white/0 via-white/70 to-white/0 origin-left z-20'
+					className='absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-primary/0 via-primary/70 to-primary/0 origin-left z-20'
 				/>
 
 				{/* Shine Effect */}
 				<motion.div
-					className='absolute inset-0 opacity-0 group-hover:opacity-100 rounded-2xl'
-					animate={{
-						background: [
-							'linear-gradient(90deg, transparent 0%, transparent 100%)',
-							'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.2) 50%, transparent 100%)',
-							'linear-gradient(90deg, transparent 0%, transparent 100%)',
-						],
+					className='absolute inset-0 opacity-0 group-hover:opacity-100 rounded-2xl overflow-hidden'
+					style={{
+						background:
+							'linear-gradient(45deg, transparent 0%, transparent 30%, rgba(255,255,255,0.2) 50%, transparent 70%, transparent 100%)',
+						width: '200%',
+						height: '200%',
+						left: '-50%',
+						top: '-50%',
 					}}
-					transition={{ duration: 1.5, repeat: Infinity }}
+					animate={{
+						rotate: [0, 360],
+						x: ['-50%', '50%'],
+						y: ['-50%', '50%'],
+					}}
+					transition={{
+						duration: 3,
+						repeat: Infinity,
+						ease: 'linear',
+					}}
 				/>
 			</div>
 		</motion.div>

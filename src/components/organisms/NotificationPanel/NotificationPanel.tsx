@@ -109,20 +109,20 @@ const NotificationPanel = () => {
 			className={getPanelWidth() + ' flex-shrink-0'}
 		>
 			<div
-				className={`glass-strong rounded-2xl ${getPadding()} border border-purple-400/30 sticky top-6`}
+				className={`glass-strong rounded-2xl ${getPadding()} border border-glass-border-strong sticky top-6`}
 			>
 				{/* Header */}
 				<div
 					className={`flex items-center gap-3 ${
 						appearanceSettings.compactMode ? 'mb-3 pb-3' : 'mb-4 pb-4'
-					} border-b border-purple-400/20`}
+					} border-b border-glass-border`}
 				>
 					{!appearanceSettings.minimalMode && (
 						<motion.div
 							animate={{ rotate: [0, 10, -10, 0] }}
 							transition={{ duration: 2, repeat: Infinity }}
 						>
-							<Bell className={`${getIconSize()} text-purple-300`} />
+							<Bell className={`${getIconSize()} text-text-primary`} />
 						</motion.div>
 					)}
 					<h3
@@ -134,7 +134,7 @@ const NotificationPanel = () => {
 					>
 						Notifications
 					</h3>
-					<div className='ml-auto bg-purple-500/30 text-purple-200 text-xs font-bold px-2 py-1 rounded-full'>
+					<div className='ml-auto bg-primary/30 text-text-primary text-xs font-bold px-2 py-1 rounded-full'>
 						{notifications.length}
 					</div>
 				</div>

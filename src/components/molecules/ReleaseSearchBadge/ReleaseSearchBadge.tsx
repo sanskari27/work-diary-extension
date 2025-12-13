@@ -18,7 +18,9 @@ const ReleaseSearchBadge = ({ release, className }: ReleaseSearchBadgeProps) => 
 		return (
 			<div className={cn('flex items-center', compactMode ? 'gap-1.5' : 'gap-2', className)}>
 				<div className='flex-shrink-0'>
-					<Calendar className={cn('text-purple-400', compactMode ? 'w-3.5 h-3.5' : 'w-4 h-4')} />
+					<Calendar
+						className={cn('text-text-accent', compactMode ? 'w-3.5 h-3.5' : 'w-4 h-4')}
+					/>
 				</div>
 				<div className='flex-1 min-w-0'>
 					<div
@@ -30,7 +32,12 @@ const ReleaseSearchBadge = ({ release, className }: ReleaseSearchBadgeProps) => 
 					>
 						{event.title}
 					</div>
-					<div className={cn('text-purple-300/60', compactMode ? 'text-[9px]' : 'text-[10px]')}>
+					<div
+						className={cn(
+							'text-text-secondary/60',
+							compactMode ? 'text-[9px]' : 'text-[10px]'
+						)}
+					>
 						Release • {new Date(event.date).toLocaleDateString()}
 					</div>
 				</div>
@@ -41,7 +48,9 @@ const ReleaseSearchBadge = ({ release, className }: ReleaseSearchBadgeProps) => 
 		return (
 			<div className={cn('flex items-center', compactMode ? 'gap-1.5' : 'gap-2', className)}>
 				<div className='flex-shrink-0'>
-					<Link2 className={cn('text-purple-400', compactMode ? 'w-3.5 h-3.5' : 'w-4 h-4')} />
+					<Link2
+						className={cn('text-text-accent', compactMode ? 'w-3.5 h-3.5' : 'w-4 h-4')}
+					/>
 				</div>
 				<div className='flex-1 min-w-0'>
 					<div
@@ -55,7 +64,7 @@ const ReleaseSearchBadge = ({ release, className }: ReleaseSearchBadgeProps) => 
 					</div>
 					<div
 						className={cn(
-							'text-purple-300/60 truncate',
+							'text-text-secondary/60 truncate',
 							compactMode ? 'text-[9px]' : 'text-[10px]'
 						)}
 					>

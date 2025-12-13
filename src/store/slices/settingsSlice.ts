@@ -40,6 +40,7 @@ export interface ReleaseEventDefaults {
 // Appearance Settings
 export interface AppearanceSettings {
 	theme: 'light' | 'dark' | 'system';
+	colorTheme: string; // Theme ID from themes (e.g., 'purple', 'blue', 'green')
 	compactMode: boolean;
 	showStatusCheckboxes: boolean;
 	showLeadSection: boolean;
@@ -92,6 +93,7 @@ const initialState: SettingsState = {
 	},
 	appearanceSettings: {
 		theme: 'system',
+		colorTheme: 'purple',
 		compactMode: false,
 		showStatusCheckboxes: true,
 		showLeadSection: true,

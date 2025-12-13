@@ -50,27 +50,25 @@ const CustomStatusSection = () => {
 	return (
 		<div className='space-y-6'>
 			<div>
-				<h3 className='text-xl font-semibold text-purple-300 mb-2'>
-					Custom Status Management
-				</h3>
-				<p className='text-sm text-slate-400 mb-4'>
+				<h3 className='text-xl font-semibold text-text-primary mb-2'>Custom Status Management</h3>
+				<p className='text-sm text-text-secondary mb-4'>
 					Manage status checkboxes for release elements globally
 				</p>
 			</div>
 
 			{/* Add New Status Form */}
 			{isAdding && (
-				<div className='glass-strong rounded-xl p-4 space-y-3 border border-purple-500/30'>
-					<h4 className='font-medium text-purple-300'>New Status</h4>
+				<div className='glass-strong rounded-xl p-4 space-y-3 border border-glass-border-strong'>
+					<h4 className='font-medium text-text-primary'>New Status</h4>
 					<div>
-						<Label htmlFor='statusName' className='text-slate-300'>
+						<Label htmlFor='statusName' className='text-text-secondary'>
 							Status Name *
 						</Label>
 						<Input
 							id='statusName'
 							value={newStatusName}
 							onChange={(e) => setNewStatusName(e.target.value)}
-							className='bg-slate-800/50 border-purple-500/30 text-white'
+							className='bg-slate-800/50 border-glass-border text-white'
 							placeholder='e.g., Code Review'
 							onKeyDown={(e) => {
 								if (e.key === 'Enter') handleAdd();
@@ -78,20 +76,11 @@ const CustomStatusSection = () => {
 						/>
 					</div>
 					<div className='flex gap-2'>
-						<Button
-							onClick={handleAdd}
-							size='sm'
-							className='bg-purple-600 hover:bg-purple-700'
-						>
+						<Button onClick={handleAdd} size='sm' variant='default'>
 							<Save className='w-4 h-4 mr-2' />
 							Add Status
 						</Button>
-						<Button
-							onClick={cancelEdit}
-							size='sm'
-							variant='outline'
-							className='border-slate-600 text-slate-300'
-						>
+						<Button onClick={cancelEdit} size='sm' variant='ghost'>
 							<X className='w-4 h-4 mr-2' />
 							Cancel
 						</Button>
@@ -103,7 +92,7 @@ const CustomStatusSection = () => {
 			{!isAdding && !editingId && (
 				<Button
 					onClick={() => setIsAdding(true)}
-					className='bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/50 text-purple-300'
+					className='bg-primary/20 hover:bg-primary/30 border border-glass-border-strong text-text-primary'
 				>
 					<Plus className='w-4 h-4 mr-2' />
 					Add Custom Status
@@ -112,7 +101,7 @@ const CustomStatusSection = () => {
 
 			{/* Statuses List */}
 			<div className='space-y-2'>
-				<div className='flex items-center justify-between text-xs text-slate-500 px-4 mb-2'>
+				<div className='flex items-center justify-between text-xs text-text-muted px-4 mb-2'>
 					<span>Status Name</span>
 					<span>Actions</span>
 				</div>
@@ -121,29 +110,25 @@ const CustomStatusSection = () => {
 						key={status.id}
 						className={`glass rounded-xl p-4 border transition-colors ${
 							status.isVisible
-								? 'border-purple-500/20 hover:border-purple-500/40'
+								? 'border-glass-border hover:border-glass-border-strong'
 								: 'border-slate-700/50 opacity-60'
 						}`}
 					>
 						{editingId === status.id ? (
 							<div className='space-y-3'>
 								<div>
-									<Label className='text-slate-300'>Status Name</Label>
+									<Label className='text-text-secondary'>Status Name</Label>
 									<Input
 										value={editStatusName}
 										onChange={(e) => setEditStatusName(e.target.value)}
-										className='bg-slate-800/50 border-purple-500/30 text-white'
+										className='bg-slate-800/50 border-glass-border text-white'
 										onKeyDown={(e) => {
 											if (e.key === 'Enter') handleUpdate(status.id);
 										}}
 									/>
 								</div>
 								<div className='flex gap-2'>
-									<Button
-										onClick={() => handleUpdate(status.id)}
-										size='sm'
-										className='bg-purple-600 hover:bg-purple-700'
-									>
+									<Button onClick={() => handleUpdate(status.id)} size='sm' variant='default'>
 										<Save className='w-4 h-4' />
 										Save
 									</Button>
@@ -151,7 +136,7 @@ const CustomStatusSection = () => {
 										onClick={cancelEdit}
 										size='sm'
 										variant='ghost'
-										className='border-slate-600 text-slate-300'
+										className='border-slate-600 text-text-secondary'
 									>
 										<X className='w-4 h-4' />
 										Cancel
@@ -164,7 +149,7 @@ const CustomStatusSection = () => {
 									<div className='flex items-center gap-2'>
 										<button
 											onClick={() => dispatch(toggleStatusVisibility(status.id))}
-											className='text-slate-400 hover:text-purple-300 transition-colors'
+											className='text-text-secondary hover:text-text-primary transition-colors'
 											title={status.isVisible ? 'Hide status' : 'Show status'}
 										>
 											{status.isVisible ? (
@@ -177,14 +162,12 @@ const CustomStatusSection = () => {
 									<div className='flex-1'>
 										<h4
 											className={`font-medium ${
-												status.isVisible ? 'text-purple-200' : 'text-slate-500'
+												status.isVisible ? 'text-text-primary' : 'text-text-muted'
 											}`}
 										>
 											{status.name}
 										</h4>
-										{status.isDefault && (
-											<p className='text-xs text-slate-500'>Default status</p>
-										)}
+										{status.isDefault && <p className='text-xs text-text-muted'>Default status</p>}
 									</div>
 								</div>
 								<div className='flex gap-2'>
@@ -192,7 +175,7 @@ const CustomStatusSection = () => {
 										onClick={() => startEdit(status)}
 										size='sm'
 										variant='ghost'
-										className='text-purple-300 hover:text-purple-200 hover:bg-purple-600/20'
+										className='text-text-primary hover:text-text-primary hover:bg-primary/20'
 									>
 										<Edit2 className='w-4 h-4' />
 									</Button>
@@ -214,9 +197,9 @@ const CustomStatusSection = () => {
 			</div>
 
 			<div className='glass-strong rounded-xl p-4 border border-blue-500/30 bg-blue-500/5'>
-				<p className='text-sm text-blue-300'>
-					<strong>Note:</strong> Default statuses (Handover Completed, Support
-					Stamping, etc.) cannot be deleted but can be hidden using the eye icon.
+				<p className='text-sm text-text-accent'>
+					<strong>Note:</strong> Default statuses (Handover Completed, Support Stamping, etc.)
+					cannot be deleted but can be hidden using the eye icon.
 				</p>
 			</div>
 		</div>

@@ -60,18 +60,67 @@
 
 @layer utilities {
 	.glass {
-		@apply bg-white/10 backdrop-blur-xl border border-white/20;
+		@apply bg-white/10 backdrop-blur-xl;
+		border-color: hsl(var(--glass-border) / 0.2);
 	}
 
 	.glass-strong {
-		@apply bg-white/20 backdrop-blur-2xl border border-white/30;
+		@apply bg-white/20 backdrop-blur-2xl;
+		border-color: hsl(var(--glass-border-strong) / 0.3);
 	}
 
 	.gradient-mesh {
-		background: radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0, transparent 50%),
-			radial-gradient(at 100% 0%, rgba(236, 72, 153, 0.15) 0, transparent 50%),
-			radial-gradient(at 100% 100%, rgba(147, 51, 234, 0.15) 0, transparent 50%),
-			radial-gradient(at 0% 100%, rgba(59, 130, 246, 0.15) 0, transparent 50%);
+		background: radial-gradient(at 0% 0%, hsl(var(--gradient-from) / 0.15) 0, transparent 50%),
+			radial-gradient(at 100% 0%, hsl(var(--gradient-to) / 0.15) 0, transparent 50%),
+			radial-gradient(at 100% 100%, hsl(var(--gradient-from) / 0.15) 0, transparent 50%),
+			radial-gradient(at 0% 100%, hsl(var(--gradient-to) / 0.15) 0, transparent 50%);
+	}
+
+	/* Theme Background Gradients */
+	.bg-background-gradient {
+		background: linear-gradient(
+			to bottom right,
+			hsl(var(--background-from)),
+			hsl(var(--background-via)),
+			hsl(var(--background-to))
+		);
+	}
+
+	.bg-icon-gradient {
+		background: linear-gradient(
+			to bottom right,
+			hsl(var(--background-icon)),
+			hsl(var(--gradient-from)),
+			hsl(var(--gradient-to))
+		);
+	}
+
+	/* Theme Text Gradients */
+	.bg-gradient-text {
+		background-image: linear-gradient(to right, hsl(var(--gradient-from)), hsl(var(--gradient-to)));
+	}
+
+	/* Theme Progress Bar Gradient */
+	.bg-progress-gradient {
+		background: linear-gradient(to right, hsl(var(--gradient-from)), hsl(var(--gradient-to)));
+	}
+
+	/* Theme Background Orbs */
+	.bg-orb-from {
+		background-color: hsl(var(--gradient-from) / 0.3);
+	}
+
+	.bg-orb-to {
+		background-color: hsl(var(--gradient-to) / 0.3);
+	}
+
+	.bg-orb-primary {
+		background-color: hsl(var(--primary) / 0.2);
+	}
+
+	/* Theme Shadow */
+	.shadow-gradient {
+		box-shadow: 0 10px 15px -3px hsl(var(--gradient-shadow) / 0.2);
 	}
 
 	/* Custom scrollbar - visible and styled */
@@ -79,15 +128,15 @@
 		width: 6px;
 	}
 	.custom-scrollbar::-webkit-scrollbar-track {
-		background: rgba(139, 92, 246, 0.1);
+		background: hsl(var(--scrollbar-track) / 0.1);
 		border-radius: 10px;
 	}
 	.custom-scrollbar::-webkit-scrollbar-thumb {
-		background: rgba(139, 92, 246, 0.3);
+		background: hsl(var(--scrollbar-thumb) / 0.3);
 		border-radius: 10px;
 	}
 	.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-		background: rgba(139, 92, 246, 0.5);
+		background: hsl(var(--scrollbar-thumb-hover) / 0.5);
 	}
 
 	/* Hidden scrollbar - thin and only appears while scrolling */
@@ -108,10 +157,10 @@
 		transition: background 0.3s ease;
 	}
 	.hidden-scrollbar:hover::-webkit-scrollbar-thumb {
-		background: rgba(139, 92, 246, 0.3);
+		background: hsl(var(--scrollbar-thumb) / 0.3);
 	}
 	.hidden-scrollbar::-webkit-scrollbar-thumb:hover {
-		background: rgba(139, 92, 246, 0.5);
+		background: hsl(var(--scrollbar-thumb-hover) / 0.5);
 	}
 }
 

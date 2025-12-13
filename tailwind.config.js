@@ -51,6 +51,20 @@ export default {
                     DEFAULT: "hsl(var(--card))",
                     foreground: "hsl(var(--card-foreground))",
                 },
+                // Theme colors (dynamically set by ThemeProvider)
+                // Note: primary and accent are already defined above, we just add additional variants
+                "primary": "hsl(var(--primary))",
+                "accent-border": "hsl(var(--accent-border))",
+                "gradient-from": "hsl(var(--gradient-from))",
+                "gradient-to": "hsl(var(--gradient-to))",
+                "gradient-shadow": "hsl(var(--gradient-shadow))",
+                "glass-border": "hsl(var(--glass-border))",
+                "glass-border-strong": "hsl(var(--glass-border-strong))",
+                "text-primary": "hsl(var(--text-primary))",
+                "text-secondary": "hsl(var(--text-secondary))",
+                "text-muted": "hsl(var(--text-muted))",
+                "text-accent": "hsl(var(--text-accent))",
+                "text-accent-foreground": "hsl(var(--text-accent-foreground))",
             },
             borderRadius: {
                 lg: "var(--radius)",

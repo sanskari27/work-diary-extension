@@ -26,13 +26,13 @@ const CollapsibleSection = ({
 			<Button
 				onClick={() => setIsOpen(!isOpen)}
 				variant='ghost'
-				className='w-full flex items-center justify-between p-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-all group'
+				className='w-full flex items-center justify-between p-4 rounded-xl glass-strong border border-white/10 transition-all group'
 			>
 				<div className='flex items-center gap-3'>
-					{icon && <div className='text-purple-400'>{icon}</div>}
+					{icon && <div className='text-text-accent'>{icon}</div>}
 					<div className='flex items-center gap-3'>
 						<h2 className='text-xl font-bold text-white'>{title}</h2>
-						<span className='px-2.5 py-1 rounded-full bg-purple-500/20 text-purple-300 text-xs font-medium'>
+						<span className='px-2.5 py-1 rounded-full bg-primary/20 text-text-primary text-xs font-medium'>
 							{count}
 						</span>
 					</div>
@@ -61,6 +61,3 @@ const CollapsibleSection = ({
 };
 
 export default CollapsibleSection;
-
-
-

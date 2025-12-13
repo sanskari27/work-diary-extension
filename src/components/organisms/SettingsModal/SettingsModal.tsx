@@ -20,10 +20,10 @@ const SettingsModal = ({ open, onOpenChange }: SettingsModalProps) => {
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
-			<DialogContent className='max-w-5xl h-[85vh] bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 backdrop-blur-xl border-purple-500/30 text-white flex flex-col'>
+			<DialogContent className='max-w-5xl h-[85vh] backdrop-blur-xl border-glass-border text-white flex flex-col bg-background-gradient'>
 				<DialogHeader className='flex-shrink-0'>
-					<DialogTitle className='flex items-center gap-3 text-2xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent'>
-						<Settings className='w-7 h-7 text-purple-400' />
+					<DialogTitle className='flex items-center gap-3 text-2xl font-bold bg-gradient-to-r from-gradient-from to-gradient-to bg-clip-text text-transparent'>
+						<Settings className='w-7 h-7 text-primary' />
 						Settings
 					</DialogTitle>
 				</DialogHeader>
@@ -33,40 +33,40 @@ const SettingsModal = ({ open, onOpenChange }: SettingsModalProps) => {
 					onValueChange={setActiveTab}
 					className='w-full flex-1 flex flex-col min-h-0'
 				>
-					<TabsList className='w-full bg-slate-800/50 border border-purple-500/20 grid grid-cols-6 h-auto p-1 flex-shrink-0'>
+					<TabsList className='w-full bg-slate-800/50 border border-glass-border grid grid-cols-6 h-auto p-1 flex-shrink-0'>
 						<TabsTrigger
 							value='templates'
-							className='text-xs data-[state=active]:bg-purple-600/30 data-[state=active]:text-purple-200'
+							className='text-xs data-[state=active]:bg-primary/30 data-[state=active]:text-primary'
 						>
 							Templates
 						</TabsTrigger>
 						<TabsTrigger
 							value='statuses'
-							className='text-xs data-[state=active]:bg-purple-600/30 data-[state=active]:text-purple-200'
+							className='text-xs data-[state=active]:bg-primary/30 data-[state=active]:text-primary'
 						>
 							Statuses
 						</TabsTrigger>
 						<TabsTrigger
 							value='reminders'
-							className='text-xs data-[state=active]:bg-purple-600/30 data-[state=active]:text-purple-200'
+							className='text-xs data-[state=active]:bg-primary/30 data-[state=active]:text-primary'
 						>
 							Reminders
 						</TabsTrigger>
 						<TabsTrigger
 							value='defaults'
-							className='text-xs data-[state=active]:bg-purple-600/30 data-[state=active]:text-purple-200'
+							className='text-xs data-[state=active]:bg-primary/30 data-[state=active]:text-primary'
 						>
 							Defaults
 						</TabsTrigger>
 						<TabsTrigger
 							value='appearance'
-							className='text-xs data-[state=active]:bg-purple-600/30 data-[state=active]:text-purple-200'
+							className='text-xs data-[state=active]:bg-primary/30 data-[state=active]:text-primary'
 						>
 							Appearance
 						</TabsTrigger>
 						<TabsTrigger
 							value='backup'
-							className='text-xs data-[state=active]:bg-purple-600/30 data-[state=active]:text-purple-200'
+							className='text-xs data-[state=active]:bg-primary/30 data-[state=active]:text-primary'
 						>
 							Backup
 						</TabsTrigger>

@@ -227,14 +227,14 @@ export default function TodosPage() {
 										}}
 										className={`${
 											appearance.compactMode ? 'p-3' : 'p-4'
-										} rounded-2xl bg-gradient-to-br from-purple-600 via-purple-500 to-pink-500`}
+										} rounded-2xl bg-icon-gradient`}
 									>
 										<CheckSquare className={spacing.iconSize + ' text-white'} />
 									</motion.div>
 								)}
 								<Text
 									variant='h1'
-									className={`${spacing.titleSize} font-black bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent`}
+									className={`${spacing.titleSize} font-black bg-clip-text text-transparent bg-gradient-text`}
 								>
 									Todos
 								</Text>
@@ -248,9 +248,10 @@ export default function TodosPage() {
 							>
 								<Button
 									onClick={handleAddNew}
+									variant='gradient'
 									className={`flex items-center gap-2 ${
 										appearance.compactMode ? 'px-4 py-2' : 'px-6 py-3'
-									} rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium shadow-lg shadow-purple-500/30`}
+									} rounded-xl font-medium`}
 								>
 									<Plus className={appearance.compactMode ? 'w-4 h-4' : 'w-5 h-5'} />
 									<span className={appearance.compactMode ? 'text-sm' : ''}>New Todo</span>
@@ -472,11 +473,11 @@ export default function TodosPage() {
 												ease: 'easeInOut',
 											}}
 										>
-											<CheckSquare className='w-24 h-24 mx-auto text-blue-400/40' />
+											<CheckSquare className='w-24 h-24 mx-auto text-text-accent/40' />
 										</motion.div>
 										<div className='space-y-2'>
-											<h3 className='text-2xl font-bold text-white/60'>No Todos Yet</h3>
-											<p className='text-blue-300/40 text-sm max-w-md mx-auto'>
+											<h3 className='text-2xl font-bold text-text-secondary'>No Todos Yet</h3>
+											<p className='text-text-secondary/40 text-sm max-w-md mx-auto'>
 												Create your first todo to start tracking your tasks and staying organized.
 											</p>
 										</div>

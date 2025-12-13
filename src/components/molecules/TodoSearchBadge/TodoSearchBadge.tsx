@@ -13,7 +13,9 @@ const TodoSearchBadge = ({ todo, className }: TodoSearchBadgeProps) => {
 	return (
 		<div className={cn('flex items-center', compactMode ? 'gap-1.5' : 'gap-2', className)}>
 			<div className='flex-shrink-0'>
-				<Calendar className={cn('text-purple-400', compactMode ? 'w-3.5 h-3.5' : 'w-4 h-4')} />
+				<Calendar
+					className={cn('text-text-accent', compactMode ? 'w-3.5 h-3.5' : 'w-4 h-4')}
+				/>
 			</div>
 			<div className='flex-1 min-w-0'>
 				<div
@@ -22,7 +24,9 @@ const TodoSearchBadge = ({ todo, className }: TodoSearchBadgeProps) => {
 				>
 					{todo.title}
 				</div>
-				<div className={cn('text-purple-300/60', compactMode ? 'text-[9px]' : 'text-[10px]')}>
+				<div
+					className={cn('text-text-secondary/60', compactMode ? 'text-[9px]' : 'text-[10px]')}
+				>
 					Todo • {todo.status}
 					{todo.description &&
 						` • ${todo.description.substring(0, 25)}${todo.description.length > 25 ? '...' : ''}`}

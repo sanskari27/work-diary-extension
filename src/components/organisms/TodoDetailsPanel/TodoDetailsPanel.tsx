@@ -47,12 +47,12 @@ export default function TodoDetailsPanel({
 
 	return (
 		<div className='fixed inset-0 z-50 flex items-start justify-end bg-black/50'>
-			<div className='h-full w-full max-w-lg overflow-y-auto bg-white shadow-xl glass-strong'>
+			<div className='h-full w-full max-w-lg overflow-y-auto bg-white shadow-xl glass-strong bg-background-gradient'>
 				{/* Header */}
 				<div className='sticky top-0 z-10 flex items-center justify-between border-b glass-week p-4'>
-					<h2 className='text-lg font-semibold text-white'>Todo Details</h2>
+					<h2 className='text-lg font-semibold text-text-primary'>Todo Details</h2>
 					<Button variant='ghost' size='sm' onClick={onClose} className='hover:bg-white/10'>
-						<X className='h-5 w-5 text-white' />
+						<X className='h-5 w-5 text-text-primary' />
 					</Button>
 				</div>
 
@@ -62,7 +62,7 @@ export default function TodoDetailsPanel({
 					<div>
 						<h1
 							className={cn(
-								'text-2xl font-bold text-white',
+								'text-2xl font-bold text-text-primary',
 								isCompleted && 'line-through opacity-60'
 							)}
 						>
@@ -88,11 +88,13 @@ export default function TodoDetailsPanel({
 						<div className='flex items-center gap-2 text-gray-700'>
 							<Calendar className='h-5 w-5 text-gray-200' />
 							<div>
-								<p className='text-sm font-medium text-white/80'>Due Date</p>
+								<p className='text-sm font-medium text-text-secondary'>Due Date</p>
 								<p
 									className={cn(
 										'text-base inline-flex gap-1',
-										isOverdue && !isCompleted ? 'font-semibold text-red-600' : 'text-white'
+										isOverdue && !isCompleted
+											? 'font-semibold text-red-600'
+											: 'text-text-primary'
 									)}
 								>
 									<span>{formatTodoDueDate(todo.date)} </span>
@@ -106,8 +108,8 @@ export default function TodoDetailsPanel({
 							<div className='flex items-center gap-2 text-gray-700'>
 								<Clock className='h-5 w-5 text-gray-200' />
 								<div>
-									<p className='text-sm font-medium text-white/80'>Reminder</p>
-									<p className='text-base text-white'>
+									<p className='text-sm font-medium text-text-secondary'>Reminder</p>
+									<p className='text-base text-text-primary'>
 										{todo.reminderDelta
 											? `${todo.reminderDelta
 													.replace('m', ' minutes')
@@ -123,15 +125,15 @@ export default function TodoDetailsPanel({
 					{/* Description */}
 					{todo.description && (
 						<div>
-							<h3 className='mb-2 text-sm font-semibold text-white/80'>Description</h3>
-							<p className='whitespace-pre-wrap text-white'>{todo.description}</p>
+							<h3 className='mb-2 text-sm font-semibold text-text-secondary'>Description</h3>
+							<p className='whitespace-pre-wrap text-text-primary'>{todo.description}</p>
 						</div>
 					)}
 
 					{/* Linked Release */}
 					{linkedRelease && (
 						<div>
-							<h3 className='mb-2 flex items-center gap-2 text-sm font-semibold text-white/80'>
+							<h3 className='mb-2 flex items-center gap-2 text-sm font-semibold text-text-secondary'>
 								<Link2 className='h-4 w-4 text-gray-200' />
 								Linked to Release
 							</h3>
@@ -150,7 +152,7 @@ export default function TodoDetailsPanel({
 					)}
 
 					{/* Metadata */}
-					<div className='border-t pt-4 text-xs text-white/80'>
+					<div className='border-t pt-4 text-xs text-text-secondary'>
 						<p>Created: {new Date(todo.createdAt).toLocaleString()}</p>
 						{todo.completedAt && <p>Completed: {new Date(todo.completedAt).toLocaleString()}</p>}
 					</div>
@@ -161,7 +163,7 @@ export default function TodoDetailsPanel({
 					<div className='flex gap-2'>
 						<Button
 							variant='outline'
-							className='flex-1 bg-white/10 hover:bg-white/15 border-white/20 text-white'
+							className='flex-1 bg-white/10 hover:bg-white/15 border-white/20 text-text-primary'
 							onClick={() => {
 								onEdit(todo);
 								onClose();

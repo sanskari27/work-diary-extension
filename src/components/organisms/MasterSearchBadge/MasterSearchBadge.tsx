@@ -43,7 +43,7 @@ const MasterSearchBadge = ({
 			animate={{ opacity: 1, scale: 1 }}
 			transition={{ duration: 0.2, delay: index * 0.05 }}
 			className={cn(
-				'glass rounded-full border border-white/20 hover:border-purple-400/40 hover:bg-white/5 cursor-pointer transition-all inline-flex items-center overflow-hidden line-clamp-1',
+				'glass rounded-full border border-white/20 hover:border-glass-border-strong hover:bg-white/5 cursor-pointer transition-all inline-flex items-center overflow-hidden line-clamp-1',
 				compactMode ? 'px-2 py-1.5 max-w-[14rem]' : 'px-3 py-2 max-w-[16rem]',
 				className
 			)}

@@ -106,9 +106,9 @@ export default function TodoForm({ isOpen, onClose, todoToEdit }: TodoFormProps)
 
 	return (
 		<Dialog open={isOpen} onOpenChange={onClose}>
-			<DialogContent className='glass-strong border-white/30 text-white max-w-2xl max-h-[90vh] overflow-y-auto'>
+			<DialogContent className='glass-strong border-white/30 text-white max-w-2xl max-h-[90vh] overflow-y-auto bg-background-gradient'>
 				<DialogHeader>
-					<DialogTitle className='text-2xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent'>
+					<DialogTitle className='text-2xl font-bold bg-clip-text text-transparent bg-gradient-text'>
 						{todoToEdit ? 'Edit Todo' : 'Create New Todo'}
 					</DialogTitle>
 				</DialogHeader>
@@ -118,7 +118,7 @@ export default function TodoForm({ isOpen, onClose, todoToEdit }: TodoFormProps)
 					<div className='space-y-2'>
 						<Label
 							htmlFor='title'
-							className='text-sm font-medium text-white/80 flex items-center gap-2'
+							className='text-sm font-medium text-text-secondary flex items-center gap-2'
 						>
 							<CheckSquare className='w-4 h-4' />
 							Title *
@@ -167,7 +167,7 @@ export default function TodoForm({ isOpen, onClose, todoToEdit }: TodoFormProps)
 								onClick={() => setIsUrgent(!isUrgent)}
 								className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${
 									isUrgent
-										? 'bg-purple-500/80 text-white border border-purple-400'
+										? 'bg-primary/80 text-white border border-accent-border'
 										: 'bg-white/5 text-white/60 border border-white/10 hover:bg-white/10'
 								}`}
 							>
@@ -180,7 +180,7 @@ export default function TodoForm({ isOpen, onClose, todoToEdit }: TodoFormProps)
 					<div className='space-y-2'>
 						<Label
 							htmlFor='description'
-							className='text-sm font-medium text-white/80 flex items-center gap-2'
+							className='text-sm font-medium text-text-secondary flex items-center gap-2'
 						>
 							<AlignLeft className='w-4 h-4' />
 							Description (Optional)
@@ -210,7 +210,10 @@ export default function TodoForm({ isOpen, onClose, todoToEdit }: TodoFormProps)
 								exit={{ opacity: 0, height: 0 }}
 								className='space-y-2'
 							>
-								<Label htmlFor='reminderDelta' className='text-sm font-medium text-white/80'>
+								<Label
+									htmlFor='reminderDelta'
+									className='text-sm font-medium text-text-secondary'
+								>
 									Remind me before
 								</Label>
 								<ReminderInput value={reminderDelta} onValueChange={setReminderDelta} />
@@ -228,10 +231,7 @@ export default function TodoForm({ isOpen, onClose, todoToEdit }: TodoFormProps)
 						>
 							Cancel
 						</Button>
-						<Button
-							type='submit'
-							className='flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white shadow-lg shadow-purple-500/30'
-						>
+						<Button type='submit' variant='gradient' className='flex-1'>
 							{todoToEdit ? 'Update Todo' : 'Create Todo'}
 						</Button>
 					</div>

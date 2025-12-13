@@ -187,14 +187,14 @@ const ReleasesPage = () => {
 										}}
 										className={`${
 											appearance.compactMode ? 'p-3' : 'p-4'
-										} rounded-2xl bg-gradient-to-br from-purple-600 via-purple-500 to-pink-500`}
+										} rounded-2xl bg-icon-gradient`}
 									>
 										<Rocket className={spacing.iconSize + ' text-white'} />
 									</motion.div>
 								)}
 								<Text
 									variant='h1'
-									className={`${spacing.titleSize} font-black bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent`}
+									className={`${spacing.titleSize} font-black bg-clip-text text-transparent bg-gradient-text`}
 								>
 									Releases
 								</Text>
@@ -208,9 +208,10 @@ const ReleasesPage = () => {
 							>
 								<Button
 									onClick={() => setShowReleaseForm(true)}
+									variant='gradient'
 									className={`flex items-center gap-2 ${
 										appearance.compactMode ? 'px-4 py-2' : 'px-6 py-3'
-									} rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium shadow-lg shadow-purple-500/30`}
+									} rounded-xl font-medium`}
 								>
 									<Plus className={appearance.compactMode ? 'w-4 h-4' : 'w-5 h-5'} />
 									<span className={appearance.compactMode ? 'text-sm' : ''}>New Release</span>
@@ -337,18 +338,21 @@ const ReleasesPage = () => {
 												ease: 'easeInOut',
 											}}
 										>
-											<Package className='w-24 h-24 mx-auto text-purple-400/40' />
+											<Package className='w-24 h-24 mx-auto text-text-accent/40' />
 										</motion.div>
 										<div className='space-y-2'>
-											<h3 className='text-2xl font-bold text-white/60'>No Release Events Yet</h3>
-											<p className='text-purple-300/40 text-sm max-w-md mx-auto'>
+											<h3 className='text-2xl font-bold text-text-secondary'>
+												No Release Events Yet
+											</h3>
+											<p className='text-text-secondary/40 text-sm max-w-md mx-auto'>
 												Create your first release event to start tracking deployments, repositories,
 												and production readiness.
 											</p>
 										</div>
 										<Button
 											onClick={() => setShowReleaseForm(true)}
-											className='inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium shadow-lg shadow-purple-500/30'
+											variant='gradient'
+											className='inline-flex items-center gap-2 px-6 py-3 rounded-xl font-medium'
 										>
 											<Plus className='w-5 h-5' />
 											<span>Create First Release</span>
@@ -363,9 +367,9 @@ const ReleasesPage = () => {
 
 			{/* Release Form Dialog */}
 			<Dialog open={showReleaseForm} onOpenChange={setShowReleaseForm}>
-				<DialogContent className='glass-strong border-white/30 text-white max-w-2xl'>
+				<DialogContent className='glass-strong border-white/30 text-white max-w-2xl bg-background-gradient'>
 					<DialogHeader>
-						<DialogTitle className='text-2xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent'>
+						<DialogTitle className='text-2xl font-bold bg-clip-text text-transparent bg-gradient-text'>
 							Create New Release Event
 						</DialogTitle>
 					</DialogHeader>

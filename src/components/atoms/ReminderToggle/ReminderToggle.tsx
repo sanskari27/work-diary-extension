@@ -3,9 +3,9 @@ import { motion } from 'framer-motion';
 import { Bell, BellOff } from 'lucide-react';
 
 type Props = {
-    isEnable: boolean;
-    onClick: () => void;
-}
+	isEnable: boolean;
+	onClick: () => void;
+};
 export default function ReminderToggle({ isEnable, onClick }: Props) {
 	return (
 		<Button
@@ -16,7 +16,7 @@ export default function ReminderToggle({ isEnable, onClick }: Props) {
 		>
 			<span className='text-sm font-medium text-white/80 flex items-center gap-2'>
 				{isEnable ? (
-					<Bell className='w-4 h-4 text-purple-400' />
+					<Bell className='w-4 h-4 text-text-accent' />
 				) : (
 					<BellOff className='w-4 h-4 text-white/40' />
 				)}
@@ -24,7 +24,7 @@ export default function ReminderToggle({ isEnable, onClick }: Props) {
 			</span>
 			<div
 				className={`w-12 h-6 rounded-full transition-all ${
-					isEnable ? 'bg-purple-500' : 'bg-white/20'
+					isEnable ? 'bg-primary' : 'bg-white/20'
 				}`}
 			>
 				<motion.div

@@ -105,16 +105,14 @@ export default function BookmarksPage() {
 										repeat: Infinity,
 										ease: 'easeInOut',
 									}}
-									className={`${
-										appearance.compactMode ? 'p-3' : 'p-4'
-									} rounded-2xl bg-gradient-to-br from-purple-600 via-purple-500 to-pink-500`}
+									className={`${appearance.compactMode ? 'p-3' : 'p-4'} rounded-2xl bg-icon-gradient`}
 								>
 									<BookmarkIcon className={spacing.iconSize + ' text-white'} />
 								</motion.div>
 							)}
 							<Text
 								variant='h1'
-								className={`${spacing.titleSize} font-black bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent`}
+								className={`${spacing.titleSize} font-black bg-clip-text text-transparent bg-gradient-text`}
 							>
 								Bookmarks
 							</Text>
@@ -147,14 +145,14 @@ export default function BookmarksPage() {
 						} items-center`}
 					>
 						<div className='flex items-center gap-2'>
-							<span className='text-sm text-white/70'>
+							<span className='text-sm text-text-secondary'>
 								{searchQuery.trim() ? 'Filtered:' : 'Total:'}
 							</span>
 							<span className='text-2xl font-bold text-white'>
 								{searchQuery.trim() ? filteredBookmarks.length : bookmarks.length}
 							</span>
 							{searchQuery.trim() && (
-								<span className='text-sm text-purple-300/60'>of {bookmarks.length}</span>
+								<span className='text-sm text-text-secondary/60'>of {bookmarks.length}</span>
 							)}
 						</div>
 					</motion.div>
@@ -192,10 +190,12 @@ export default function BookmarksPage() {
 								className='flex-1 flex items-center justify-center'
 							>
 								<div className='text-center space-y-4'>
-									<BookmarkIcon className='w-16 h-16 text-purple-400/40 mx-auto' />
+									<BookmarkIcon className='w-16 h-16 text-text-accent/40 mx-auto' />
 									<div className='space-y-2'>
-										<h3 className='text-2xl font-semibold text-white/70'>No results found</h3>
-										<p className='text-purple-300/50'>Try adjusting your search query</p>
+										<h3 className='text-2xl font-semibold text-text-secondary'>
+											No results found
+										</h3>
+										<p className='text-text-secondary/50'>Try adjusting your search query</p>
 									</div>
 								</div>
 							</motion.div>
@@ -207,10 +207,12 @@ export default function BookmarksPage() {
 								className='flex-1 flex items-center justify-center'
 							>
 								<div className='text-center space-y-4'>
-									<BookmarkIcon className='w-16 h-16 text-purple-400/40 mx-auto' />
+									<BookmarkIcon className='w-16 h-16 text-text-accent/40 mx-auto' />
 									<div className='space-y-2'>
-										<h3 className='text-2xl font-semibold text-white/70'>No bookmarks yet</h3>
-										<p className='text-purple-300/50'>
+										<h3 className='text-2xl font-semibold text-text-secondary'>
+											No bookmarks yet
+										</h3>
+										<p className='text-text-secondary/50'>
 											Use the extension popup to bookmark your favorite pages
 										</p>
 									</div>

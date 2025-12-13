@@ -100,29 +100,26 @@ const BackupSyncSection = () => {
 	return (
 		<div className='space-y-6'>
 			<div>
-				<h3 className='text-xl font-semibold text-purple-300 mb-2'>Backup & Sync</h3>
-				<p className='text-sm text-slate-400 mb-4'>
+				<h3 className='text-xl font-semibold text-text-primary mb-2'>Backup & Sync</h3>
+				<p className='text-sm text-text-secondary mb-4'>
 					Export your data for backup or restore from a previous backup
 				</p>
 			</div>
 
 			<div className='space-y-6'>
 				{/* Export Section */}
-				<div className='glass rounded-xl p-5 border border-purple-500/20'>
+				<div className='glass rounded-xl p-5 border border-glass-border'>
 					<div className='flex items-start gap-3'>
-						<Download className='w-5 h-5 text-purple-400 mt-0.5' />
+						<Download className='w-5 h-5 text-text-accent mt-0.5' />
 						<div className='flex-1 space-y-3'>
 							<div>
-								<h4 className='text-purple-200 font-medium'>Export Data</h4>
-								<p className='text-sm text-slate-400 mt-1'>
+								<h4 className='text-text-primary font-medium'>Export Data</h4>
+								<p className='text-sm text-text-secondary mt-1'>
 									Download all your settings, todos, bookmarks, releases, and content as a backup
 									file
 								</p>
 							</div>
-							<Button
-								onClick={handleExport}
-								className='bg-purple-600/20 border border-purple-500/30 hover:bg-purple-600/30'
-							>
+							<Button onClick={handleExport} variant='gradient'>
 								<Download className='w-4 h-4 mr-2' />
 								Export to JSON
 							</Button>
@@ -131,13 +128,13 @@ const BackupSyncSection = () => {
 				</div>
 
 				{/* Import Section */}
-				<div className='glass rounded-xl p-5 border border-purple-500/20'>
+				<div className='glass rounded-xl p-5 border border-glass-border'>
 					<div className='flex items-start gap-3'>
-						<Upload className='w-5 h-5 text-purple-400 mt-0.5' />
+						<Upload className='w-5 h-5 text-text-accent mt-0.5' />
 						<div className='flex-1 space-y-3'>
 							<div>
-								<h4 className='text-purple-200 font-medium'>Import Data</h4>
-								<p className='text-sm text-slate-400 mt-1'>
+								<h4 className='text-text-primary font-medium'>Import Data</h4>
+								<p className='text-sm text-text-secondary mt-1'>
 									Restore data from a backup file. Existing data will be merged with imported data
 									(no data will be removed).
 								</p>
@@ -149,10 +146,7 @@ const BackupSyncSection = () => {
 								onChange={handleFileChange}
 								className='hidden'
 							/>
-							<Button
-								onClick={handleImportClick}
-								className='bg-purple-600/20 border border-purple-500/30 hover:bg-purple-600/30'
-							>
+							<Button onClick={handleImportClick} variant='gradient'>
 								<Upload className='w-4 h-4 mr-2' />
 								Import from JSON
 							</Button>
@@ -187,22 +181,22 @@ const BackupSyncSection = () => {
 				)}
 
 				{/* Placeholder UI for Cloud Sync */}
-				<div className='glass rounded-xl p-5 border border-purple-500/20 opacity-50 cursor-not-allowed'>
+				<div className='glass rounded-xl p-5 border border-glass-border opacity-50 cursor-not-allowed'>
 					<div className='flex items-start gap-3'>
-						<Cloud className='w-5 h-5 text-purple-400 mt-0.5' />
+						<Cloud className='w-5 h-5 text-text-accent mt-0.5' />
 						<div className='flex-1 space-y-3'>
 							<div>
-								<h4 className='text-purple-200 font-medium'>Cloud Sync</h4>
-								<p className='text-sm text-slate-400 mt-1'>
+								<h4 className='text-text-primary font-medium'>Cloud Sync</h4>
+								<p className='text-sm text-text-secondary mt-1'>
 									Automatically sync your data across multiple devices
 								</p>
 							</div>
 							<div className='space-y-2'>
-								<div className='flex items-center gap-2 text-sm text-slate-400'>
+								<div className='flex items-center gap-2 text-sm text-text-secondary'>
 									<div className='w-2 h-2 rounded-full bg-slate-600'></div>
 									<span>Coming soon</span>
 								</div>
-								<Button disabled className='bg-purple-600/20 border border-purple-500/30'>
+								<Button disabled className='bg-primary/20 border border-glass-border'>
 									<Cloud className='w-4 h-4 mr-2' />
 									Connect to Cloud
 								</Button>

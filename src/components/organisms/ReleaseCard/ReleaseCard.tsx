@@ -101,7 +101,7 @@ const ReleaseCard = ({
 			<motion.div
 				initial={{ opacity: 0, y: 20 }}
 				animate={{ opacity: 1, y: 0 }}
-				className={`glass-strong rounded-2xl overflow-hidden border border-white/20 flex flex-col ${
+				className={`glass rounded-2xl overflow-hidden border border-white/20 flex flex-col ${
 					appearance.minimalMode ? 'shadow-sm' : 'shadow-lg'
 				}`}
 			>
@@ -119,19 +119,19 @@ const ReleaseCard = ({
 										sizeStyles.metaSize
 									}`}
 								>
-									<div className='flex items-center gap-2 text-white/70'>
+									<div className='flex items-center gap-2 text-text-secondary'>
 										<Calendar className={sizeStyles.iconSize} />
 										<span>{formatDate(event.date)}</span>
 									</div>
 
 									{event.reminderEnabled && event.reminderDelta && (
-										<div className='flex items-center gap-2 text-purple-400'>
+										<div className='flex items-center gap-2 text-text-accent'>
 											<Bell className={sizeStyles.iconSize} />
 											<span>{formatReminderDelta(event.reminderDelta)} before</span>
 										</div>
 									)}
 
-									<div className='flex items-center gap-2 text-white/70'>
+									<div className='flex items-center gap-2 text-text-secondary'>
 										<Package className={sizeStyles.iconSize} />
 										<span>
 											{event.items.length} {event.items.length === 1 ? 'item' : 'items'}
@@ -139,7 +139,7 @@ const ReleaseCard = ({
 									</div>
 
 									{todoStats.total > 0 && (
-										<div className='flex items-center gap-2 text-blue-400'>
+										<div className='flex items-center gap-2 text-text-accent'>
 											<CheckSquare className={sizeStyles.iconSize} />
 											<span>
 												{todoStats.pending} task{todoStats.pending !== 1 ? 's' : ''} pending
@@ -159,9 +159,9 @@ const ReleaseCard = ({
 								className={`${sizeStyles.buttonPadding} rounded-xl hover:bg-white/10`}
 							>
 								{isExpanded ? (
-									<ChevronUp className={`${sizeStyles.iconSize} text-white/70`} />
+									<ChevronUp className={`${sizeStyles.iconSize} text-text-secondary`} />
 								) : (
-									<ChevronDown className={`${sizeStyles.iconSize} text-white/70`} />
+									<ChevronDown className={`${sizeStyles.iconSize} text-text-secondary`} />
 								)}
 							</Button>
 							{!appearance.minimalMode && (
@@ -172,7 +172,7 @@ const ReleaseCard = ({
 									className={`${sizeStyles.buttonPadding} rounded-xl hover:bg-red-500/20 group`}
 								>
 									<Trash2
-										className={`${sizeStyles.iconSize} text-white/70 group-hover:text-red-400`}
+										className={`${sizeStyles.iconSize} text-text-secondary group-hover:text-red-400`}
 									/>
 								</Button>
 							)}
@@ -204,9 +204,9 @@ const ReleaseCard = ({
 									} rounded-xl bg-white/10 hover:bg-white/15 border border-dashed border-white/30 group`}
 								>
 									<Plus
-										className={`${sizeStyles.iconSize} text-purple-400 group-hover:scale-110 transition-transform`}
+										className={`${sizeStyles.iconSize} text-text-accent group-hover:scale-110 transition-transform`}
 									/>
-									<span className={`text-white/80 font-medium ${sizeStyles.metaSize}`}>
+									<span className={`text-text-primary font-medium ${sizeStyles.metaSize}`}>
 										Add Item
 									</span>
 								</Button>
@@ -250,8 +250,10 @@ const ReleaseCard = ({
 									>
 										<div className='flex items-center justify-between mb-2'>
 											<div className='flex items-center gap-2'>
-												<CheckSquare className={`${sizeStyles.iconSize} text-blue-400`} />
-												<span className={`${sizeStyles.metaSize} font-medium text-white/80`}>
+												<CheckSquare className={`${sizeStyles.iconSize} text-text-accent`} />
+												<span
+													className={`${sizeStyles.metaSize} font-medium text-text-secondary`}
+												>
 													Linked Todos
 												</span>
 											</div>
@@ -302,7 +304,7 @@ const ReleaseCard = ({
 									initial={{ width: 0 }}
 									animate={{ width: `${progress}%` }}
 									transition={{ duration: 0.5 }}
-									className='h-full bg-gradient-to-r from-purple-500 to-pink-500'
+									className='h-full bg-progress-gradient'
 								/>
 							</div>
 						</div>
@@ -312,9 +314,9 @@ const ReleaseCard = ({
 
 			{/* Item Form Dialog */}
 			<Dialog open={showItemForm} onOpenChange={setShowItemForm}>
-				<DialogContent className='glass-strong border-white/30 text-white max-w-2xl max-h-[90vh] overflow-y-auto'>
+				<DialogContent className='glass-strong border-white/30 text-white max-w-2xl max-h-[90vh] overflow-y-auto bg-background-gradient'>
 					<DialogHeader>
-						<DialogTitle className='text-2xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent'>
+						<DialogTitle className='text-2xl font-bold bg-clip-text text-transparent bg-gradient-text'>
 							Add New Item
 						</DialogTitle>
 					</DialogHeader>

@@ -121,12 +121,12 @@ export default function BookmarkCard({ bookmark, onDelete, onUpdate }: BookmarkC
 							onChange={(e) => setEditName(e.target.value)}
 							onBlur={handleSave}
 							onKeyDown={handleKeyDown}
-							className='text-xs h-6 px-1.5 py-0.5 bg-white/10 border-purple-500/50 text-white placeholder:text-white/50 focus-visible:ring-purple-500/50 flex-1'
+							className='text-xs h-6 px-1.5 py-0.5 bg-white/10 border-glass-border-strong text-white placeholder:text-white/50 focus-visible:ring-primary/50 flex-1'
 							onClick={(e) => e.stopPropagation()}
 						/>
 					) : (
 						<h3
-							className='text-xs font-semibold text-white group-hover:text-purple-300 transition-colors line-clamp-2 leading-tight flex-1'
+							className='text-xs font-semibold text-white group-hover:text-text-primary transition-colors line-clamp-2 leading-tight flex-1'
 							title={bookmark.name}
 						>
 							{bookmark.name}
@@ -136,7 +136,7 @@ export default function BookmarkCard({ bookmark, onDelete, onUpdate }: BookmarkC
 
 				{/* Domain */}
 				<div className='mb-auto'>
-					<p className='text-[10px] text-purple-300/70 truncate' title={bookmark.pageUrl}>
+					<p className='text-[10px] text-text-secondary/70 truncate' title={bookmark.pageUrl}>
 						{getDomain(bookmark.pageUrl)}
 					</p>
 				</div>
@@ -152,7 +152,7 @@ export default function BookmarkCard({ bookmark, onDelete, onUpdate }: BookmarkC
 						<Button
 							size='icon'
 							variant='ghost'
-							className='h-6 w-6 p-0 border border-purple-500/30 text-purple-400/80 hover:text-purple-300 hover:bg-purple-500/10'
+							className='h-6 w-6 p-0 border border-glass-border text-text-accent/80 hover:text-text-primary hover:bg-primary/10'
 							onClick={handleEdit}
 						>
 							<Pencil className='h-2.5 w-2.5' />

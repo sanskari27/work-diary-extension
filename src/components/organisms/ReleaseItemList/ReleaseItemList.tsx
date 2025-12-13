@@ -138,7 +138,7 @@ const ReleaseItemCard = ({
 					<div className={`flex-1 ${sizeStyles.spacing}`}>
 						{/* Repo Name */}
 						<div className='flex items-center gap-2'>
-							<Github className={`${sizeStyles.iconSize} text-purple-400`} />
+							<Github className={`${sizeStyles.iconSize} text-text-accent`} />
 							<h4 className={`${sizeStyles.titleSize} font-semibold text-white`}>
 								{item.repoName}
 							</h4>
@@ -188,9 +188,9 @@ const ReleaseItemCard = ({
 							className={`${appearance.compactMode ? 'p-1.5' : 'p-2'} rounded-lg hover:bg-white/10`}
 						>
 							{isExpanded ? (
-								<ChevronUp className={`${sizeStyles.iconSize} text-white/70`} />
+								<ChevronUp className={`${sizeStyles.iconSize} text-text-secondary`} />
 							) : (
-								<ChevronDown className={`${sizeStyles.iconSize} text-white/70`} />
+								<ChevronDown className={`${sizeStyles.iconSize} text-text-secondary`} />
 							)}
 						</Button>
 						{!appearance.minimalMode && (
@@ -203,7 +203,7 @@ const ReleaseItemCard = ({
 								} rounded-lg hover:bg-red-500/20 group`}
 							>
 								<Trash2
-									className={`${sizeStyles.iconSize} text-white/70 group-hover:text-red-400`}
+									className={`${sizeStyles.iconSize} text-text-secondary group-hover:text-red-400`}
 								/>
 							</Button>
 						)}
@@ -233,7 +233,9 @@ const ReleaseItemCard = ({
 										<FileText className={sizeStyles.iconSize} />
 										<span className='font-medium'>Notes</span>
 									</div>
-									<p className={`${sizeStyles.textSize} text-white/70 pl-6 whitespace-pre-wrap`}>
+									<p
+										className={`${sizeStyles.textSize} text-text-secondary pl-6 whitespace-pre-wrap`}
+									>
 										{item.description}
 									</p>
 								</div>
@@ -278,7 +280,9 @@ const ReleaseItemCard = ({
 												)}
 												<span
 													className={`${sizeStyles.textSize} ${
-														status.checked ? 'text-green-300 font-medium' : 'text-white/70'
+														status.checked
+															? 'text-green-300 font-medium'
+															: 'text-text-secondary'
 													}`}
 												>
 													{status.name}
@@ -319,7 +323,7 @@ const ReleaseItemCard = ({
 								className={`h-full ${
 									progress === 100
 										? 'bg-gradient-to-r from-green-500 to-emerald-500'
-										: 'bg-gradient-to-r from-purple-500 to-pink-500'
+										: 'bg-progress-gradient'
 								}`}
 							/>
 						</div>

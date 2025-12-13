@@ -115,7 +115,7 @@ const ReleaseItemForm = ({ onSubmit, onCancel }: ReleaseItemFormProps) => {
 			{/* Template Selector */}
 			{templates.length > 0 && (
 				<div className='space-y-2'>
-					<Label className='text-sm font-medium text-white/80 flex items-center gap-2'>
+					<Label className='text-sm font-medium text-text-secondary flex items-center gap-2'>
 						<Sparkles className='w-4 h-4' />
 						Use Template (Optional)
 					</Label>
@@ -137,7 +137,7 @@ const ReleaseItemForm = ({ onSubmit, onCancel }: ReleaseItemFormProps) => {
 
 			{/* Repo Name */}
 			<div className='space-y-2'>
-				<Label className='text-sm font-medium text-white/80 flex items-center gap-2'>
+				<Label className='text-sm font-medium text-text-secondary flex items-center gap-2'>
 					<Github className='w-4 h-4' />
 					Repository Name *
 				</Label>
@@ -153,7 +153,7 @@ const ReleaseItemForm = ({ onSubmit, onCancel }: ReleaseItemFormProps) => {
 
 			{/* Repo Link */}
 			<div className='space-y-2'>
-				<Label className='text-sm font-medium text-white/80 flex items-center gap-2'>
+				<Label className='text-sm font-medium text-text-secondary flex items-center gap-2'>
 					<LinkIcon className='w-4 h-4' />
 					Repository Link *
 				</Label>
@@ -170,7 +170,7 @@ const ReleaseItemForm = ({ onSubmit, onCancel }: ReleaseItemFormProps) => {
 			{/* PR Link */}
 			{appearance.showPRLinkField && (
 				<div className='space-y-2'>
-					<Label className='text-sm font-medium text-white/80 flex items-center gap-2'>
+					<Label className='text-sm font-medium text-text-secondary flex items-center gap-2'>
 						<LinkIcon className='w-4 h-4' />
 						PR Link (Optional)
 					</Label>
@@ -187,7 +187,7 @@ const ReleaseItemForm = ({ onSubmit, onCancel }: ReleaseItemFormProps) => {
 			{/* Lead Name */}
 			{appearance.showLeadSection && (
 				<div className='space-y-2'>
-					<Label className='text-sm font-medium text-white/80 flex items-center gap-2'>
+					<Label className='text-sm font-medium text-text-secondary flex items-center gap-2'>
 						<User className='w-4 h-4' />
 						Lead / Contact Person (Optional)
 					</Label>
@@ -204,7 +204,7 @@ const ReleaseItemForm = ({ onSubmit, onCancel }: ReleaseItemFormProps) => {
 			{/* Description */}
 			{appearance.showDescriptionSection && (
 				<div className='space-y-2'>
-					<Label className='text-sm font-medium text-white/80 flex items-center gap-2'>
+					<Label className='text-sm font-medium text-text-secondary flex items-center gap-2'>
 						<FileText className='w-4 h-4' />
 						Description / Notes (Optional)
 					</Label>
@@ -220,7 +220,7 @@ const ReleaseItemForm = ({ onSubmit, onCancel }: ReleaseItemFormProps) => {
 
 			{/* Status Configuration */}
 			<div className='space-y-3'>
-				<Label className='text-sm font-medium text-white/80 flex items-center gap-2'>
+				<Label className='text-sm font-medium text-text-secondary flex items-center gap-2'>
 					<ListChecks className='w-4 h-4' />
 					Statuses for this Item
 				</Label>
@@ -238,7 +238,7 @@ const ReleaseItemForm = ({ onSubmit, onCancel }: ReleaseItemFormProps) => {
 									onClick={() => handleToggleStatus(status.name)}
 									className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${
 										selectedStatuses.includes(status.name)
-											? 'bg-purple-500/80 text-white border border-purple-400'
+											? 'bg-primary/80 text-white border border-accent-border'
 											: 'bg-white/5 text-white/60 border border-white/10 hover:bg-white/10'
 									}`}
 								>
@@ -283,7 +283,7 @@ const ReleaseItemForm = ({ onSubmit, onCancel }: ReleaseItemFormProps) => {
 							type='button'
 							onClick={() => setShowAddStatus(true)}
 							variant='outline'
-							className='w-full bg-white/5 hover:bg-white/10 border-white/20 text-white/80 flex items-center gap-2'
+							className='w-full bg-white/5 hover:bg-white/10 border-white/20 text-text-secondary flex items-center gap-2'
 						>
 							<Plus className='w-4 h-4' />
 							Add Custom Status (specific to this item)
@@ -319,7 +319,7 @@ const ReleaseItemForm = ({ onSubmit, onCancel }: ReleaseItemFormProps) => {
 									setNewStatusInput('');
 								}}
 								variant='outline'
-								className='bg-white/5 hover:bg-white/10 border-white/20 text-white/80'
+								className='bg-white/5 hover:bg-white/10 border-white/20 text-text-secondary'
 							>
 								Cancel
 							</Button>
@@ -345,10 +345,7 @@ const ReleaseItemForm = ({ onSubmit, onCancel }: ReleaseItemFormProps) => {
 				>
 					Cancel
 				</Button>
-				<Button
-					type='submit'
-					className='flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white shadow-lg shadow-purple-500/30'
-				>
+				<Button type='submit' variant='gradient' className='flex-1'>
 					Add Item
 				</Button>
 			</div>

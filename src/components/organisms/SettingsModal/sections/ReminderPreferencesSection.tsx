@@ -34,39 +34,41 @@ const ReminderPreferencesSection = () => {
 	return (
 		<div className='space-y-6'>
 			<div>
-				<h3 className='text-xl font-semibold text-purple-300 mb-2'>Reminder Preferences</h3>
-				<p className='text-sm text-slate-400 mb-4'>
+				<h3 className='text-xl font-semibold text-text-primary mb-2'>Reminder Preferences</h3>
+				<p className='text-sm text-text-secondary mb-4'>
 					Configure global reminder and notification settings
 				</p>
 			</div>
 
 			<div className='space-y-6'>
 				{/* Default Reminder Delta */}
-				<div className='glass rounded-xl p-5 border border-purple-500/20'>
+				<div className='glass rounded-xl p-5 border border-glass-border'>
 					<div className='flex items-start gap-3'>
-						<Clock className='w-5 h-5 text-purple-400 mt-0.5' />
+						<Clock className='w-5 h-5 text-text-accent mt-0.5' />
 						<div className='flex-1 space-y-3'>
 							<div>
-								<Label className='text-purple-200 font-medium'>Default Reminder Time</Label>
-								<p className='text-sm text-slate-400 mt-1'>
+								<Label className='text-text-primary font-medium'>Default Reminder Time</Label>
+								<p className='text-sm text-text-secondary mt-1'>
 									How far in advance should reminders be triggered?
 								</p>
 							</div>
 							<ReminderInput
 								value={preferences.defaultReminderDelta}
 								onValueChange={(value) => handleUpdate({ defaultReminderDelta: value })}
-								className='bg-slate-800/50 border-purple-500/30 text-white w-full'
+								className='bg-slate-800/50 border-glass-border text-white w-full'
 							/>
 						</div>
 					</div>
 				</div>
 
 				{/* Default Reminder Enabled */}
-				<div className='glass rounded-xl p-5 border border-purple-500/20'>
+				<div className='glass rounded-xl p-5 border border-glass-border'>
 					<div className='flex items-center justify-between'>
 						<div className='flex-1'>
-							<Label className='text-purple-200 font-medium'>Enable Reminders by Default</Label>
-							<p className='text-sm text-slate-400 mt-1'>
+							<Label className='text-text-primary font-medium'>
+								Enable Reminders by Default
+							</Label>
+							<p className='text-sm text-text-secondary mt-1'>
 								Automatically enable reminders for new release events
 							</p>
 						</div>
@@ -78,11 +80,13 @@ const ReminderPreferencesSection = () => {
 				</div>
 
 				{/* Browser Notifications */}
-				<div className='glass rounded-xl p-5 border border-purple-500/20'>
+				<div className='glass rounded-xl p-5 border border-glass-border'>
 					<div className='flex items-center justify-between'>
 						<div className='flex-1'>
-							<Label className='text-purple-200 font-medium'>Enable Browser Notifications</Label>
-							<p className='text-sm text-slate-400 mt-1'>
+							<Label className='text-text-primary font-medium'>
+								Enable Browser Notifications
+							</Label>
+							<p className='text-sm text-text-secondary mt-1'>
 								Receive browser notifications at 12:00 PM for active reminders (once per day)
 							</p>
 							{isNotificationDisabled && (
@@ -101,7 +105,7 @@ const ReminderPreferencesSection = () => {
 
 				{/* Info Box */}
 				<div className='glass rounded-xl p-4 border border-blue-500/30 bg-blue-500/5'>
-					<p className='text-sm text-blue-300'>
+					<p className='text-sm text-text-accent'>
 						<strong>Tip:</strong> Reminders will be displayed in-app when the release date
 						approaches based on your configured delta time.
 					</p>

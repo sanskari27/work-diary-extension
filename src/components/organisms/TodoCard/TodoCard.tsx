@@ -119,7 +119,7 @@ export default function TodoCard({ todo, onClick }: TodoCardProps) {
 					<p
 						className={cn(
 							'mt-1 text-sm gap-1 inline-flex items-center',
-							isOverdue && !isCompleted ? 'font-medium text-red-400' : 'text-white/70'
+							isOverdue && !isCompleted ? 'font-medium text-red-400' : 'text-text-secondary'
 						)}
 					>
 						<span>{formatTodoDueDate(todo.date)}</span>
@@ -139,7 +139,7 @@ export default function TodoCard({ todo, onClick }: TodoCardProps) {
 									size='sm'
 									variant='ghost'
 									className={cn(
-										'h-8 px-3 text-xs transition-colors border border-white/10 text-white/80 hover:text-white hover:bg-white/10',
+										'h-8 px-3 text-xs transition-colors border border-white/10 text-text-secondary hover:text-white hover:bg-white/10',
 										isHovered ? 'opacity-100' : 'opacity-80'
 									)}
 									onClick={(e) => {

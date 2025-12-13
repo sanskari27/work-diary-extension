@@ -53,7 +53,7 @@ const ReleaseEventForm = ({ onSubmit, onCancel }: ReleaseEventFormProps) => {
 		<form onSubmit={handleSubmit} className='space-y-6'>
 			{/* Title Input */}
 			<div className='space-y-2'>
-				<Label className='text-sm font-medium text-white/80 flex items-center gap-2'>
+				<Label className='text-sm font-medium text-text-secondary flex items-center gap-2'>
 					<Calendar className='w-4 h-4' />
 					Release Title
 				</Label>
@@ -69,7 +69,7 @@ const ReleaseEventForm = ({ onSubmit, onCancel }: ReleaseEventFormProps) => {
 
 			{/* Date Input */}
 			<div className='space-y-2'>
-				<Label className='text-sm font-medium text-white/80 flex items-center gap-2'>
+				<Label className='text-sm font-medium text-text-secondary flex items-center gap-2'>
 					<Calendar className='w-4 h-4' />
 					Release Date
 				</Label>
@@ -97,7 +97,9 @@ const ReleaseEventForm = ({ onSubmit, onCancel }: ReleaseEventFormProps) => {
 						exit={{ opacity: 0, height: 0 }}
 						className='space-y-2'
 					>
-						<Label className='text-sm font-medium text-white/80'>Remind me before</Label>
+						<Label className='text-sm font-medium text-text-secondary'>
+							Remind me before
+						</Label>
 						<ReminderInput
 							value={reminderDelta}
 							onValueChange={setReminderDelta}
@@ -117,10 +119,7 @@ const ReleaseEventForm = ({ onSubmit, onCancel }: ReleaseEventFormProps) => {
 				>
 					Cancel
 				</Button>
-				<Button
-					type='submit'
-					className='flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white shadow-lg shadow-purple-500/30'
-				>
+				<Button type='submit' variant='gradient' className='flex-1'>
 					Create Release
 				</Button>
 			</div>

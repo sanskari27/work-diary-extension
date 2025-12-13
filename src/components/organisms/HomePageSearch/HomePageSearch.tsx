@@ -165,7 +165,7 @@ const HomePageSearch = () => {
 								initial={{ opacity: 0 }}
 								animate={{ opacity: 1 }}
 								className={cn(
-									'text-center text-purple-300/50 text-sm py-8',
+									'text-center text-text-secondary/50 text-sm py-8',
 									isTodoQuery && 'hidden'
 								)}
 							>

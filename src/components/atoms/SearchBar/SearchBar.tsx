@@ -68,11 +68,11 @@ const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
 			<div
 				className={cn(
 					'relative flex items-center glass-strong rounded-xl border border-white/20 transition-all',
-					isFocused && 'border-purple-400/40 shadow-lg shadow-purple-500/20',
+					isFocused && 'border-accent-border shadow-lg shadow-gradient',
 					containerClassName
 				)}
 			>
-				<Search className='absolute left-3 h-4 w-4 text-purple-300/60 pointer-events-none' />
+				<Search className='absolute left-3 h-4 w-4 text-text-accent/60 pointer-events-none' />
 				<Input
 					ref={ref}
 					type='text'
@@ -82,7 +82,7 @@ const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
 					onBlur={() => setIsFocused(false)}
 					onKeyDown={handleKeyDown}
 					className={cn(
-						'pl-10 bg-transparent border-0 text-white placeholder:text-purple-300/50 focus-visible:ring-0 focus-visible:ring-offset-0',
+						'pl-10 bg-transparent border-0 text-white placeholder:text-text-accent/50 focus-visible:ring-0 focus-visible:ring-offset-0',
 						rightPadding,
 						className
 					)}
@@ -105,7 +105,7 @@ const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
 						type='button'
 						onClick={handleClear}
 						className={cn(
-							'absolute h-6 w-6 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors text-purple-300/60 hover:text-white',
+							'absolute h-6 w-6 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors text-text-accent/60 hover:text-white',
 							hasActions ? 'right-12' : 'right-3'
 						)}
 					>

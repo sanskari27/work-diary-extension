@@ -38,7 +38,7 @@ const BookmarkSearchBadge = ({ bookmark, className }: BookmarkSearchBadgeProps) 
 					/>
 				) : (
 					<BookmarkIcon
-						className={cn('text-purple-400', compactMode ? 'w-3.5 h-3.5' : 'w-4 h-4')}
+						className={cn('text-text-accent', compactMode ? 'w-3.5 h-3.5' : 'w-4 h-4')}
 					/>
 				)}
 			</div>
@@ -52,7 +52,10 @@ const BookmarkSearchBadge = ({ bookmark, className }: BookmarkSearchBadgeProps) 
 					{bookmark.name}
 				</div>
 				<div
-					className={cn('text-purple-300/60 truncate', compactMode ? 'text-[9px]' : 'text-[10px]')}
+					className={cn(
+						'text-text-secondary/60 truncate',
+						compactMode ? 'text-[9px]' : 'text-[10px]'
+					)}
 					title={bookmark.pageUrl}
 				>
 					{getDomain(bookmark.pageUrl)}

@@ -71,78 +71,80 @@ const TemplatesSection = () => {
 	return (
 		<div className='space-y-6'>
 			<div>
-				<h3 className='text-xl font-semibold text-purple-300 mb-2'>Presaved Templates</h3>
-				<p className='text-sm text-slate-400 mb-4'>Create templates for faster element creation</p>
+				<h3 className='text-xl font-semibold text-text-primary mb-2'>Presaved Templates</h3>
+				<p className='text-sm text-text-secondary mb-4'>
+					Create templates for faster element creation
+				</p>
 			</div>
 
 			{/* Add New Template Form */}
 			{isAdding && (
-				<div className='glass rounded-xl p-4 space-y-3 border border-purple-500/30'>
-					<h4 className='font-medium text-purple-300'>New Template</h4>
+				<div className='glass rounded-xl p-4 space-y-3 border border-glass-border'>
+					<h4 className='font-medium text-text-primary'>New Template</h4>
 					<div className='grid grid-cols-2 gap-3'>
 						<div>
-							<Label htmlFor='name' className='text-slate-300'>
+							<Label htmlFor='name' className='text-text-secondary'>
 								Template Name *
 							</Label>
 							<Input
 								id='name'
 								value={formData.name}
 								onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-								className='bg-slate-800/50 border-purple-500/30 text-white'
+								className='bg-slate-800/50 border-glass-border text-white'
 								placeholder='My Template'
 							/>
 						</div>
 						<div>
-							<Label htmlFor='repoName' className='text-slate-300'>
+							<Label htmlFor='repoName' className='text-text-secondary'>
 								Repo Name *
 							</Label>
 							<Input
 								id='repoName'
 								value={formData.repoName}
 								onChange={(e) => setFormData({ ...formData, repoName: e.target.value })}
-								className='bg-slate-800/50 border-purple-500/30 text-white'
+								className='bg-slate-800/50 border-glass-border text-white'
 								placeholder='my-repo'
 							/>
 						</div>
 						<div>
-							<Label htmlFor='repoLink' className='text-slate-300'>
+							<Label htmlFor='repoLink' className='text-text-secondary'>
 								Repo Link *
 							</Label>
 							<Input
 								id='repoLink'
 								value={formData.repoLink}
 								onChange={(e) => setFormData({ ...formData, repoLink: e.target.value })}
-								className='bg-slate-800/50 border-purple-500/30 text-white'
+								className='bg-slate-800/50 border-glass-border text-white'
 								placeholder='https://github.com/...'
 							/>
 						</div>
 						<div>
-							<Label htmlFor='prLinkFormat' className='text-slate-300'>
+							<Label htmlFor='prLinkFormat' className='text-text-secondary'>
 								PR Link Format
 							</Label>
 							<Input
 								id='prLinkFormat'
 								value={formData.prLinkFormat}
 								onChange={(e) => setFormData({ ...formData, prLinkFormat: e.target.value })}
-								className='bg-slate-800/50 border-purple-500/30 text-white'
+								className='bg-slate-800/50 border-glass-border text-white'
 								placeholder='https://github.com/.../pull/{number}'
 							/>
 						</div>
 						<div>
-							<Label htmlFor='leadName' className='text-slate-300'>
+							<Label htmlFor='leadName' className='text-text-secondary'>
 								Lead Name
 							</Label>
 							<Input
 								id='leadName'
 								value={formData.leadName}
 								onChange={(e) => setFormData({ ...formData, leadName: e.target.value })}
-								className='bg-slate-800/50 border-purple-500/30 text-white'
+								className='bg-slate-800/50 border-glass-border text-white'
 								placeholder='John Doe'
 							/>
 						</div>
 					</div>
 					<div className='flex gap-2'>
-						<Button onClick={handleAdd} size='sm' className='bg-purple-600 hover:bg-purple-700'>
+						<Button onClick={handleAdd} size='sm' variant='default'>
 							<Save className='w-4 h-4' />
 							Save Template
 						</Button>
@@ -150,7 +152,7 @@ const TemplatesSection = () => {
 							onClick={cancelEdit}
 							size='sm'
 							variant='ghost'
-							className='border-slate-600 text-slate-300'
+							className='border-slate-600 text-text-secondary'
 						>
 							<X className='w-4 h-4' />
 							Cancel
@@ -163,7 +165,7 @@ const TemplatesSection = () => {
 			{!isAdding && !editingId && (
 				<Button
 					onClick={() => setIsAdding(true)}
-					className='bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/50 text-purple-300'
+					className='bg-primary/20 hover:bg-primary/30 border border-glass-border-strong text-text-primary'
 				>
 					<Plus className='w-4 h-4 mr-2' />
 					Add Template
@@ -175,50 +177,46 @@ const TemplatesSection = () => {
 				{templates.map((template) => (
 					<div
 						key={template.id}
-						className='glass rounded-xl p-4 border border-purple-500/20 hover:border-purple-500/40 transition-colors'
+						className='glass rounded-xl p-4 border border-glass-border hover:border-glass-border-strong transition-colors'
 					>
 						{editingId === template.id ? (
 							<div className='space-y-3'>
 								<div className='grid grid-cols-2 gap-3'>
 									<div>
-										<Label className='text-slate-300'>Template Name</Label>
+										<Label className='text-text-secondary'>Template Name</Label>
 										<Input
 											value={formData.name}
 											onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-											className='bg-slate-800/50 border-purple-500/30 text-white'
+											className='bg-slate-800/50 border-glass-border text-white'
 										/>
 									</div>
 									<div>
-										<Label className='text-slate-300'>Repo Name</Label>
+										<Label className='text-text-secondary'>Repo Name</Label>
 										<Input
 											value={formData.repoName}
 											onChange={(e) => setFormData({ ...formData, repoName: e.target.value })}
-											className='bg-slate-800/50 border-purple-500/30 text-white'
+											className='bg-slate-800/50 border-glass-border text-white'
 										/>
 									</div>
 									<div>
-										<Label className='text-slate-300'>Repo Link</Label>
+										<Label className='text-text-secondary'>Repo Link</Label>
 										<Input
 											value={formData.repoLink}
 											onChange={(e) => setFormData({ ...formData, repoLink: e.target.value })}
-											className='bg-slate-800/50 border-purple-500/30 text-white'
+											className='bg-slate-800/50 border-glass-border text-white'
 										/>
 									</div>
 									<div>
-										<Label className='text-slate-300'>Lead Name</Label>
+										<Label className='text-text-secondary'>Lead Name</Label>
 										<Input
 											value={formData.leadName}
 											onChange={(e) => setFormData({ ...formData, leadName: e.target.value })}
-											className='bg-slate-800/50 border-purple-500/30 text-white'
+											className='bg-slate-800/50 border-glass-border text-white'
 										/>
 									</div>
 								</div>
 								<div className='flex gap-2'>
-									<Button
-										onClick={() => handleUpdate(template.id)}
-										size='sm'
-										className='bg-purple-600 hover:bg-purple-700'
-									>
+									<Button onClick={() => handleUpdate(template.id)} size='sm' variant='default'>
 										<Save className='w-4 h-4' />
 										Save
 									</Button>
@@ -226,7 +224,7 @@ const TemplatesSection = () => {
 										onClick={cancelEdit}
 										size='sm'
 										variant='ghost'
-										className='border-slate-600 text-slate-300'
+										className='border-slate-600 text-text-secondary'
 									>
 										<X className='w-4 h-4' />
 										Cancel
@@ -236,8 +234,8 @@ const TemplatesSection = () => {
 						) : (
 							<div className='flex items-start justify-between'>
 								<div className='flex-1 space-y-1'>
-									<h4 className='font-semibold text-purple-200'>{template.name}</h4>
-									<p className='text-sm text-slate-400'>
+									<h4 className='font-semibold text-text-primary'>{template.name}</h4>
+									<p className='text-sm text-text-secondary'>
 										<span className='font-medium'>Repo:</span> {template.repoName}
 									</p>
 									<p className='text-xs text-slate-500 truncate'>{template.repoLink}</p>
@@ -252,7 +250,7 @@ const TemplatesSection = () => {
 										onClick={() => startEdit(template)}
 										size='sm'
 										variant='ghost'
-										className='text-purple-300 hover:text-purple-200 hover:bg-purple-600/20'
+										className='text-text-primary hover:text-text-primary hover:bg-primary/20'
 									>
 										<Edit2 className='w-4 h-4' />
 									</Button>
