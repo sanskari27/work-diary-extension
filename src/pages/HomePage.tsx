@@ -4,10 +4,12 @@ import NotificationPanel from '@/components/organisms/NotificationPanel/Notifica
 import PageLayout from '@/components/templates/PageLayout/PageLayout';
 import { FEATURES } from '@/config/features';
 import { useContent } from '@/hooks/useContent';
+import { useAppSelector } from '@/store/hooks';
 import { motion } from 'framer-motion';
 
 const HomePage = () => {
 	const { content, loading } = useContent();
+	const appearance = useAppSelector((state) => state.settings.appearanceSettings);
 
 	if (loading || !content) {
 		return (
@@ -23,6 +25,8 @@ const HomePage = () => {
 		);
 	}
 
+	const greetingName = (appearance.greetingName || '').trim() || content.greeting.userName;
+
 	return (
 		<PageLayout showHomeButton={false}>
 			<div className='min-h-screen p-6 md:p-12 lg:p-16 flex flex-col'>
@@ -34,7 +38,7 @@ const HomePage = () => {
 						transition={{ duration: 0.5 }}
 						className='flex-1 flex flex-col'
 					>
-						<Greeting userName={content.greeting.userName} />
+						<Greeting userName={greetingName} />
 
 						{/* Center Piece Placeholder */}
 						<motion.div

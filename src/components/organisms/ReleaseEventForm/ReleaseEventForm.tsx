@@ -1,13 +1,8 @@
+import ReminderInput from '@/components/atoms/ReminderInput/ReminderInput';
+import ReminderToggle from '@/components/atoms/ReminderToggle/ReminderToggle';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from '@/components/ui/select';
 import { useAppSelector } from '@/store/hooks';
 import { motion } from 'framer-motion';
 import { Bell, BellOff, Calendar } from 'lucide-react';
@@ -90,32 +85,7 @@ const ReleaseEventForm = ({ onSubmit, onCancel }: ReleaseEventFormProps) => {
 
 			{/* Reminder Toggle */}
 			<div className='space-y-3'>
-				<Button
-					type='button'
-					onClick={() => setReminderEnabled(!reminderEnabled)}
-					variant='ghost'
-					className='w-full flex items-center justify-between p-4 rounded-xl bg-white/10 border border-white/20 hover:bg-white/15'
-				>
-					<span className='text-sm font-medium text-white/80 flex items-center gap-2'>
-						{reminderEnabled ? (
-							<Bell className='w-4 h-4 text-purple-400' />
-						) : (
-							<BellOff className='w-4 h-4 text-white/40' />
-						)}
-						Enable Reminder
-					</span>
-					<div
-						className={`w-12 h-6 rounded-full transition-all ${
-							reminderEnabled ? 'bg-purple-500' : 'bg-white/20'
-						}`}
-					>
-						<motion.div
-							className='w-5 h-5 bg-white rounded-full shadow-lg'
-							animate={{ x: reminderEnabled ? 26 : 2, y: 2 }}
-							transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-						/>
-					</div>
-				</Button>
+				<ReminderToggle isEnable={reminderEnabled} onClick={() => setReminderEnabled(!reminderEnabled)} />
 
 				{/* Reminder Delta */}
 				{reminderEnabled && (
@@ -126,20 +96,11 @@ const ReleaseEventForm = ({ onSubmit, onCancel }: ReleaseEventFormProps) => {
 						className='space-y-2'
 					>
 						<Label className='text-sm font-medium text-white/80'>Remind me before</Label>
-						<Select value={reminderDelta} onValueChange={setReminderDelta}>
-							<SelectTrigger className='w-full bg-white/10 border-white/20 text-white'>
-								<SelectValue placeholder='Select days' />
-							</SelectTrigger>
-							<SelectContent>
-								<SelectItem value='1d'>1 day before</SelectItem>
-								<SelectItem value='2d'>2 days before</SelectItem>
-								<SelectItem value='3d'>3 days before</SelectItem>
-								<SelectItem value='4d'>4 days before</SelectItem>
-								<SelectItem value='5d'>5 days before</SelectItem>
-								<SelectItem value='6d'>6 days before</SelectItem>
-								<SelectItem value='7d'>7 days before</SelectItem>
-							</SelectContent>
-						</Select>
+						<ReminderInput
+							value={reminderDelta}
+							onValueChange={setReminderDelta}
+							placeholder='Select days'
+						/>
 					</motion.div>
 				)}
 			</div>

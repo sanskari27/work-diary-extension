@@ -9,7 +9,15 @@
 	"chrome_url_overrides": {
 		"newtab": "index.html"
 	},
+	"action": {
+		"default_popup": "popup.html",
+		"default_title": "Work Diary"
+	},
 	"permissions": [
-		"storage"
+		"storage",
+		"tabs"
+	],
+	"host_permissions": [
+		"http://localhost:*/*"
 	]
 }

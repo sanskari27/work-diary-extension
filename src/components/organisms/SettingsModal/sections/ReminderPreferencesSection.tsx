@@ -1,11 +1,5 @@
+import ReminderInput from '@/components/atoms/ReminderInput/ReminderInput';
 import { Label } from '@/components/ui/label';
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { updateReminderPreferences } from '@/store/slices/settingsSlice';
@@ -40,23 +34,11 @@ const ReminderPreferencesSection = () => {
 									How far in advance should reminders be triggered?
 								</p>
 							</div>
-							<Select
+							<ReminderInput
 								value={preferences.defaultReminderDelta}
 								onValueChange={(value) => handleUpdate({ defaultReminderDelta: value })}
-							>
-								<SelectTrigger className='bg-slate-800/50 border-purple-500/30 text-white w-full'>
-									<SelectValue />
-								</SelectTrigger>
-								<SelectContent className='bg-slate-800 border-purple-500/30 text-white'>
-									<SelectItem value='1d'>1 day before</SelectItem>
-									<SelectItem value='2d'>2 days before</SelectItem>
-									<SelectItem value='3d'>3 days before</SelectItem>
-									<SelectItem value='4d'>4 days before</SelectItem>
-									<SelectItem value='5d'>5 days before</SelectItem>
-									<SelectItem value='6d'>6 days before</SelectItem>
-									<SelectItem value='7d'>7 days before</SelectItem>
-								</SelectContent>
-							</Select>
+								className='bg-slate-800/50 border-purple-500/30 text-white w-full'
+							/>
 						</div>
 					</div>
 				</div>

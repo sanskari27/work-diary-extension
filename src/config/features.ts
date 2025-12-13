@@ -1,4 +1,4 @@
-import { LucideIcon, Rocket } from 'lucide-react';
+import { Bookmark, CheckSquare, LucideIcon, Rocket } from 'lucide-react';
 
 export interface Feature {
 	id: string;
@@ -14,8 +14,22 @@ export const FEATURES: Feature[] = [
 		route: '/releases',
 		icon: 'rocket',
 	},
+	{
+		id: 'todos',
+		name: 'Todos',
+		route: '/todos',
+		icon: 'checkSquare',
+	},
+	{
+		id: 'bookmarks',
+		name: 'Bookmarks',
+		route: '/bookmarks',
+		icon: 'bookmark',
+	},
 ];
 
 export const iconMap: Record<string, LucideIcon> = {
 	rocket: Rocket,
+	checkSquare: CheckSquare,
+	bookmark: Bookmark,
 };

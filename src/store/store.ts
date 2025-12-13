@@ -1,19 +1,23 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { loadStateFromIndexedDB } from './indexedDB';
 import { indexedDBMiddleware } from './middleware/indexedDBMiddleware';
+import bookmarksReducer from './slices/bookmarksSlice';
 import contentReducer from './slices/contentSlice';
 import releasesReducer from './slices/releasesSlice';
 import settingsReducer from './slices/settingsSlice';
+import todosReducer from './slices/todosSlice';
 import uiReducer from './slices/uiSlice';
 
 // Load persisted state from IndexedDB
 export const loadPersistedState = async () => {
 	try {
-		const [content, ui, releases, settings] = await Promise.all([
+		const [content, ui, releases, settings, todos, bookmarks] = await Promise.all([
 			loadStateFromIndexedDB('content'),
 			loadStateFromIndexedDB('ui'),
 			loadStateFromIndexedDB('releases'),
 			loadStateFromIndexedDB('settings'),
+			loadStateFromIndexedDB('todos'),
+			loadStateFromIndexedDB('bookmarks'),
 		]);
 
 		return {
@@ -21,6 +25,8 @@ export const loadPersistedState = async () => {
 			ui: ui || undefined,
 			releases: releases || undefined,
 			settings: settings || undefined,
+			todos: todos || undefined,
+			bookmarks: bookmarks || undefined,
 		};
 	} catch (error) {
 		console.error('Error loading persisted state:', error);
@@ -37,6 +43,8 @@ export const createStore = (preloadedState?: any) => {
 			ui: uiReducer,
 			releases: releasesReducer,
 			settings: settingsReducer,
+			todos: todosReducer,
+			bookmarks: bookmarksReducer,
 		},
 		preloadedState,
 		middleware: (getDefaultMiddleware) =>

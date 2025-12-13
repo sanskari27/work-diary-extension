@@ -114,3 +114,7 @@
 		background: rgba(139, 92, 246, 0.5);
 	}
 }
+
+.rdp-weeks button {
+	padding: 8px;
+}

@@ -1,3 +1,4 @@
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
 	Select,
@@ -9,7 +10,7 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { updateAppearanceSettings } from '@/store/slices/settingsSlice';
-import { Eye, Layout, Maximize2, Palette } from 'lucide-react';
+import { Eye, Layout, Maximize2, Palette, User } from 'lucide-react';
 
 const AppearanceSection = () => {
 	const dispatch = useAppDispatch();
@@ -50,6 +51,30 @@ const AppearanceSection = () => {
 									<SelectItem value='system'>System</SelectItem>
 								</SelectContent>
 							</Select>
+						</div>
+					</div>
+				</div>
+
+				{/* Greeting Name */}
+				<div className='glass-strong rounded-xl p-5 border border-purple-500/20'>
+					<div className='flex items-start gap-3'>
+						<User className='w-5 h-5 text-purple-400 mt-0.5' />
+						<div className='flex-1 space-y-3'>
+							<div>
+								<Label htmlFor='greetingName' className='text-purple-200 font-medium'>
+									Greeting Name
+								</Label>
+								<p className='text-sm text-slate-400 mt-1'>
+									Personalize the name shown in the homepage greeting
+								</p>
+							</div>
+							<Input
+								id='greetingName'
+								value={appearance.greetingName ?? ''}
+								onChange={(e) => handleUpdate({ greetingName: e.target.value })}
+								className='bg-slate-800/50 border-purple-500/30 text-white'
+								placeholder='Enter your name'
+							/>
 						</div>
 					</div>
 				</div>

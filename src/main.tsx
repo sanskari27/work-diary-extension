@@ -4,6 +4,7 @@ import { Provider } from 'react-redux';
 import App from './App.tsx';
 import './index.css';
 import { initializeReleaseNotifications } from './services/ReleaseNotificationService';
+import { initializeTodoNotifications } from './services/TodoNotificationService';
 import { createStore, loadPersistedState } from './store/store';
 
 // Initialize the app with persisted state
@@ -14,8 +15,9 @@ const initApp = async () => {
 	// Create store with persisted state
 	const store = createStore(persistedState);
 
-	// Initialize release notification service (runs once on app load)
+	// Initialize notification services (runs once on app load)
 	initializeReleaseNotifications(store);
+	initializeTodoNotifications(store);
 
 	// Render the app
 	ReactDOM.createRoot(document.getElementById('root')!).render(

@@ -46,6 +46,7 @@ export interface AppearanceSettings {
 	showPRLinkField: boolean;
 	cardSize: 'small' | 'medium' | 'large';
 	minimalMode: boolean;
+	greetingName: string;
 }
 
 // Settings State
@@ -96,6 +97,7 @@ const initialState: SettingsState = {
 		showPRLinkField: true,
 		cardSize: 'medium',
 		minimalMode: false,
+		greetingName: '',
 	},
 };
 

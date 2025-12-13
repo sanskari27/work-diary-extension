@@ -1,13 +1,25 @@
+import ReleaseItemForm from '@/components/organisms/ReleaseItemForm/ReleaseItemForm';
+import ReleaseItemList from '@/components/organisms/ReleaseItemList/ReleaseItemList';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { formatDate, formatReminderDelta, isDateInCurrentMonth } from '@/lib/dateUtils';
+import { getReleaseTodoStats } from '@/lib/todoUtils';
+import { cn } from '@/lib/utils';
 import { useAppSelector } from '@/store/hooks';
 import { ReleaseEvent } from '@/store/slices/releasesSlice';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Bell, Calendar, ChevronDown, ChevronUp, Package, Plus, Trash2 } from 'lucide-react';
+import {
+	Bell,
+	Calendar,
+	CheckSquare,
+	ChevronDown,
+	ChevronUp,
+	Package,
+	Plus,
+	Trash2,
+} from 'lucide-react';
 import { useState } from 'react';
-import ReleaseItemForm from '@/components/organisms/ReleaseItemForm/ReleaseItemForm';
-import ReleaseItemList from '@/components/organisms/ReleaseItemList/ReleaseItemList';
 
 interface ReleaseCardProps {
 	event: ReleaseEvent;
@@ -27,10 +39,14 @@ const ReleaseCard = ({
 	onToggleStatus,
 }: ReleaseCardProps) => {
 	const appearance = useAppSelector((state) => state.settings.appearanceSettings);
+	const todos = useAppSelector((state) => state.todos.todos);
 
 	// Auto-expand if the event is in the current month
 	const [isExpanded, setIsExpanded] = useState(isDateInCurrentMonth(event.date));
 	const [showItemForm, setShowItemForm] = useState(false);
+
+	// Get todo stats for this release
+	const todoStats = getReleaseTodoStats(todos, event.id);
 
 	// Get size-based styles
 	const getSizeStyles = () => {
@@ -115,6 +131,15 @@ const ReleaseCard = ({
 											{event.items.length} {event.items.length === 1 ? 'item' : 'items'}
 										</span>
 									</div>
+
+									{todoStats.total > 0 && (
+										<div className='flex items-center gap-2 text-blue-400'>
+											<CheckSquare className={sizeStyles.iconSize} />
+											<span>
+												{todoStats.pending} task{todoStats.pending !== 1 ? 's' : ''} pending
+											</span>
+										</div>
+									)}
 								</div>
 							)}
 						</div>
@@ -204,6 +229,41 @@ const ReleaseCard = ({
 										/>
 										<p className={sizeStyles.metaSize}>
 											No items yet. Add your first item to get started.
+										</p>
+									</div>
+								)}
+
+								{/* Linked Todos Section */}
+								{todoStats.total > 0 && (
+									<div
+										className={cn(
+											`border-t border-white/20`,
+											appearance.compactMode ? 'pt-2 mt-2' : 'pt-4 mt-4'
+										)}
+									>
+										<div className='flex items-center justify-between mb-2'>
+											<div className='flex items-center gap-2'>
+												<CheckSquare className={`${sizeStyles.iconSize} text-blue-400`} />
+												<span className={`${sizeStyles.metaSize} font-medium text-white/80`}>
+													Linked Todos
+												</span>
+											</div>
+											<div className='flex gap-2'>
+												{todoStats.pending > 0 && (
+													<Badge variant='secondary' className='bg-yellow-500/20 text-yellow-300'>
+														{todoStats.pending} pending
+													</Badge>
+												)}
+												{todoStats.completed > 0 && (
+													<Badge variant='secondary' className='bg-green-500/20 text-green-300'>
+														{todoStats.completed} completed
+													</Badge>
+												)}
+											</div>
+										</div>
+										<p className={`${sizeStyles.metaSize} text-white/60`}>
+											{todoStats.total} todo{todoStats.total !== 1 ? 's' : ''} linked to this
+											release
 										</p>
 									</div>
 								)}

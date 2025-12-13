@@ -1,3 +1,4 @@
+import ReminderInput from '@/components/atoms/ReminderInput/ReminderInput';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -79,23 +80,11 @@ const ReleaseEventDefaultsSection = () => {
 									How far in advance should release event reminders trigger?
 								</p>
 							</div>
-							<Select
+							<ReminderInput
 								value={defaults.defaultDelta}
 								onValueChange={(value) => handleUpdate({ defaultDelta: value })}
-							>
-								<SelectTrigger className='bg-slate-800/50 border-purple-500/30 text-white w-full'>
-									<SelectValue />
-								</SelectTrigger>
-								<SelectContent className='bg-slate-800 border-purple-500/30 text-white'>
-									<SelectItem value='1d'>1 day before</SelectItem>
-									<SelectItem value='2d'>2 days before</SelectItem>
-									<SelectItem value='3d'>3 days before</SelectItem>
-									<SelectItem value='4d'>4 days before</SelectItem>
-									<SelectItem value='5d'>5 days before</SelectItem>
-									<SelectItem value='6d'>6 days before</SelectItem>
-									<SelectItem value='7d'>7 days before</SelectItem>
-								</SelectContent>
-							</Select>
+								className='bg-slate-800/50 border-purple-500/30 text-white w-full'
+							/>
 						</div>
 					</div>
 				</div>
