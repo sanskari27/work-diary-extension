@@ -7,15 +7,30 @@ export interface SearchBarProps extends React.ComponentPropsWithoutRef<'input'> 
 	onClear?: () => void;
 	showClearButton?: boolean;
 	containerClassName?: string;
+	actions?: React.ReactNode[];
+	onComplete?: (query: string) => void;
 }
 
 const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
 	(
-		{ className, onClear, showClearButton = true, containerClassName, value, onChange, ...props },
+		{
+			className,
+			onClear,
+			showClearButton = true,
+			containerClassName,
+			value,
+			onChange,
+			actions = [],
+			onComplete,
+			onKeyDown,
+			...props
+		},
 		ref
 	) => {
 		const [isFocused, setIsFocused] = useState(false);
 		const hasValue = value && String(value).length > 0;
+		const hasActions = actions.length > 0;
+		const showClear = showClearButton && hasValue;
 
 		const handleClear = () => {
 			if (onClear) {
@@ -29,6 +44,25 @@ const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
 				onChange(syntheticEvent);
 			}
 		};
+
+		const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+			if (e.key === 'Enter' && onComplete) {
+				const inputValue = value ? String(value) : '';
+				onComplete(inputValue);
+			}
+			// Call the original onKeyDown if provided
+			onKeyDown?.(e);
+		};
+
+		// Calculate right padding based on actions and clear button
+		let rightPadding = 'pr-10'; // Default padding
+		if (hasActions && showClear) {
+			rightPadding = 'pr-20'; // Space for actions + clear button
+		} else if (hasActions) {
+			rightPadding = 'pr-28'; // Space for actions
+		} else if (showClear) {
+			rightPadding = 'pr-10'; // Space for clear button
+		}
 
 		return (
 			<div
@@ -46,18 +80,34 @@ const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
 					onChange={onChange}
 					onFocus={() => setIsFocused(true)}
 					onBlur={() => setIsFocused(false)}
+					onKeyDown={handleKeyDown}
 					className={cn(
-						'pl-10 pr-10 h-10 bg-transparent border-0 text-white placeholder:text-purple-300/50 focus-visible:ring-0 focus-visible:ring-offset-0',
+						'pl-10 bg-transparent border-0 text-white placeholder:text-purple-300/50 focus-visible:ring-0 focus-visible:ring-offset-0',
+						rightPadding,
 						className
 					)}
 					placeholder='Search...'
 					{...props}
 				/>
-				{showClearButton && hasValue && (
+				{/* Actions */}
+				{hasActions && (
+					<div className='absolute right-2 flex items-center gap-2'>
+						{actions.map((action, index) => (
+							<div key={index} className='rounded-full overflow-hidden'>
+								{action}
+							</div>
+						))}
+					</div>
+				)}
+				{/* Clear Button */}
+				{showClear && !hasActions && (
 					<button
 						type='button'
 						onClick={handleClear}
-						className='absolute right-3 h-6 w-6 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors text-purple-300/60 hover:text-white'
+						className={cn(
+							'absolute h-6 w-6 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors text-purple-300/60 hover:text-white',
+							hasActions ? 'right-12' : 'right-3'
+						)}
 					>
 						<X className='h-3.5 w-3.5' />
 					</button>
