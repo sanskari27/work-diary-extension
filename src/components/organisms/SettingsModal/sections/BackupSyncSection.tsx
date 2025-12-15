@@ -1,12 +1,12 @@
 import { Button } from '@/components/ui/button';
 import { downloadBackup, prepareImportData, readBackupFile } from '@/services/BackupService';
 import { useAppDispatch, useAppSelector } from '@/store';
-import { setBookmarks } from '@/store/slices/bookmarksSlice';
+import { addBookmark, setBookmarks } from '@/store/slices/bookmarksSlice';
 import { setContent } from '@/store/slices/contentSlice';
 import { setReleases } from '@/store/slices/releasesSlice';
 import { setSettings } from '@/store/slices/settingsSlice';
 import { setTodos } from '@/store/slices/todosSlice';
-import { AlertCircle, CheckCircle, Cloud, Download, Upload } from 'lucide-react';
+import { AlertCircle, Bookmark, CheckCircle, Cloud, Download, Upload } from 'lucide-react';
 import { useRef, useState } from 'react';
 
 const BackupSyncSection = () => {
@@ -17,6 +17,7 @@ const BackupSyncSection = () => {
 		type: 'success' | 'error' | null;
 		message: string;
 	}>({ type: null, message: '' });
+	const [isImportingBrowserBookmarks, setIsImportingBrowserBookmarks] = useState(false);
 
 	const handleExport = () => {
 		try {
@@ -97,6 +98,106 @@ const BackupSyncSection = () => {
 		}
 	};
 
+	const handleImportBrowserBookmarks = () => {
+		if (isImportingBrowserBookmarks) return;
+
+		// Ensure we can talk to the background script
+		if (typeof chrome === 'undefined' || !chrome.runtime || !chrome.runtime.sendMessage) {
+			setImportStatus({
+				type: 'error',
+				message:
+					'Browser extension APIs are not available. Make sure you are running this as a Chrome extension.',
+			});
+			setTimeout(() => setImportStatus({ type: null, message: '' }), 5000);
+			return;
+		}
+
+		setIsImportingBrowserBookmarks(true);
+		setImportStatus({ type: null, message: 'Importing bookmarks from browser...' });
+
+		chrome.runtime.sendMessage(
+			{ type: 'IMPORT_BROWSER_BOOKMARKS' },
+			(response: {
+				success: boolean;
+				error?: string;
+				bookmarks?: { title: string; url: string }[];
+			}) => {
+				try {
+					if (chrome.runtime.lastError) {
+						throw new Error(
+							chrome.runtime.lastError.message || 'Failed to communicate with background script.'
+						);
+					}
+
+					if (!response || !response.success) {
+						throw new Error(
+							response?.error ||
+								'Failed to import browser bookmarks. Background script returned an error.'
+						);
+					}
+
+					const collected = response.bookmarks || [];
+
+					if (collected.length === 0) {
+						setImportStatus({
+							type: 'success',
+							message: 'No browser bookmarks were found to import.',
+						});
+						setTimeout(() => setImportStatus({ type: null, message: '' }), 5000);
+						return;
+					}
+
+					const existing = state.bookmarks.bookmarks || [];
+					const existingUrls = new Set(existing.map((b) => b.pageUrl.toLowerCase()));
+
+					let importedCount = 0;
+
+					for (const { title, url } of collected) {
+						const lowerUrl = url.toLowerCase();
+						if (!existingUrls.has(lowerUrl)) {
+							existingUrls.add(lowerUrl);
+							dispatch(
+								addBookmark({
+									name: title || url,
+									pageUrl: url,
+								})
+							);
+							importedCount += 1;
+						}
+					}
+
+					if (importedCount === 0) {
+						setImportStatus({
+							type: 'success',
+							message: 'All browser bookmarks are already imported. No new bookmarks were added.',
+						});
+					} else {
+						setImportStatus({
+							type: 'success',
+							message: `Imported ${importedCount} browser bookmark${
+								importedCount === 1 ? '' : 's'
+							} successfully.`,
+						});
+					}
+
+					setTimeout(() => setImportStatus({ type: null, message: '' }), 5000);
+				} catch (error) {
+					console.error('Browser bookmarks import error:', error);
+					setImportStatus({
+						type: 'error',
+						message:
+							error instanceof Error
+								? `Failed to import browser bookmarks: ${error.message}`
+								: 'Failed to import browser bookmarks.',
+					});
+					setTimeout(() => setImportStatus({ type: null, message: '' }), 5000);
+				} finally {
+					setIsImportingBrowserBookmarks(false);
+				}
+			}
+		);
+	};
+
 	return (
 		<div className='space-y-6'>
 			<div>
@@ -149,6 +250,36 @@ const BackupSyncSection = () => {
 							<Button onClick={handleImportClick} variant='gradient'>
 								<Upload className='w-4 h-4 mr-2' />
 								Import from JSON
+							</Button>
+						</div>
+					</div>
+				</div>
+
+				{/* Import Browser Bookmarks Section */}
+				<div className='glass rounded-xl p-5 border border-glass-border'>
+					<div className='flex items-start gap-3'>
+						<Bookmark className='w-5 h-5 text-text-accent mt-0.5' />
+						<div className='flex-1 space-y-3'>
+							<div>
+								<h4 className='text-text-primary font-medium'>Import Browser Bookmarks</h4>
+								<p className='text-sm text-text-secondary mt-1'>
+									Import your existing browser bookmarks directly into Work Diary. We&apos;ll skip
+									any bookmarks you already have.
+								</p>
+							</div>
+							<Button
+								onClick={handleImportBrowserBookmarks}
+								variant='gradient'
+								disabled={isImportingBrowserBookmarks}
+							>
+								{isImportingBrowserBookmarks ? (
+									<span>Importing...</span>
+								) : (
+									<>
+										<Bookmark className='w-4 h-4 mr-2' />
+										Import from browser
+									</>
+								)}
 							</Button>
 						</div>
 					</div>

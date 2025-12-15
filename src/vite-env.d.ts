@@ -2,6 +2,15 @@
 
 // Chrome Extension API types
 declare global {
+	interface ChromeBookmarkTreeNode {
+		id: string;
+		parentId?: string;
+		title: string;
+		url?: string;
+		children?: ChromeBookmarkTreeNode[];
+		dateAdded?: number;
+	}
+
 	interface ChromeTabsTab {
 		id?: number;
 		index?: number;
@@ -82,6 +91,9 @@ declare global {
 		> {}
 
 	const chrome: {
+		bookmarks?: {
+			getTree(callback: (nodes: ChromeBookmarkTreeNode[]) => void): void;
+		};
 		tabs: {
 			query(
 				queryInfo: { active?: boolean; currentWindow?: boolean; [key: string]: any },

@@ -116,6 +116,50 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 		} else if (message.type === 'CLEAR_DAILY_CHECK') {
 			chrome.alarms.clear('daily-reminder-check');
 			sendResponse({ success: true });
+		} else if (message.type === 'IMPORT_BROWSER_BOOKMARKS') {
+			// Import bookmarks using the background context (has bookmarks permission)
+			if (!chrome.bookmarks || !chrome.bookmarks.getTree) {
+				sendResponse({
+					success: false,
+					error:
+						'Browser bookmarks API is not available. Ensure the extension has the "bookmarks" permission.',
+				});
+				return true;
+			}
+
+			chrome.bookmarks.getTree((nodes: ChromeBookmarkTreeNode[]) => {
+				try {
+					if (chrome.runtime.lastError) {
+						throw new Error(
+							chrome.runtime.lastError.message || 'Failed to read browser bookmarks.'
+						);
+					}
+
+					const collected: { title: string; url: string }[] = [];
+
+					const traverse = (node: ChromeBookmarkTreeNode) => {
+						if (node.url) {
+							collected.push({
+								title: node.title || node.url,
+								url: node.url,
+							});
+						}
+						if (node.children) {
+							node.children.forEach(traverse);
+						}
+					};
+
+					nodes.forEach(traverse);
+
+					sendResponse({ success: true, bookmarks: collected });
+				} catch (error) {
+					console.error('Error importing browser bookmarks in background:', error);
+					sendResponse({
+						success: false,
+						error: error instanceof Error ? error.message : 'Failed to import browser bookmarks.',
+					});
+				}
+			});
 		}
 	} catch (error) {
 		console.error('Error handling message:', error);
