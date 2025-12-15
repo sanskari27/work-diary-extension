@@ -1,3 +1,4 @@
+import { StatusAlert } from '@/components/atoms';
 import { Button } from '@/components/ui/button';
 import { downloadBackup, prepareImportData, readBackupFile } from '@/services/BackupService';
 import { useAppDispatch, useAppSelector } from '@/store';
@@ -6,7 +7,7 @@ import { setContent } from '@/store/slices/contentSlice';
 import { setReleases } from '@/store/slices/releasesSlice';
 import { setSettings } from '@/store/slices/settingsSlice';
 import { setTodos } from '@/store/slices/todosSlice';
-import { AlertCircle, Bookmark, CheckCircle, Cloud, Download, Upload } from 'lucide-react';
+import { Bookmark, Cloud, Download, Upload } from 'lucide-react';
 import { useRef, useState } from 'react';
 
 const BackupSyncSection = () => {
@@ -287,28 +288,7 @@ const BackupSyncSection = () => {
 
 				{/* Status Messages */}
 				{importStatus.type && (
-					<div
-						className={`glass-strong rounded-xl p-4 border ${
-							importStatus.type === 'success'
-								? 'border-green-500/30 bg-green-500/5'
-								: 'border-red-500/30 bg-red-500/5'
-						}`}
-					>
-						<div className='flex items-start gap-3'>
-							{importStatus.type === 'success' ? (
-								<CheckCircle className='w-5 h-5 text-green-400 flex-shrink-0 mt-0.5' />
-							) : (
-								<AlertCircle className='w-5 h-5 text-red-400 flex-shrink-0 mt-0.5' />
-							)}
-							<p
-								className={`text-sm ${
-									importStatus.type === 'success' ? 'text-green-300' : 'text-red-300'
-								}`}
-							>
-								{importStatus.message}
-							</p>
-						</div>
-					</div>
+					<StatusAlert type={importStatus.type} message={importStatus.message} />
 				)}
 
 				{/* Placeholder UI for Cloud Sync */}

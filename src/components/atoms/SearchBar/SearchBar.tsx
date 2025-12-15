@@ -104,6 +104,7 @@ const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
 					<button
 						type='button'
 						onClick={handleClear}
+						tabIndex={-1}
 						className={cn(
 							'absolute h-6 w-6 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors text-text-accent/60 hover:text-white',
 							hasActions ? 'right-12' : 'right-3'

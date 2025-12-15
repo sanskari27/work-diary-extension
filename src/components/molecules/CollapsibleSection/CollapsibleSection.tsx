@@ -25,7 +25,7 @@ const CollapsibleSection = ({
 			{/* Section Header */}
 			<Button
 				onClick={() => setIsOpen(!isOpen)}
-				variant='ghost'
+				variant='default'
 				className='w-full flex items-center justify-between p-4 rounded-xl glass-strong border border-white/10 transition-all group'
 			>
 				<div className='flex items-center gap-3'>

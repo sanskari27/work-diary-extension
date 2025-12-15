@@ -138,24 +138,25 @@ const HomePageSearch = () => {
 						animate={{ opacity: 1, y: 0 }}
 						exit={{ opacity: 0, y: -10 }}
 						transition={{ duration: 0.2 }}
-						className='absolute w-full max-h-[400px] overflow-y-auto custom-scrollbar'
+						className='absolute w-full max-h-[400px] overflow-y-auto custom-scrollbar py-2'
 					>
 						{searchResults.length > 0 ? (
 							<div className='flex flex-wrap gap-2 justify-center'>
-								{searchResults.map((result, index) => {
+								{searchResults.map((item, index) => {
 									// Generate unique key based on type and result id
+									const result = item.result as Bookmark | ReleaseEvent | ReleaseItem | Todo;
 									const key =
-										result.type === 'bookmark'
-											? `bookmark-${(result.result as any).id}`
-											: result.type === 'release'
-											? `release-${(result.result as any).id}`
-											: `todo-${(result.result as any).id}`;
+										item.type === 'bookmark'
+											? `bookmark-${result.id}`
+											: item.type === 'release'
+											? `release-${result.id}`
+											: `todo-${result.id}`;
 									return (
 										<MasterSearchBadge
 											key={key}
-											result={result}
+											result={item}
 											index={index}
-											onClick={() => handleResultClick(result)}
+											onClick={() => handleResultClick(item)}
 										/>
 									);
 								})}

@@ -210,10 +210,7 @@ export default function TodoForm({ isOpen, onClose, todoToEdit }: TodoFormProps)
 								exit={{ opacity: 0, height: 0 }}
 								className='space-y-2'
 							>
-								<Label
-									htmlFor='reminderDelta'
-									className='text-sm font-medium text-text-secondary'
-								>
+								<Label htmlFor='reminderDelta' className='text-sm font-medium text-text-secondary'>
 									Remind me before
 								</Label>
 								<ReminderInput value={reminderDelta} onValueChange={setReminderDelta} />

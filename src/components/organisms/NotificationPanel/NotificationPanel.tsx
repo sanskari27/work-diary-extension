@@ -1,3 +1,4 @@
+import { useAppearanceStyles } from '@/hooks/useAppearanceStyles';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { removeNotification } from '@/store/slices/uiSlice';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -6,70 +7,16 @@ import { AlertCircle, AlertTriangle, Bell, CheckCircle, Info, X } from 'lucide-r
 const NotificationPanel = () => {
 	const dispatch = useAppDispatch();
 	const notifications = useAppSelector((state) => state.ui.notifications);
-	const appearanceSettings = useAppSelector((state) => state.settings.appearanceSettings);
+	const { appearance: appearanceSettings, notification: notificationStyles } =
+		useAppearanceStyles();
 
 	// Don't render if no notifications
 	if (notifications.length === 0) {
 		return null;
 	}
 
-	// Determine sizing based on appearance settings
-	const getPanelWidth = () => {
-		if (appearanceSettings.compactMode) {
-			return 'w-full lg:w-72 xl:w-80';
-		}
-		return 'w-full lg:w-80 xl:w-96';
-	};
-
-	const getPadding = () => {
-		if (appearanceSettings.compactMode) {
-			return 'p-2';
-		}
-		return 'p-4';
-	};
-
-	const getNotificationPadding = () => {
-		if (appearanceSettings.compactMode) {
-			return 'p-2';
-		}
-		if (appearanceSettings.cardSize === 'small') {
-			return 'p-2';
-		}
-		if (appearanceSettings.cardSize === 'large') {
-			return 'p-4';
-		}
-		return 'p-4';
-	};
-
-	const getSpacing = () => {
-		if (appearanceSettings.compactMode) {
-			return 'space-y-2';
-		}
-		return 'space-y-3';
-	};
-
-	const getIconSize = () => {
-		if (appearanceSettings.compactMode || appearanceSettings.cardSize === 'small') {
-			return 'w-4 h-4';
-		}
-		if (appearanceSettings.cardSize === 'large') {
-			return 'w-6 h-6';
-		}
-		return 'w-5 h-5';
-	};
-
-	const getTextSize = () => {
-		if (appearanceSettings.compactMode || appearanceSettings.cardSize === 'small') {
-			return 'text-xs';
-		}
-		if (appearanceSettings.cardSize === 'large') {
-			return 'text-base';
-		}
-		return 'text-sm';
-	};
-
 	const getIcon = (type: string) => {
-		const iconSize = getIconSize();
+		const iconSize = notificationStyles.iconSize;
 		switch (type) {
 			case 'error':
 				return <AlertCircle className={iconSize} />;
@@ -83,20 +30,6 @@ const NotificationPanel = () => {
 		}
 	};
 
-	const getTypeColors = (type: string) => {
-		switch (type) {
-			case 'error':
-				return 'bg-red-500/20 border-red-500/50 text-red-200';
-			case 'success':
-				return 'bg-green-500/20 border-green-500/50 text-green-200';
-			case 'warning':
-				return 'bg-yellow-500/20 border-yellow-500/50 text-yellow-200';
-			case 'info':
-			default:
-				return 'bg-blue-500/20 border-blue-500/50 text-blue-200';
-		}
-	};
-
 	const handleRemove = (id: string) => {
 		dispatch(removeNotification(id));
 	};
@@ -106,10 +39,10 @@ const NotificationPanel = () => {
 			initial={{ opacity: 0, x: 20 }}
 			animate={{ opacity: 1, x: 0 }}
 			transition={{ duration: 0.5 }}
-			className={getPanelWidth() + ' flex-shrink-0'}
+			className={notificationStyles.panelWidth + ' flex-shrink-0'}
 		>
 			<div
-				className={`glass-strong rounded-2xl ${getPadding()} border border-glass-border-strong sticky top-6`}
+				className={`glass-strong rounded-2xl ${notificationStyles.panelPadding} border border-glass-border-strong sticky top-6`}
 			>
 				{/* Header */}
 				<div
@@ -122,16 +55,10 @@ const NotificationPanel = () => {
 							animate={{ rotate: [0, 10, -10, 0] }}
 							transition={{ duration: 2, repeat: Infinity }}
 						>
-							<Bell className={`${getIconSize()} text-text-primary`} />
+							<Bell className={`${notificationStyles.iconSize} text-text-primary`} />
 						</motion.div>
 					)}
-					<h3
-						className={`${
-							appearanceSettings.compactMode || appearanceSettings.cardSize === 'small'
-								? 'text-base'
-								: 'text-lg'
-						} font-bold text-white`}
-					>
+					<h3 className={`${notificationStyles.headerTextSize} font-bold text-white`}>
 						Notifications
 					</h3>
 					<div className='ml-auto bg-primary/30 text-text-primary text-xs font-bold px-2 py-1 rounded-full'>
@@ -141,7 +68,7 @@ const NotificationPanel = () => {
 
 				{/* Notifications List */}
 				<div
-					className={`${getSpacing()} max-h-[calc(100vh-200px)] overflow-y-auto hidden-scrollbar`}
+					className={`${notificationStyles.spacing} max-h-[calc(100vh-200px)] overflow-y-auto hidden-scrollbar`}
 				>
 					<AnimatePresence mode='popLayout'>
 						{notifications.map((notification) => (
@@ -152,9 +79,9 @@ const NotificationPanel = () => {
 								animate={{ opacity: 1, scale: 1, y: 0 }}
 								exit={{ opacity: 0, scale: 0.9, x: 100 }}
 								transition={{ duration: 0.3 }}
-								className={`${getTypeColors(
-									notification.type
-								)} rounded-xl ${getNotificationPadding()} border relative group`}
+								className={`${notificationStyles.getTypeColors(notification.type)} rounded-xl ${
+									notificationStyles.notificationPadding
+								} border relative group`}
 							>
 								{/* Remove button */}
 								<button
@@ -173,7 +100,7 @@ const NotificationPanel = () => {
 								>
 									<div className='flex-shrink-0 mt-0.5'>{getIcon(notification.type)}</div>
 									<div className='flex-1'>
-										<p className={`${getTextSize()} leading-relaxed break-words`}>
+										<p className={`${notificationStyles.textSize} leading-relaxed break-words`}>
 											{notification.message}
 										</p>
 										{!appearanceSettings.minimalMode && (

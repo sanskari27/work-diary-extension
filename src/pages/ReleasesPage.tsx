@@ -4,6 +4,7 @@ import { ReleaseCard, ReleaseEventForm } from '@/components/organisms';
 import { PageLayout } from '@/components/templates';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useAppearanceStyles } from '@/hooks/useAppearanceStyles';
 import { getCurrentMonth, getCurrentYear, getDateStart, getTodayStart } from '@/lib/dateUtils';
 import { sortDescending, sortThisMonthReleases } from '@/lib/sortingUtils';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
@@ -25,7 +26,7 @@ const ReleasesPage = () => {
 	const dispatch = useAppDispatch();
 	const events = useAppSelector((state) => state.releases.events);
 	const customStatuses = useAppSelector((state) => state.settings.customStatuses);
-	const appearance = useAppSelector((state) => state.settings.appearanceSettings);
+	const { appearance, page: pageStyles } = useAppearanceStyles();
 	const [showReleaseForm, setShowReleaseForm] = useState(false);
 	const [searchParams] = useSearchParams();
 	const expandReleaseId = searchParams.get('expand');
@@ -118,43 +119,7 @@ const ReleasesPage = () => {
 		dispatch(toggleItemStatus({ eventId, itemId, statusName }));
 	};
 
-	// Get spacing based on appearance settings
-	const getSpacing = () => {
-		if (appearance.compactMode) {
-			return {
-				padding: 'p-4 md:p-6 lg:p-8',
-				sectionGap: 'space-y-4',
-				headerMargin: 'mb-4',
-				iconSize: 'w-6 h-6',
-				titleSize: 'text-4xl md:text-5xl',
-			};
-		} else if (appearance.cardSize === 'large') {
-			return {
-				padding: 'p-8 md:p-16 lg:p-20',
-				sectionGap: 'space-y-10',
-				headerMargin: 'mb-10',
-				iconSize: 'w-10 h-10',
-				titleSize: 'text-6xl md:text-7xl',
-			};
-		} else if (appearance.cardSize === 'small') {
-			return {
-				padding: 'p-4 md:p-8 lg:p-12',
-				sectionGap: 'space-y-4',
-				headerMargin: 'mb-6',
-				iconSize: 'w-6 h-6',
-				titleSize: 'text-3xl md:text-4xl',
-			};
-		}
-		return {
-			padding: 'p-6 md:p-12 lg:p-16',
-			sectionGap: 'space-y-8',
-			headerMargin: 'mb-8',
-			iconSize: 'w-8 h-8',
-			titleSize: 'text-5xl md:text-6xl',
-		};
-	};
-
-	const spacing = getSpacing();
+	const spacing = pageStyles;
 
 	return (
 		<>

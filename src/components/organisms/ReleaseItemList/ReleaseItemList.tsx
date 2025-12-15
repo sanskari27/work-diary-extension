@@ -1,4 +1,7 @@
+import { ProgressBar } from '@/components/atoms';
 import { Button } from '@/components/ui/button';
+import { useAppearanceStyles } from '@/hooks/useAppearanceStyles';
+import { cn } from '@/lib/utils';
 import { useAppSelector } from '@/store/hooks';
 import { ReleaseItem } from '@/store/slices/releasesSlice';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -68,6 +71,7 @@ const ReleaseItemCard = ({
 	// Get appearance settings from Redux store
 	const appearance = useAppSelector((state) => state.settings.appearanceSettings);
 	const customStatuses = useAppSelector((state) => state.settings.customStatuses);
+	const { card: cardStyles } = useAppearanceStyles();
 
 	const [isExpanded, setIsExpanded] = useState(expanded || false);
 
@@ -88,40 +92,17 @@ const ReleaseItemCard = ({
 	const totalStatuses = visibleStatuses.length;
 	const progress = totalStatuses > 0 ? (completedStatuses / totalStatuses) * 100 : 0;
 
-	// Get size-based styles
-	const getSizeStyles = () => {
-		switch (appearance.cardSize) {
-			case 'small':
-				return {
-					padding: appearance.compactMode ? 'p-2' : 'p-3',
-					titleSize: 'text-base',
-					textSize: 'text-xs',
-					iconSize: 'w-3 h-3',
-					spacing: 'space-y-1.5',
-					gap: 'gap-2',
-				};
-			case 'large':
-				return {
-					padding: appearance.compactMode ? 'p-5' : 'p-6',
-					titleSize: 'text-xl',
-					textSize: 'text-base',
-					iconSize: 'w-5 h-5',
-					spacing: 'space-y-3',
-					gap: 'gap-4',
-				};
-			default: // medium
-				return {
-					padding: appearance.compactMode ? 'p-3' : 'p-4',
-					titleSize: 'text-lg',
-					textSize: 'text-sm',
-					iconSize: 'w-4 h-4',
-					spacing: 'space-y-2',
-					gap: 'gap-3',
-				};
-		}
+	const sizeStyles = {
+		...cardStyles,
+		// ReleaseItem-specific tokens that weren't in the generic card styles
+		textSize: cardStyles.metaSize,
+		gap:
+			appearance.cardSize === 'small'
+				? 'gap-2'
+				: appearance.cardSize === 'large'
+				? 'gap-4'
+				: 'gap-3',
 	};
-
-	const sizeStyles = getSizeStyles();
 
 	return (
 		<motion.div
@@ -142,41 +123,37 @@ const ReleaseItemCard = ({
 							<h4 className={`${sizeStyles.titleSize} font-semibold text-white`}>
 								{item.repoName}
 							</h4>
-						</div>
-
-						{/* Links */}
-						{!appearance.minimalMode && (
-							<div className={`flex flex-wrap ${sizeStyles.gap} ${sizeStyles.textSize}`}>
-								<a
-									href={item.repoLink}
-									target='_blank'
-									rel='noopener noreferrer'
-									className='flex items-center gap-1 text-blue-400 hover:text-blue-300 transition-colors'
-								>
-									<ExternalLink className='w-3 h-3' />
-									<span>Repository</span>
-								</a>
-								{appearance.showPRLinkField && item.prLink && (
+							{!appearance.minimalMode && (
+								<div className={`flex flex-wrap ${sizeStyles.gap} ${sizeStyles.textSize}`}>
 									<a
-										href={item.prLink}
+										href={item.repoLink}
 										target='_blank'
 										rel='noopener noreferrer'
-										className='flex items-center gap-1 text-blue-400 hover:text-blue-300 transition-colors'
+										className='flex items-center gap-1 text-blue-400 hover:text-blue-300 transition-colors cursor-pointer'
 									>
 										<ExternalLink className='w-3 h-3' />
-										<span>Pull Request</span>
+										<span>Repository</span>
 									</a>
-								)}
-							</div>
-						)}
-
-						{/* Lead Name */}
-						{appearance.showLeadSection && item.leadName && !appearance.minimalMode && (
-							<div className={`flex items-center gap-2 ${sizeStyles.textSize} text-white/60`}>
-								<User className='w-3 h-3' />
-								<span>{item.leadName}</span>
-							</div>
-						)}
+									{appearance.showPRLinkField && item.prLink && (
+										<a
+											href={item.prLink}
+											target='_blank'
+											rel='noopener noreferrer'
+											className='flex items-center gap-1 text-blue-400 hover:text-blue-300 transition-colors'
+										>
+											<ExternalLink className='w-3 h-3' />
+											<span>Pull Request</span>
+										</a>
+									)}
+									{appearance.showLeadSection && item.leadName && !appearance.minimalMode && (
+										<div className={`flex items-center gap-2 ${sizeStyles.textSize} text-white/60`}>
+											<User className='w-3 h-3' />
+											<span>{item.leadName}</span>
+										</div>
+									)}
+								</div>
+							)}
+						</div>
 					</div>
 
 					{/* Actions */}
@@ -280,9 +257,7 @@ const ReleaseItemCard = ({
 												)}
 												<span
 													className={`${sizeStyles.textSize} ${
-														status.checked
-															? 'text-green-300 font-medium'
-															: 'text-text-secondary'
+														status.checked ? 'text-green-300 font-medium' : 'text-text-secondary'
 													}`}
 												>
 													{status.name}
@@ -311,22 +286,16 @@ const ReleaseItemCard = ({
 								{completedStatuses} / {totalStatuses} ({Math.round(progress)}%)
 							</span>
 						</div>
-						<div
-							className={`w-full ${
-								appearance.compactMode ? 'h-1' : 'h-1.5'
-							} bg-white/10 rounded-full overflow-hidden`}
-						>
-							<motion.div
-								initial={{ width: 0 }}
-								animate={{ width: `${progress}%` }}
-								transition={{ duration: 0.5 }}
-								className={`h-full ${
-									progress === 100
-										? 'bg-gradient-to-r from-green-500 to-emerald-500'
-										: 'bg-progress-gradient'
-								}`}
-							/>
-						</div>
+						<ProgressBar
+							value={progress}
+							className={appearance.compactMode ? 'h-1' : 'h-1.5'}
+							barClassName={cn(
+								progress === 100
+									? 'bg-gradient-to-r from-green-500 to-emerald-500'
+									: 'bg-progress-gradient',
+								appearance.compactMode ? 'h-1.5' : 'h-2'
+							)}
+						/>
 					</div>
 				</div>
 			)}

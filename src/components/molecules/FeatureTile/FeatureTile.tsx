@@ -16,6 +16,7 @@ const FeatureTile = ({ name, icon, route }: FeatureTileProps) => {
 			onClick={() => navigate(route)}
 			whileHover={{ scale: 1.05, y: -5 }}
 			whileTap={{ scale: 0.95 }}
+			tabIndex={-1}
 			className='cursor-pointer group h-full'
 		>
 			<div className={`relative h-full rounded-2xl overflow-hidden min-h-[140px]`}>

@@ -1,7 +1,9 @@
+import { ProgressBar } from '@/components/atoms';
 import { ReleaseItemForm, ReleaseItemList } from '@/components/organisms';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useAppearanceStyles } from '@/hooks/useAppearanceStyles';
 import { formatDate, formatReminderDelta, isDateInCurrentMonth } from '@/lib/dateUtils';
 import { getReleaseTodoStats } from '@/lib/todoUtils';
 import { cn } from '@/lib/utils';
@@ -42,52 +44,21 @@ const ReleaseCard = ({
 	expandItemId,
 	expandReleaseId,
 }: ReleaseCardProps) => {
-	const appearance = useAppSelector((state) => state.settings.appearanceSettings);
+	const { appearance, card: cardStyles } = useAppearanceStyles();
 	const todos = useAppSelector((state) => state.todos.todos);
 
 	// Auto-expand if the event is in the current month, or if expanded prop is true
 	const [isExpanded, setIsExpanded] = useState(() =>
-		!isEmpty(expandReleaseId) ? expandReleaseId === event.id : isDateInCurrentMonth(event.date)
+		!isEmpty(expandReleaseId)
+			? expandReleaseId === event.id
+			: isDateInCurrentMonth(event.date) && event.items.length > 0
 	);
 	const [showItemForm, setShowItemForm] = useState(false);
 
 	// Get todo stats for this release
 	const todoStats = getReleaseTodoStats(todos, event.id);
 
-	// Get size-based styles
-	const getSizeStyles = () => {
-		switch (appearance.cardSize) {
-			case 'small':
-				return {
-					padding: appearance.compactMode ? 'p-3' : 'p-4',
-					titleSize: 'text-lg',
-					metaSize: 'text-xs',
-					iconSize: 'w-3.5 h-3.5',
-					spacing: 'space-y-2',
-					buttonPadding: 'p-1.5',
-				};
-			case 'large':
-				return {
-					padding: appearance.compactMode ? 'p-6' : 'p-8',
-					titleSize: 'text-3xl',
-					metaSize: 'text-base',
-					iconSize: 'w-5 h-5',
-					spacing: 'space-y-4',
-					buttonPadding: 'p-3',
-				};
-			default: // medium
-				return {
-					padding: appearance.compactMode ? 'p-4' : 'p-6',
-					titleSize: 'text-2xl',
-					metaSize: 'text-sm',
-					iconSize: 'w-4 h-4',
-					spacing: 'space-y-3',
-					buttonPadding: 'p-2',
-				};
-		}
-	};
-
-	const sizeStyles = getSizeStyles();
+	const sizeStyles = cardStyles;
 
 	const completedStatuses = event.items.reduce(
 		(acc, item) => acc + item.statuses.filter((s) => s.checked).length,
@@ -251,9 +222,7 @@ const ReleaseCard = ({
 										<div className='flex items-center justify-between mb-2'>
 											<div className='flex items-center gap-2'>
 												<CheckSquare className={`${sizeStyles.iconSize} text-text-accent`} />
-												<span
-													className={`${sizeStyles.metaSize} font-medium text-text-secondary`}
-												>
+												<span className={`${sizeStyles.metaSize} font-medium text-text-secondary`}>
 													Linked Todos
 												</span>
 											</div>
@@ -289,24 +258,13 @@ const ReleaseCard = ({
 								appearance.compactMode ? '2' : '3'
 							} space-y-${appearance.compactMode ? '1' : '2'}`}
 						>
-							<div className={`flex items-center justify-between text-xs text-white/60`}>
+							<div className='flex items-center justify-between text-xs text-white/60'>
 								<span>Progress</span>
 								<span>
 									{completedStatuses} / {totalStatuses} completed
 								</span>
 							</div>
-							<div
-								className={`w-full ${
-									appearance.compactMode ? 'h-1.5' : 'h-2'
-								} bg-white/10 rounded-full overflow-hidden`}
-							>
-								<motion.div
-									initial={{ width: 0 }}
-									animate={{ width: `${progress}%` }}
-									transition={{ duration: 0.5 }}
-									className='h-full bg-progress-gradient'
-								/>
-							</div>
+							<ProgressBar value={progress} className={appearance.compactMode ? 'h-1' : 'h-1.5'} />
 						</div>
 					</div>
 				)}

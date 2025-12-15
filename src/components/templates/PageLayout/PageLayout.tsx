@@ -86,6 +86,7 @@ const PageLayout = ({ children, showHomeButton = true }: PageLayoutProps) => {
 				animate={{ opacity: 1, scale: 1 }}
 				transition={{ duration: 0.5, delay: 0.8 }}
 				onClick={() => setSettingsOpen(true)}
+				tabIndex={-1}
 				className='fixed bottom-8 left-8 z-20 glass-strong rounded-2xl p-4 hover:bg-white/30 transition-all duration-300 group shadow-2xl'
 			>
 				<Settings className='w-6 h-6 text-primary group-hover:text-white transition-colors group-hover:rotate-90 duration-300' />

@@ -1,6 +1,7 @@
 import { SearchBar, Text } from '@/components/atoms';
 import { BookmarkCard } from '@/components/organisms';
 import { PageLayout } from '@/components/templates';
+import { useAppearanceStyles } from '@/hooks/useAppearanceStyles';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Bookmark, deleteBookmark, updateBookmark } from '@/store/slices/bookmarksSlice';
 import { motion } from 'framer-motion';
@@ -10,46 +11,8 @@ import { useMemo, useState } from 'react';
 export default function BookmarksPage() {
 	const dispatch = useAppDispatch();
 	const bookmarks = useAppSelector((state) => state.bookmarks.bookmarks);
-	const appearance = useAppSelector((state) => state.settings.appearanceSettings);
+	const { appearance, page: spacing } = useAppearanceStyles();
 	const [searchQuery, setSearchQuery] = useState('');
-
-	// Get spacing based on appearance settings
-	const getSpacing = () => {
-		if (appearance.compactMode) {
-			return {
-				padding: 'p-4 md:p-6 lg:p-8',
-				sectionGap: 'space-y-4',
-				headerMargin: 'mb-4',
-				iconSize: 'w-6 h-6',
-				titleSize: 'text-4xl md:text-5xl',
-			};
-		} else if (appearance.cardSize === 'large') {
-			return {
-				padding: 'p-8 md:p-16 lg:p-20',
-				sectionGap: 'space-y-10',
-				headerMargin: 'mb-10',
-				iconSize: 'w-10 h-10',
-				titleSize: 'text-6xl md:text-7xl',
-			};
-		} else if (appearance.cardSize === 'small') {
-			return {
-				padding: 'p-4 md:p-8 lg:p-12',
-				sectionGap: 'space-y-4',
-				headerMargin: 'mb-6',
-				iconSize: 'w-6 h-6',
-				titleSize: 'text-3xl md:text-4xl',
-			};
-		}
-		return {
-			padding: 'p-6 md:p-12 lg:p-16',
-			sectionGap: 'space-y-8',
-			headerMargin: 'mb-8',
-			iconSize: 'w-8 h-8',
-			titleSize: 'text-5xl md:text-6xl',
-		};
-	};
-
-	const spacing = getSpacing();
 
 	// Sort and filter bookmarks
 	const filteredBookmarks = useMemo(() => {
@@ -105,7 +68,9 @@ export default function BookmarksPage() {
 										repeat: Infinity,
 										ease: 'easeInOut',
 									}}
-									className={`${appearance.compactMode ? 'p-3' : 'p-4'} rounded-2xl bg-icon-gradient`}
+									className={`${
+										appearance.compactMode ? 'p-3' : 'p-4'
+									} rounded-2xl bg-icon-gradient`}
 								>
 									<BookmarkIcon className={spacing.iconSize + ' text-white'} />
 								</motion.div>
@@ -192,9 +157,7 @@ export default function BookmarksPage() {
 								<div className='text-center space-y-4'>
 									<BookmarkIcon className='w-16 h-16 text-text-accent/40 mx-auto' />
 									<div className='space-y-2'>
-										<h3 className='text-2xl font-semibold text-text-secondary'>
-											No results found
-										</h3>
+										<h3 className='text-2xl font-semibold text-text-secondary'>No results found</h3>
 										<p className='text-text-secondary/50'>Try adjusting your search query</p>
 									</div>
 								</div>
@@ -209,9 +172,7 @@ export default function BookmarksPage() {
 								<div className='text-center space-y-4'>
 									<BookmarkIcon className='w-16 h-16 text-text-accent/40 mx-auto' />
 									<div className='space-y-2'>
-										<h3 className='text-2xl font-semibold text-text-secondary'>
-											No bookmarks yet
-										</h3>
+										<h3 className='text-2xl font-semibold text-text-secondary'>No bookmarks yet</h3>
 										<p className='text-text-secondary/50'>
 											Use the extension popup to bookmark your favorite pages
 										</p>
