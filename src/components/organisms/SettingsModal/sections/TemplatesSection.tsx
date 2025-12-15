@@ -15,7 +15,6 @@ const TemplatesSection = () => {
 		name: '',
 		repoName: '',
 		repoLink: '',
-		prLinkFormat: '',
 		leadName: '',
 	});
 
@@ -26,7 +25,6 @@ const TemplatesSection = () => {
 				name: '',
 				repoName: '',
 				repoLink: '',
-				prLinkFormat: '',
 				leadName: '',
 			});
 			setIsAdding(false);
@@ -40,7 +38,6 @@ const TemplatesSection = () => {
 			name: '',
 			repoName: '',
 			repoLink: '',
-			prLinkFormat: '',
 			leadName: '',
 		});
 	};
@@ -51,7 +48,6 @@ const TemplatesSection = () => {
 			name: template.name,
 			repoName: template.repoName,
 			repoLink: template.repoLink,
-			prLinkFormat: template.prLinkFormat || '',
 			leadName: template.leadName || '',
 		});
 	};
@@ -63,7 +59,6 @@ const TemplatesSection = () => {
 			name: '',
 			repoName: '',
 			repoLink: '',
-			prLinkFormat: '',
 			leadName: '',
 		});
 	};
@@ -116,18 +111,6 @@ const TemplatesSection = () => {
 								onChange={(e) => setFormData({ ...formData, repoLink: e.target.value })}
 								className='bg-slate-800/50 border-glass-border text-white'
 								placeholder='https://github.com/...'
-							/>
-						</div>
-						<div>
-							<Label htmlFor='prLinkFormat' className='text-text-secondary'>
-								PR Link Format
-							</Label>
-							<Input
-								id='prLinkFormat'
-								value={formData.prLinkFormat}
-								onChange={(e) => setFormData({ ...formData, prLinkFormat: e.target.value })}
-								className='bg-slate-800/50 border-glass-border text-white'
-								placeholder='https://github.com/.../pull/{number}'
 							/>
 						</div>
 						<div>

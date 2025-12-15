@@ -7,7 +7,6 @@ export interface PreSavedTemplate {
 	name: string;
 	repoName: string;
 	repoLink: string;
-	prLinkFormat?: string;
 	leadName?: string;
 	defaultStatuses?: string[];
 }

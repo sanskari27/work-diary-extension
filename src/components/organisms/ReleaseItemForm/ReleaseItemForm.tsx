@@ -70,7 +70,6 @@ const ReleaseItemForm = ({ onSubmit, onCancel }: ReleaseItemFormProps) => {
 		if (template) {
 			setRepoName(template.repoName);
 			setRepoLink(template.repoLink);
-			setPrLink(template.prLinkFormat || '');
 			setLeadName(template.leadName || '');
 		}
 	};
