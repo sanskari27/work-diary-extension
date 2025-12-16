@@ -35,12 +35,17 @@ const uiSlice = createSlice({
 		addNotification: (
 			state,
 			action: PayloadAction<{
+				id?: string;
 				message: string;
 				type: 'info' | 'success' | 'warning' | 'error';
 			}>
 		) => {
+			// check if the notification with the same id already exists
+			if (action.payload.id && state.notifications.find((n) => n.id === action.payload.id)) {
+				return;
+			}
 			state.notifications.push({
-				id: `${Date.now()}-${Math.random()}`,
+				id: action.payload.id || `${Date.now()}-${Math.random()}`,
 				message: action.payload.message,
 				type: action.payload.type,
 				timestamp: Date.now(),

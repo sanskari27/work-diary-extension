@@ -1,4 +1,4 @@
-import { Bookmark, CheckSquare, LucideIcon, Rocket } from 'lucide-react';
+import { Bookmark, CheckSquare, GitPullRequest, LucideIcon, Rocket } from 'lucide-react';
 
 export interface Feature {
 	id: string;
@@ -26,10 +26,17 @@ export const FEATURES: Feature[] = [
 		route: '/bookmarks',
 		icon: 'bookmark',
 	},
+	{
+		id: 'prs',
+		name: 'Active PRs',
+		route: '/prs',
+		icon: 'gitPullRequest',
+	},
 ];
 
 export const iconMap: Record<string, LucideIcon> = {
 	rocket: Rocket,
 	checkSquare: CheckSquare,
 	bookmark: Bookmark,
+	gitPullRequest: GitPullRequest,
 };

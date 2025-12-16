@@ -3,6 +3,7 @@ export { default as FeatureGrid } from './FeatureGrid/FeatureGrid';
 export { default as HomePageSearch } from './HomePageSearch/HomePageSearch';
 export { default as MasterSearchBadge } from './MasterSearchBadge/MasterSearchBadge';
 export { default as NotificationPanel } from './NotificationPanel/NotificationPanel';
+export { default as PrCard } from './PrCard/PrCard';
 export { default as ReleaseCard } from './ReleaseCard/ReleaseCard';
 export { default as ReleaseEventForm } from './ReleaseEventForm/ReleaseEventForm';
 export { default as ReleaseItemForm } from './ReleaseItemForm/ReleaseItemForm';

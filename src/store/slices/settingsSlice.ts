@@ -27,6 +27,16 @@ export interface ReminderPreferences {
 	enableBrowserNotification: boolean;
 }
 
+// GitHub Integration Settings
+export interface GitHubSettings {
+	username: string;
+	personalAccessToken: string;
+	prRefreshIntervalMinutes: number;
+	notifyOnApproval: boolean;
+	notifyOnMerge: boolean;
+	notifyOnChangesRequested: boolean;
+}
+
 // Release Event Defaults
 export interface ReleaseEventDefaults {
 	titlePrefix: string;
@@ -55,6 +65,7 @@ interface SettingsState {
 	templates: PreSavedTemplate[];
 	customStatuses: CustomStatus[];
 	reminderPreferences: ReminderPreferences;
+	githubSettings: GitHubSettings;
 	releaseEventDefaults: ReleaseEventDefaults;
 	appearanceSettings: AppearanceSettings;
 }
@@ -83,6 +94,14 @@ const initialState: SettingsState = {
 		defaultReminderEnabled: true,
 		enableBrowserNotification: false,
 	},
+	githubSettings: {
+		username: '',
+		personalAccessToken: '',
+		prRefreshIntervalMinutes: 10,
+		notifyOnApproval: true,
+		notifyOnMerge: true,
+		notifyOnChangesRequested: true,
+	},
 	releaseEventDefaults: {
 		titlePrefix: 'Release - ',
 		defaultStatusesIncluded: DEFAULT_STATUSES,
@@ -103,6 +122,9 @@ const initialState: SettingsState = {
 		greetingName: '',
 	},
 };
+
+// Default settings state, useful for merging with persisted data
+export const defaultSettingsState: SettingsState = initialState;
 
 const settingsSlice = createSlice({
 	name: 'settings',
@@ -207,6 +229,14 @@ const settingsSlice = createSlice({
 			};
 		},
 
+		// GitHub Settings Actions
+		updateGitHubSettings: (state, action: PayloadAction<Partial<GitHubSettings>>) => {
+			state.githubSettings = {
+				...state.githubSettings,
+				...action.payload,
+			};
+		},
+
 		// Reset to Defaults
 		resetSettings: () => initialState,
 
@@ -229,6 +259,7 @@ export const {
 	updateReminderPreferences,
 	updateReleaseEventDefaults,
 	updateAppearanceSettings,
+	updateGitHubSettings,
 	resetSettings,
 	setSettings,
 } = settingsSlice.actions;

@@ -6,6 +6,7 @@ import { useState } from 'react';
 import AppearanceSection from './sections/AppearanceSection';
 import BackupSyncSection from './sections/BackupSyncSection';
 import CustomStatusSection from './sections/CustomStatusSection';
+import GitHubSettingsSection from './sections/GitHubSettingsSection';
 import ReleaseEventDefaultsSection from './sections/ReleaseEventDefaultsSection';
 import ReminderPreferencesSection from './sections/ReminderPreferencesSection';
 import TemplatesSection from './sections/TemplatesSection';
@@ -33,7 +34,7 @@ const SettingsModal = ({ open, onOpenChange }: SettingsModalProps) => {
 					onValueChange={setActiveTab}
 					className='w-full flex-1 flex flex-col min-h-0'
 				>
-					<TabsList className='w-full bg-slate-800/50 border border-glass-border grid grid-cols-6 h-auto p-1 flex-shrink-0'>
+					<TabsList className='w-full bg-slate-800/50 border border-glass-border grid grid-cols-7 h-auto p-1 flex-shrink-0'>
 						<TabsTrigger
 							value='templates'
 							className='text-xs data-[state=active]:bg-primary/30 data-[state=active]:text-primary'
@@ -70,6 +71,12 @@ const SettingsModal = ({ open, onOpenChange }: SettingsModalProps) => {
 						>
 							Backup
 						</TabsTrigger>
+						<TabsTrigger
+							value='github'
+							className='text-xs data-[state=active]:bg-primary/30 data-[state=active]:text-primary'
+						>
+							GitHub
+						</TabsTrigger>
 					</TabsList>
 
 					<div className='flex-1 overflow-y-auto mt-4 pr-2 custom-scrollbar min-h-0'>
@@ -101,6 +108,10 @@ const SettingsModal = ({ open, onOpenChange }: SettingsModalProps) => {
 
 							<TabsContent value='backup' className='mt-0'>
 								<BackupSyncSection />
+							</TabsContent>
+
+							<TabsContent value='github' className='mt-0'>
+								<GitHubSettingsSection />
 							</TabsContent>
 						</motion.div>
 					</div>

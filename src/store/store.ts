@@ -3,33 +3,43 @@ import { loadStateFromIndexedDB } from './indexedDB';
 import { indexedDBMiddleware } from './middleware/indexedDBMiddleware';
 import bookmarksReducer from './slices/bookmarksSlice';
 import contentReducer from './slices/contentSlice';
+import prsReducer from './slices/prsSlice';
 import releasesReducer from './slices/releasesSlice';
-import settingsReducer from './slices/settingsSlice';
+import settingsReducer, { defaultSettingsState } from './slices/settingsSlice';
 import todosReducer from './slices/todosSlice';
 import uiReducer from './slices/uiSlice';
 
 // Load persisted state from IndexedDB
 export const loadPersistedState = async () => {
 	try {
-		const [content, ui, releases, settings, todos, bookmarks] = await Promise.all([
+		const [content, ui, releases, settings, todos, bookmarks, prs] = await Promise.all([
 			loadStateFromIndexedDB('content'),
 			loadStateFromIndexedDB('ui'),
 			loadStateFromIndexedDB('releases'),
 			loadStateFromIndexedDB('settings'),
 			loadStateFromIndexedDB('todos'),
 			loadStateFromIndexedDB('bookmarks'),
+			loadStateFromIndexedDB('prs'),
 		]);
 
 		// Ensure searchQuery is not persisted - always reset to empty string
 		const uiState = ui ? { ...ui, searchQuery: '' } : undefined;
 
+		const mergedSettings = settings
+			? {
+					...defaultSettingsState,
+					...settings,
+			  }
+			: undefined;
+
 		return {
 			content: content || undefined,
 			ui: uiState,
 			releases: releases || undefined,
-			settings: settings || undefined,
+			settings: mergedSettings || undefined,
 			todos: todos || undefined,
 			bookmarks: bookmarks || undefined,
+			prs: prs || undefined,
 		};
 	} catch (error) {
 		console.error('Error loading persisted state:', error);
@@ -48,6 +58,7 @@ export const createStore = (preloadedState?: any) => {
 			settings: settingsReducer,
 			todos: todosReducer,
 			bookmarks: bookmarksReducer,
+			prs: prsReducer,
 		},
 		preloadedState,
 		middleware: (getDefaultMiddleware) =>

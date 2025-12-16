@@ -16,7 +16,15 @@ const debounce = <T extends (...args: any[]) => void>(
 
 // List of action types that should trigger a save to IndexedDB
 // Add more action types here as needed
-const ACTIONS_TO_PERSIST = ['content/', 'ui/', 'releases/', 'settings/', 'todos/', 'bookmarks/'];
+const ACTIONS_TO_PERSIST = [
+	'content/',
+	'ui/',
+	'releases/',
+	'settings/',
+	'todos/',
+	'bookmarks/',
+	'prs/',
+];
 
 // Create debounced save function
 const debouncedSave = debounce(
@@ -31,6 +39,7 @@ const debouncedSave = debounce(
 			saveStateToIndexedDB('settings', state.settings),
 			saveStateToIndexedDB('todos', state.todos),
 			saveStateToIndexedDB('bookmarks', state.bookmarks),
+			saveStateToIndexedDB('prs', state.prs),
 		]);
 	},
 	500 // Wait 500ms after the last action before saving
