@@ -2,6 +2,5 @@ export { default as BookmarkSearchBadge } from './BookmarkSearchBadge/BookmarkSe
 export { default as CollapsibleSection } from './CollapsibleSection/CollapsibleSection';
 export { default as FeatureTile } from './FeatureTile/FeatureTile';
 export { default as Greeting } from './Greeting/Greeting';
-export { default as PrFiltersBar } from './PrFiltersBar/PrFiltersBar';
 export { default as ReleaseSearchBadge } from './ReleaseSearchBadge/ReleaseSearchBadge';
 export { default as TodoSearchBadge } from './TodoSearchBadge/TodoSearchBadge';

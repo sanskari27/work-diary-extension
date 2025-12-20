@@ -6,7 +6,7 @@ import { useAppearanceStyles } from '@/hooks/useAppearanceStyles';
 import useAutoRefresh from '@/hooks/useAutoRefresh';
 import { formatRelativeTime } from '@/lib/dateUtils';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { selectAllPrs, selectPinnedPrsMap, togglePin } from '@/store/slices/prsSlice';
+import { selectAllPrs } from '@/store/slices/prsSlice';
 import { fetchPrReport } from '@/store/thunks/prsThunks';
 import { motion } from 'framer-motion';
 import { GitPullRequest } from 'lucide-react';
@@ -18,7 +18,6 @@ const ActivePrsPage = () => {
 	const { isLoading, error, lastSyncedAt } = useAppSelector((state) => state.prs);
 	const githubSettings = useAppSelector((state) => state.settings.githubSettings || {});
 	const prsToRender = useAppSelector(selectAllPrs);
-	const pinnedPrsMap = useAppSelector(selectPinnedPrsMap);
 
 	const handleRefresh = useCallback(() => {
 		if (!githubSettings.username || !githubSettings.personalAccessToken) {
@@ -77,10 +76,6 @@ const ActivePrsPage = () => {
 	// 	githubSettings.prRefreshIntervalMinutes,
 	// 	error,
 	// ]);
-
-	const handleTogglePin = (id: string) => {
-		dispatch(togglePin(id));
-	};
 
 	const showSetupState =
 		!githubSettings.username ||
@@ -161,12 +156,7 @@ const ActivePrsPage = () => {
 						) : prsToRender.length > 0 ? (
 							<div className='space-y-3'>
 								{prsToRender.map((pr) => (
-									<PrCard
-										key={pr.id}
-										pr={pr}
-										isPinned={pinnedPrsMap.has(pr.id)}
-										onTogglePin={handleTogglePin}
-									/>
+									<PrCard key={pr.id} pr={pr} />
 								))}
 							</div>
 						) : (

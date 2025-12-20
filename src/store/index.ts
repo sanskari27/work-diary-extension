@@ -28,14 +28,5 @@ export {
 } from './indexedDB';
 
 // Export PR slice types and selectors
-export {
-	selectActivePrs,
-	selectAllPrs,
-	selectPinnedPrs,
-} from './slices/prsSlice';
-export type {
-	CiStatus,
-	PullRequest,
-	PullRequestStatus,
-	ReviewState,
-} from './slices/prsSlice';
+export { selectActivePrs, selectAllPrs } from './slices/prsSlice';
+export type { CiStatus, PullRequest, PullRequestStatus, ReviewState } from './slices/prsSlice';
