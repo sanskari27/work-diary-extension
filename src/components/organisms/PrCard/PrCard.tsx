@@ -130,7 +130,7 @@ const PrCard = ({ pr }: PrCardProps) => {
 										target='_blank'
 										rel='noopener noreferrer'
 									>
-										<span className='px-1 py-0.5 rounded-md bg-gray-500/30 text-gray-200'>
+										<span className='px-1 py-0.5 rounded-md bg-gray-500/30 text-gray-200 font-italic'>
 											{pr.baseBranch}
 										</span>
 									</a>
@@ -140,7 +140,7 @@ const PrCard = ({ pr }: PrCardProps) => {
 										target='_blank'
 										rel='noopener noreferrer'
 									>
-										<span className='px-1 py-0.5 rounded-md bg-gray-500/30 text-gray-200'>
+										<span className='px-1 py-0.5 rounded-md bg-gray-500/30 text-gray-200 font-italic'>
 											{pr.headBranch}
 										</span>
 									</a>

@@ -43,7 +43,7 @@ const HomePageSearch = () => {
 
 		const todoData = {
 			title: todoTitle,
-			date: getDateAfterDays(5), // Default to 5 days from now
+			date: getDateAfterDays(1), // Default to 5 days from now
 			description: '',
 			isUrgent: false,
 			status: 'pending' as const,

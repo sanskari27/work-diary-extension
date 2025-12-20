@@ -13,8 +13,8 @@ const HomePage = () => {
 
 	return (
 		<PageLayout showHomeButton={false}>
-			<div className='min-h-screen p-6 md:p-12 lg:p-16 flex flex-col'>
-				<div className='max-w-[1920px] mx-auto w-full flex-1 flex flex-col lg:flex-row gap-6'>
+			<div className='min-h-screen p-6 md:p-12 lg:p-16 flex flex-col relative'>
+				<div className='max-w-[1920px] mx-auto w-full flex-1 flex flex-col'>
 					{/* Main Content */}
 					<motion.div
 						initial={{ opacity: 0 }}
@@ -44,16 +44,17 @@ const HomePage = () => {
 							<FeatureGrid features={FEATURES} />
 						</motion.div>
 					</motion.div>
-
-					{/* Notifications Panel */}
-					<motion.div
-						initial={{ opacity: 0, y: 20 }}
-						animate={{ opacity: 1, y: 0 }}
-						transition={{ duration: 0.6, delay: 0.4 }}
-					>
-						<NotificationPanel />
-					</motion.div>
 				</div>
+
+				{/* Notifications Panel - Floating Window */}
+				<motion.div
+					initial={{ opacity: 0, y: 20 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ duration: 0.6, delay: 0.4 }}
+					className='absolute top-6 right-6 md:top-12 md:right-12 lg:top-16 lg:right-16 z-50'
+				>
+					<NotificationPanel />
+				</motion.div>
 			</div>
 		</PageLayout>
 	);

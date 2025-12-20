@@ -1,6 +1,7 @@
 import { useAppearanceStyles } from '@/hooks/useAppearanceStyles';
+import { cn } from '@/lib/utils';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { removeNotification } from '@/store/slices/uiSlice';
+import { clearNotifications, removeNotification } from '@/store/slices/uiSlice';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AlertCircle, AlertTriangle, Bell, CheckCircle, Info, X } from 'lucide-react';
 
@@ -34,6 +35,10 @@ const NotificationPanel = () => {
 		dispatch(removeNotification(id));
 	};
 
+	const handleClearAll = () => {
+		dispatch(clearNotifications());
+	};
+
 	return (
 		<motion.div
 			initial={{ opacity: 0, x: 20 }}
@@ -42,7 +47,7 @@ const NotificationPanel = () => {
 			className={notificationStyles.panelWidth + ' flex-shrink-0'}
 		>
 			<div
-				className={`glass-strong rounded-2xl ${notificationStyles.panelPadding} border border-glass-border-strong sticky top-6`}
+				className={`glass-strong rounded-2xl ${notificationStyles.panelPadding} border border-glass-border-strong`}
 			>
 				{/* Header */}
 				<div
@@ -61,14 +66,27 @@ const NotificationPanel = () => {
 					<h3 className={`${notificationStyles.headerTextSize} font-bold text-white`}>
 						Notifications
 					</h3>
-					<div className='ml-auto bg-primary/30 text-text-primary text-xs font-bold px-2 py-1 rounded-full'>
-						{notifications.length}
+					<div className='ml-auto flex items-center gap-2'>
+						<div className='bg-primary/30 text-text-primary text-xs font-bold px-2 py-1 rounded-full'>
+							{notifications.length}
+						</div>
+						<button
+							onClick={handleClearAll}
+							className='opacity-70 hover:opacity-100 transition-opacity duration-200 hover:bg-white/10 rounded-full p-1.5'
+							aria-label='Clear all notifications'
+							title='Clear all notifications'
+						>
+							<X className='w-4 h-4 text-white' />
+						</button>
 					</div>
 				</div>
 
 				{/* Notifications List */}
 				<div
-					className={`${notificationStyles.spacing} max-h-[calc(100vh-200px)] overflow-y-auto hidden-scrollbar`}
+					className={cn(
+						notificationStyles.spacing,
+						'max-h-[calc(100vh-200px)] overflow-y-auto hidden-scrollbar'
+					)}
 				>
 					<AnimatePresence mode='popLayout'>
 						{notifications.map((notification) => (
@@ -79,9 +97,12 @@ const NotificationPanel = () => {
 								animate={{ opacity: 1, scale: 1, y: 0 }}
 								exit={{ opacity: 0, scale: 0.9, x: 100 }}
 								transition={{ duration: 0.3 }}
-								className={`${notificationStyles.getTypeColors(notification.type)} rounded-xl ${
-									notificationStyles.notificationPadding
-								} border relative group`}
+								className={cn(
+									notificationStyles.getTypeColors(notification.type),
+									notificationStyles.notificationPadding,
+									'rounded-xl',
+									'border relative group'
+								)}
 							>
 								{/* Remove button */}
 								<button
@@ -94,17 +115,18 @@ const NotificationPanel = () => {
 
 								{/* Icon and Message */}
 								<div
-									className={`flex items-start gap-3 ${
+									className={cn(
+										'flex items-start gap-3',
 										appearanceSettings.compactMode ? 'pr-4' : 'pr-6'
-									}`}
+									)}
 								>
 									<div className='flex-shrink-0 mt-0.5'>{getIcon(notification.type)}</div>
 									<div className='flex-1'>
-										<p className={`${notificationStyles.textSize} leading-relaxed break-words`}>
+										<p className={cn(notificationStyles.textSize, 'leading-relaxed break-words')}>
 											{notification.message}
 										</p>
 										{!appearanceSettings.minimalMode && (
-											<p className='text-xs opacity-60 mt-2'>
+											<p className={cn('text-xs opacity-60 mt-2')}>
 												{new Date(notification.timestamp).toLocaleTimeString([], {
 													hour: '2-digit',
 													minute: '2-digit',

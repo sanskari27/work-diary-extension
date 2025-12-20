@@ -445,7 +445,8 @@ export default function TodosPage() {
 										</div>
 										<Button
 											onClick={handleAddNew}
-											className='inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-medium shadow-lg shadow-blue-500/30'
+											variant='gradient'
+											className='text-white font-medium'
 										>
 											<Plus className='w-5 h-5' />
 											<span>Create First Todo</span>

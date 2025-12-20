@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { formatRelativeTime } from '@/lib/dateUtils';
+import { cn } from '@/lib/utils';
 
 function formatDateToISO(date: Date | undefined): string {
 	if (!date) {
@@ -58,10 +59,7 @@ export default function DatePicker({
 	return (
 		<Popover open={open} onOpenChange={setOpen}>
 			<PopoverTrigger asChild>
-				<Button
-					variant='outline'
-					className={`justify-start text-left font-normal ${className || ''}`}
-				>
+				<Button variant='outline' className={cn(`justify-start text-left font-normal`, className)}>
 					<CalendarIcon className='mr-2 h-4 w-4' />
 					{formatRelativeTime(value) || placeholder}
 				</Button>
