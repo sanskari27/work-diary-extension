@@ -9,42 +9,81 @@ import {
 	updateCustomStatus,
 } from '@/store/slices/settingsSlice';
 import { Edit2, Eye, EyeOff, Plus, Save, Trash2, X } from 'lucide-react';
-import { useState } from 'react';
+import { useReducer } from 'react';
+
+interface CustomStatusSectionState {
+	isAdding: boolean;
+	editingId: string | null;
+	newStatusName: string;
+	editStatusName: string;
+}
+
+type CustomStatusSectionAction =
+	| { type: 'SET_IS_ADDING'; payload: boolean }
+	| { type: 'SET_EDITING_ID'; payload: string | null }
+	| { type: 'SET_NEW_STATUS_NAME'; payload: string }
+	| { type: 'SET_EDIT_STATUS_NAME'; payload: string }
+	| { type: 'RESET_FORM' }
+	| { type: 'START_EDIT'; payload: { id: string; name: string } };
+
+const initialState: CustomStatusSectionState = {
+	isAdding: false,
+	editingId: null,
+	newStatusName: '',
+	editStatusName: '',
+};
+
+const customStatusSectionReducer = (
+	state: CustomStatusSectionState,
+	action: CustomStatusSectionAction
+): CustomStatusSectionState => {
+	switch (action.type) {
+		case 'SET_IS_ADDING':
+			return { ...state, isAdding: action.payload };
+		case 'SET_EDITING_ID':
+			return { ...state, editingId: action.payload };
+		case 'SET_NEW_STATUS_NAME':
+			return { ...state, newStatusName: action.payload };
+		case 'SET_EDIT_STATUS_NAME':
+			return { ...state, editStatusName: action.payload };
+		case 'RESET_FORM':
+			return initialState;
+		case 'START_EDIT':
+			return {
+				...state,
+				editingId: action.payload.id,
+				editStatusName: action.payload.name,
+			};
+		default:
+			return state;
+	}
+};
 
 const CustomStatusSection = () => {
 	const dispatch = useAppDispatch();
 	const statuses = useAppSelector((state) => state.settings.customStatuses);
-	const [isAdding, setIsAdding] = useState(false);
-	const [editingId, setEditingId] = useState<string | null>(null);
-	const [newStatusName, setNewStatusName] = useState('');
-	const [editStatusName, setEditStatusName] = useState('');
+	const [state, formDispatch] = useReducer(customStatusSectionReducer, initialState);
 
 	const handleAdd = () => {
-		if (newStatusName.trim()) {
-			dispatch(addCustomStatus(newStatusName.trim()));
-			setNewStatusName('');
-			setIsAdding(false);
+		if (state.newStatusName.trim()) {
+			dispatch(addCustomStatus(state.newStatusName.trim()));
+			formDispatch({ type: 'RESET_FORM' });
 		}
 	};
 
 	const handleUpdate = (id: string) => {
-		if (editStatusName.trim()) {
-			dispatch(updateCustomStatus({ id, updates: { name: editStatusName.trim() } }));
-			setEditingId(null);
-			setEditStatusName('');
+		if (state.editStatusName.trim()) {
+			dispatch(updateCustomStatus({ id, updates: { name: state.editStatusName.trim() } }));
+			formDispatch({ type: 'RESET_FORM' });
 		}
 	};
 
 	const startEdit = (status: any) => {
-		setEditingId(status.id);
-		setEditStatusName(status.name);
+		formDispatch({ type: 'START_EDIT', payload: { id: status.id, name: status.name } });
 	};
 
 	const cancelEdit = () => {
-		setEditingId(null);
-		setIsAdding(false);
-		setNewStatusName('');
-		setEditStatusName('');
+		formDispatch({ type: 'RESET_FORM' });
 	};
 
 	return (
@@ -57,7 +96,7 @@ const CustomStatusSection = () => {
 			</div>
 
 			{/* Add New Status Form */}
-			{isAdding && (
+			{state.isAdding && (
 				<div className='glass-strong rounded-xl p-4 space-y-3 border border-glass-border-strong'>
 					<h4 className='font-medium text-text-primary'>New Status</h4>
 					<div>
@@ -66,8 +105,10 @@ const CustomStatusSection = () => {
 						</Label>
 						<Input
 							id='statusName'
-							value={newStatusName}
-							onChange={(e) => setNewStatusName(e.target.value)}
+							value={state.newStatusName}
+							onChange={(e) =>
+								formDispatch({ type: 'SET_NEW_STATUS_NAME', payload: e.target.value })
+							}
 							className='bg-slate-800/50 border-glass-border text-white'
 							placeholder='e.g., Code Review'
 							onKeyDown={(e) => {
@@ -89,9 +130,9 @@ const CustomStatusSection = () => {
 			)}
 
 			{/* Add Status Button */}
-			{!isAdding && !editingId && (
+			{!state.isAdding && !state.editingId && (
 				<Button
-					onClick={() => setIsAdding(true)}
+					onClick={() => formDispatch({ type: 'SET_IS_ADDING', payload: true })}
 					className='bg-primary/20 hover:bg-primary/30 border border-glass-border-strong text-text-primary'
 				>
 					<Plus className='w-4 h-4 mr-2' />
@@ -114,13 +155,15 @@ const CustomStatusSection = () => {
 								: 'border-slate-700/50 opacity-60'
 						}`}
 					>
-						{editingId === status.id ? (
+						{state.editingId === status.id ? (
 							<div className='space-y-3'>
 								<div>
 									<Label className='text-text-secondary'>Status Name</Label>
 									<Input
-										value={editStatusName}
-										onChange={(e) => setEditStatusName(e.target.value)}
+										value={state.editStatusName}
+										onChange={(e) =>
+											formDispatch({ type: 'SET_EDIT_STATUS_NAME', payload: e.target.value })
+										}
 										className='bg-slate-800/50 border-glass-border text-white'
 										onKeyDown={(e) => {
 											if (e.key === 'Enter') handleUpdate(status.id);

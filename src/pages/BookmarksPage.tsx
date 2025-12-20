@@ -1,16 +1,24 @@
 import { SearchBar, Text } from '@/components/atoms';
-import { BookmarkCard } from '@/components/organisms';
+import { BookmarkCard, BookmarkGroupCard } from '@/components/organisms';
 import { PageLayout } from '@/components/templates';
 import { useAppearanceStyles } from '@/hooks/useAppearanceStyles';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { Bookmark, deleteBookmark, updateBookmark } from '@/store/slices/bookmarksSlice';
+import {
+	Bookmark,
+	BookmarkGroup,
+	deleteBookmark,
+	deleteBookmarkGroup,
+	updateBookmark,
+	updateBookmarkGroup,
+} from '@/store/slices/bookmarksSlice';
 import { motion } from 'framer-motion';
-import { Bookmark as BookmarkIcon } from 'lucide-react';
+import { Bookmark as BookmarkIcon, FolderOpen } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 export default function BookmarksPage() {
 	const dispatch = useAppDispatch();
-	const bookmarks = useAppSelector((state) => state.bookmarks.bookmarks);
+	const bookmarks = useAppSelector((state) => state.bookmarks.bookmarks) || [];
+	const groups = useAppSelector((state) => state.bookmarks.groups) || [];
 	const { appearance, page: spacing } = useAppearanceStyles();
 	const [searchQuery, setSearchQuery] = useState('');
 
@@ -32,12 +40,44 @@ export default function BookmarksPage() {
 		return filtered.sort((a, b) => b.createdAt - a.createdAt);
 	}, [bookmarks, searchQuery]);
 
+	// Sort and filter groups
+	const filteredGroups = useMemo(() => {
+		let filtered = [...groups];
+
+		// Filter by search query
+		if (searchQuery.trim()) {
+			const query = searchQuery.toLowerCase().trim();
+			filtered = filtered.filter((group) => group.name.toLowerCase().includes(query));
+		}
+
+		// Sort by creation date (newest first)
+		return filtered.sort((a, b) => b.createdAt - a.createdAt);
+	}, [groups, searchQuery]);
+
 	const handleDelete = (bookmarkId: string) => {
 		dispatch(deleteBookmark(bookmarkId));
 	};
 
 	const handleUpdate = (bookmarkId: string, updates: Partial<Bookmark>) => {
 		dispatch(updateBookmark({ id: bookmarkId, updates }));
+	};
+
+	const handleDeleteGroup = (groupId: string) => {
+		dispatch(deleteBookmarkGroup(groupId));
+	};
+
+	const handleUpdateGroup = (groupId: string, updates: Partial<BookmarkGroup>) => {
+		dispatch(updateBookmarkGroup({ id: groupId, updates }));
+	};
+
+	const handleOpenGroup = (group: BookmarkGroup, groupBookmarks: Bookmark[]) => {
+		if (groupBookmarks.length === 0) return;
+
+		// Create a new window and open all bookmarks in it
+		const urls = groupBookmarks.map((b) => b.pageUrl);
+		chrome.windows.create({ url: urls }, () => {
+			// Window created successfully
+		});
 	};
 
 	return (
@@ -95,7 +135,7 @@ export default function BookmarksPage() {
 							value={searchQuery}
 							onChange={(e) => setSearchQuery(e.target.value)}
 							onClear={() => setSearchQuery('')}
-							placeholder='Search bookmarks by name or URL...'
+							placeholder='Search bookmarks and groups by name or URL...'
 							className='w-full'
 						/>
 					</motion.div>
@@ -114,11 +154,21 @@ export default function BookmarksPage() {
 								{searchQuery.trim() ? 'Filtered:' : 'Total:'}
 							</span>
 							<span className='text-2xl font-bold text-white'>
-								{searchQuery.trim() ? filteredBookmarks.length : bookmarks.length}
+								{searchQuery.trim()
+									? filteredBookmarks.length + filteredGroups.length
+									: bookmarks.length + groups.length}
 							</span>
 							{searchQuery.trim() && (
-								<span className='text-sm text-text-secondary/60'>of {bookmarks.length}</span>
+								<span className='text-sm text-text-secondary/60'>
+									of {bookmarks.length + groups.length}
+								</span>
 							)}
+						</div>
+						<div className='flex items-center gap-2'>
+							<span className='text-sm text-text-secondary'>Groups:</span>
+							<span className='text-2xl font-bold text-white'>
+								{searchQuery.trim() ? filteredGroups.length : groups.length}
+							</span>
 						</div>
 					</motion.div>
 
@@ -129,23 +179,65 @@ export default function BookmarksPage() {
 						transition={{ duration: 0.6, delay: 0.3 }}
 						className={`flex-1 ${appearance.compactMode ? 'pb-4' : 'pb-8'}`}
 					>
-						{filteredBookmarks.length > 0 ? (
-							<div className='flex flex-wrap gap-3'>
-								{filteredBookmarks.map((bookmark, index) => (
-									<motion.div
-										key={bookmark.id}
-										initial={{ opacity: 0, y: 20 }}
-										animate={{ opacity: 1, y: 0 }}
-										transition={{ delay: index * 0.02 }}
-										className='h-fill-available'
-									>
-										<BookmarkCard
-											bookmark={bookmark}
-											onDelete={handleDelete}
-											onUpdate={handleUpdate}
-										/>
-									</motion.div>
-								))}
+						{filteredBookmarks.length > 0 || filteredGroups.length > 0 ? (
+							<div className='space-y-6'>
+								{/* Bookmark Groups Section */}
+								{filteredGroups.length > 0 && (
+									<div>
+										<h2 className='text-lg font-semibold text-text-secondary mb-3 flex items-center gap-2'>
+											<FolderOpen className='w-5 h-5 text-text-accent' />
+											Groups
+										</h2>
+										<div className='flex flex-wrap gap-3'>
+											{filteredGroups.map((group, index) => (
+												<motion.div
+													key={group.id}
+													initial={{ opacity: 0, y: 20 }}
+													animate={{ opacity: 1, y: 0 }}
+													transition={{ delay: index * 0.02 }}
+													className='h-fill-available'
+												>
+													<BookmarkGroupCard
+														group={group}
+														bookmarks={bookmarks}
+														onDelete={handleDeleteGroup}
+														onUpdate={handleUpdateGroup}
+														onOpenGroup={handleOpenGroup}
+													/>
+												</motion.div>
+											))}
+										</div>
+									</div>
+								)}
+
+								{/* Bookmarks Section */}
+								{filteredBookmarks.length > 0 && (
+									<div>
+										{filteredGroups.length > 0 && (
+											<h2 className='text-lg font-semibold text-text-secondary mb-3 flex items-center gap-2'>
+												<BookmarkIcon className='w-5 h-5 text-text-accent' />
+												Bookmarks
+											</h2>
+										)}
+										<div className='flex flex-wrap gap-3'>
+											{filteredBookmarks.map((bookmark, index) => (
+												<motion.div
+													key={bookmark.id}
+													initial={{ opacity: 0, y: 20 }}
+													animate={{ opacity: 1, y: 0 }}
+													transition={{ delay: index * 0.02 }}
+													className='h-fill-available'
+												>
+													<BookmarkCard
+														bookmark={bookmark}
+														onDelete={handleDelete}
+														onUpdate={handleUpdate}
+													/>
+												</motion.div>
+											))}
+										</div>
+									</div>
+								)}
 							</div>
 						) : searchQuery.trim() ? (
 							<motion.div

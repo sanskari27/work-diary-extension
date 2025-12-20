@@ -4,63 +4,100 @@ import { Label } from '@/components/ui/label';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { addTemplate, deleteTemplate, updateTemplate } from '@/store/slices/settingsSlice';
 import { Edit2, Plus, Save, Trash2, X } from 'lucide-react';
-import { useState } from 'react';
+import { useReducer } from 'react';
 
-const TemplatesSection = () => {
-	const dispatch = useAppDispatch();
-	const templates = useAppSelector((state) => state.settings.templates);
-	const [editingId, setEditingId] = useState<string | null>(null);
-	const [isAdding, setIsAdding] = useState(false);
-	const [formData, setFormData] = useState({
+interface TemplatesSectionState {
+	editingId: string | null;
+	isAdding: boolean;
+	formData: {
+		name: string;
+		repoName: string;
+		repoLink: string;
+		leadName: string;
+	};
+}
+
+type TemplatesSectionAction =
+	| { type: 'SET_EDITING_ID'; payload: string | null }
+	| { type: 'SET_IS_ADDING'; payload: boolean }
+	| { type: 'SET_FORM_DATA'; payload: Partial<TemplatesSectionState['formData']> }
+	| { type: 'RESET_FORM' }
+	| {
+			type: 'LOAD_TEMPLATE';
+			payload: { name: string; repoName: string; repoLink: string; leadName: string };
+	  };
+
+const initialState: TemplatesSectionState = {
+	editingId: null,
+	isAdding: false,
+	formData: {
 		name: '',
 		repoName: '',
 		repoLink: '',
 		leadName: '',
-	});
+	},
+};
+
+const templatesSectionReducer = (
+	state: TemplatesSectionState,
+	action: TemplatesSectionAction
+): TemplatesSectionState => {
+	switch (action.type) {
+		case 'SET_EDITING_ID':
+			return { ...state, editingId: action.payload };
+		case 'SET_IS_ADDING':
+			return { ...state, isAdding: action.payload };
+		case 'SET_FORM_DATA':
+			return { ...state, formData: { ...state.formData, ...action.payload } };
+		case 'RESET_FORM':
+			return {
+				...state,
+				editingId: null,
+				isAdding: false,
+				formData: initialState.formData,
+			};
+		case 'LOAD_TEMPLATE':
+			return {
+				...state,
+				formData: action.payload,
+			};
+		default:
+			return state;
+	}
+};
+
+const TemplatesSection = () => {
+	const dispatch = useAppDispatch();
+	const templates = useAppSelector((state) => state.settings.templates);
+	const [state, formDispatch] = useReducer(templatesSectionReducer, initialState);
 
 	const handleAdd = () => {
-		if (formData.name && formData.repoName && formData.repoLink) {
-			dispatch(addTemplate(formData));
-			setFormData({
-				name: '',
-				repoName: '',
-				repoLink: '',
-				leadName: '',
-			});
-			setIsAdding(false);
+		if (state.formData.name && state.formData.repoName && state.formData.repoLink) {
+			dispatch(addTemplate(state.formData));
+			formDispatch({ type: 'RESET_FORM' });
 		}
 	};
 
 	const handleUpdate = (id: string) => {
-		dispatch(updateTemplate({ id, updates: formData }));
-		setEditingId(null);
-		setFormData({
-			name: '',
-			repoName: '',
-			repoLink: '',
-			leadName: '',
-		});
+		dispatch(updateTemplate({ id, updates: state.formData }));
+		formDispatch({ type: 'RESET_FORM' });
 	};
 
 	const startEdit = (template: any) => {
-		setEditingId(template.id);
-		setFormData({
-			name: template.name,
-			repoName: template.repoName,
-			repoLink: template.repoLink,
-			leadName: template.leadName || '',
+		formDispatch({ type: 'SET_EDITING_ID', payload: template.id });
+		formDispatch({
+			type: 'LOAD_TEMPLATE',
+			payload: {
+				name: template.name,
+				repoName: template.repoName,
+				repoLink: template.repoLink,
+				leadName: template.leadName || '',
+			},
 		});
 	};
 
 	const cancelEdit = () => {
-		setEditingId(null);
-		setIsAdding(false);
-		setFormData({
-			name: '',
-			repoName: '',
-			repoLink: '',
-			leadName: '',
-		});
+		formDispatch({ type: 'RESET_FORM' });
 	};
 
 	return (
@@ -73,7 +110,7 @@ const TemplatesSection = () => {
 			</div>
 
 			{/* Add New Template Form */}
-			{isAdding && (
+			{state.isAdding && (
 				<div className='glass rounded-xl p-4 space-y-3 border border-glass-border'>
 					<h4 className='font-medium text-text-primary'>New Template</h4>
 					<div className='grid grid-cols-2 gap-3'>
@@ -83,8 +120,10 @@ const TemplatesSection = () => {
 							</Label>
 							<Input
 								id='name'
-								value={formData.name}
-								onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+								value={state.formData.name}
+								onChange={(e) =>
+									formDispatch({ type: 'SET_FORM_DATA', payload: { name: e.target.value } })
+								}
 								className='bg-slate-800/50 border-glass-border text-white'
 								placeholder='My Template'
 							/>
@@ -95,8 +134,10 @@ const TemplatesSection = () => {
 							</Label>
 							<Input
 								id='repoName'
-								value={formData.repoName}
-								onChange={(e) => setFormData({ ...formData, repoName: e.target.value })}
+								value={state.formData.repoName}
+								onChange={(e) =>
+									formDispatch({ type: 'SET_FORM_DATA', payload: { repoName: e.target.value } })
+								}
 								className='bg-slate-800/50 border-glass-border text-white'
 								placeholder='my-repo'
 							/>
@@ -107,8 +148,10 @@ const TemplatesSection = () => {
 							</Label>
 							<Input
 								id='repoLink'
-								value={formData.repoLink}
-								onChange={(e) => setFormData({ ...formData, repoLink: e.target.value })}
+								value={state.formData.repoLink}
+								onChange={(e) =>
+									formDispatch({ type: 'SET_FORM_DATA', payload: { repoLink: e.target.value } })
+								}
 								className='bg-slate-800/50 border-glass-border text-white'
 								placeholder='https://github.com/...'
 							/>
@@ -119,8 +162,10 @@ const TemplatesSection = () => {
 							</Label>
 							<Input
 								id='leadName'
-								value={formData.leadName}
-								onChange={(e) => setFormData({ ...formData, leadName: e.target.value })}
+								value={state.formData.leadName}
+								onChange={(e) =>
+									formDispatch({ type: 'SET_FORM_DATA', payload: { leadName: e.target.value } })
+								}
 								className='bg-slate-800/50 border-glass-border text-white'
 								placeholder='John Doe'
 							/>
@@ -145,9 +190,9 @@ const TemplatesSection = () => {
 			)}
 
 			{/* Add Template Button */}
-			{!isAdding && !editingId && (
+			{!state.isAdding && !state.editingId && (
 				<Button
-					onClick={() => setIsAdding(true)}
+					onClick={() => formDispatch({ type: 'SET_IS_ADDING', payload: true })}
 					className='bg-primary/20 hover:bg-primary/30 border border-glass-border-strong text-text-primary'
 				>
 					<Plus className='w-4 h-4 mr-2' />
@@ -162,38 +207,55 @@ const TemplatesSection = () => {
 						key={template.id}
 						className='glass rounded-xl p-4 border border-glass-border hover:border-glass-border-strong transition-colors'
 					>
-						{editingId === template.id ? (
+						{state.editingId === template.id ? (
 							<div className='space-y-3'>
 								<div className='grid grid-cols-2 gap-3'>
 									<div>
 										<Label className='text-text-secondary'>Template Name</Label>
 										<Input
-											value={formData.name}
-											onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+											value={state.formData.name}
+											onChange={(e) =>
+												formDispatch({ type: 'SET_FORM_DATA', payload: { name: e.target.value } })
+											}
 											className='bg-slate-800/50 border-glass-border text-white'
 										/>
 									</div>
 									<div>
 										<Label className='text-text-secondary'>Repo Name</Label>
 										<Input
-											value={formData.repoName}
-											onChange={(e) => setFormData({ ...formData, repoName: e.target.value })}
+											value={state.formData.repoName}
+											onChange={(e) =>
+												formDispatch({
+													type: 'SET_FORM_DATA',
+													payload: { repoName: e.target.value },
+												})
+											}
 											className='bg-slate-800/50 border-glass-border text-white'
 										/>
 									</div>
 									<div>
 										<Label className='text-text-secondary'>Repo Link</Label>
 										<Input
-											value={formData.repoLink}
-											onChange={(e) => setFormData({ ...formData, repoLink: e.target.value })}
+											value={state.formData.repoLink}
+											onChange={(e) =>
+												formDispatch({
+													type: 'SET_FORM_DATA',
+													payload: { repoLink: e.target.value },
+												})
+											}
 											className='bg-slate-800/50 border-glass-border text-white'
 										/>
 									</div>
 									<div>
 										<Label className='text-text-secondary'>Lead Name</Label>
 										<Input
-											value={formData.leadName}
-											onChange={(e) => setFormData({ ...formData, leadName: e.target.value })}
+											value={state.formData.leadName}
+											onChange={(e) =>
+												formDispatch({
+													type: 'SET_FORM_DATA',
+													payload: { leadName: e.target.value },
+												})
+											}
 											className='bg-slate-800/50 border-glass-border text-white'
 										/>
 									</div>
@@ -251,7 +313,7 @@ const TemplatesSection = () => {
 					</div>
 				))}
 
-				{templates.length === 0 && !isAdding && (
+				{templates.length === 0 && !state.isAdding && (
 					<div className='text-center py-8 text-slate-500'>
 						<p>No templates yet. Create your first template!</p>
 					</div>

@@ -20,7 +20,7 @@ import {
 	User,
 	X,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useReducer } from 'react';
 
 interface ReleaseItemFormProps {
 	onSubmit: (data: {
@@ -34,77 +34,178 @@ interface ReleaseItemFormProps {
 	onCancel: () => void;
 }
 
+interface ReleaseItemFormState {
+	selectedTemplate: string;
+	repoName: string;
+	repoLink: string;
+	prLink: string;
+	leadName: string;
+	description: string;
+	selectedStatuses: string[];
+	newStatusInput: string;
+	showAddStatus: boolean;
+}
+
+type ReleaseItemFormAction =
+	| { type: 'SET_SELECTED_TEMPLATE'; payload: string }
+	| { type: 'SET_REPO_NAME'; payload: string }
+	| { type: 'SET_REPO_LINK'; payload: string }
+	| { type: 'SET_PR_LINK'; payload: string }
+	| { type: 'SET_LEAD_NAME'; payload: string }
+	| { type: 'SET_DESCRIPTION'; payload: string }
+	| { type: 'SET_SELECTED_STATUSES'; payload: string[] }
+	| { type: 'SET_NEW_STATUS_INPUT'; payload: string }
+	| { type: 'SET_SHOW_ADD_STATUS'; payload: boolean }
+	| { type: 'ADD_CUSTOM_STATUS'; payload: string }
+	| { type: 'REMOVE_STATUS'; payload: string }
+	| { type: 'TOGGLE_STATUS'; payload: string }
+	| { type: 'LOAD_TEMPLATE'; payload: { repoName: string; repoLink: string; leadName: string } }
+	| { type: 'CLEAR_TEMPLATE' }
+	| { type: 'INIT_STATUSES'; payload: string[] };
+
+const createInitialState = (defaultStatuses: string[]): ReleaseItemFormState => ({
+	selectedTemplate: '',
+	repoName: '',
+	repoLink: '',
+	prLink: '',
+	leadName: '',
+	description: '',
+	selectedStatuses: defaultStatuses,
+	newStatusInput: '',
+	showAddStatus: false,
+});
+
+const releaseItemFormReducer = (
+	state: ReleaseItemFormState,
+	action: ReleaseItemFormAction
+): ReleaseItemFormState => {
+	switch (action.type) {
+		case 'SET_SELECTED_TEMPLATE':
+			return { ...state, selectedTemplate: action.payload };
+		case 'SET_REPO_NAME':
+			return { ...state, repoName: action.payload };
+		case 'SET_REPO_LINK':
+			return { ...state, repoLink: action.payload };
+		case 'SET_PR_LINK':
+			return { ...state, prLink: action.payload };
+		case 'SET_LEAD_NAME':
+			return { ...state, leadName: action.payload };
+		case 'SET_DESCRIPTION':
+			return { ...state, description: action.payload };
+		case 'SET_SELECTED_STATUSES':
+			return { ...state, selectedStatuses: action.payload };
+		case 'SET_NEW_STATUS_INPUT':
+			return { ...state, newStatusInput: action.payload };
+		case 'SET_SHOW_ADD_STATUS':
+			return { ...state, showAddStatus: action.payload };
+		case 'ADD_CUSTOM_STATUS':
+			if (action.payload && !state.selectedStatuses.includes(action.payload)) {
+				return {
+					...state,
+					selectedStatuses: [...state.selectedStatuses, action.payload],
+					newStatusInput: '',
+					showAddStatus: false,
+				};
+			}
+			return state;
+		case 'REMOVE_STATUS':
+			return {
+				...state,
+				selectedStatuses: state.selectedStatuses.filter((s) => s !== action.payload),
+			};
+		case 'TOGGLE_STATUS':
+			if (state.selectedStatuses.includes(action.payload)) {
+				return {
+					...state,
+					selectedStatuses: state.selectedStatuses.filter((s) => s !== action.payload),
+				};
+			} else {
+				return {
+					...state,
+					selectedStatuses: [...state.selectedStatuses, action.payload],
+				};
+			}
+		case 'LOAD_TEMPLATE':
+			return {
+				...state,
+				repoName: action.payload.repoName,
+				repoLink: action.payload.repoLink,
+				leadName: action.payload.leadName,
+			};
+		case 'CLEAR_TEMPLATE':
+			return {
+				...state,
+				repoName: '',
+				repoLink: '',
+				prLink: '',
+				leadName: '',
+			};
+		case 'INIT_STATUSES':
+			return { ...state, selectedStatuses: action.payload };
+		default:
+			return state;
+	}
+};
+
 const ReleaseItemForm = ({ onSubmit, onCancel }: ReleaseItemFormProps) => {
 	// Get templates, appearance settings, and default statuses from Redux store
 	const templates = useAppSelector((state) => state.settings.templates);
 	const appearance = useAppSelector((state) => state.settings.appearanceSettings);
 	const globalStatuses = useAppSelector((state) => state.settings.customStatuses);
 
-	const [selectedTemplate, setSelectedTemplate] = useState<string>('');
-	const [repoName, setRepoName] = useState('');
-	const [repoLink, setRepoLink] = useState('');
-	const [prLink, setPrLink] = useState('');
-	const [leadName, setLeadName] = useState('');
-	const [description, setDescription] = useState('');
-
-	// Status management
-	const [selectedStatuses, setSelectedStatuses] = useState<string[]>(
-		globalStatuses.filter((s) => s.isVisible).map((s) => s.name)
+	const [formState, formDispatch] = useReducer(
+		releaseItemFormReducer,
+		createInitialState(globalStatuses.filter((s) => s.isVisible).map((s) => s.name))
 	);
-	const [newStatusInput, setNewStatusInput] = useState('');
-	const [showAddStatus, setShowAddStatus] = useState(false);
 
 	// Handle template selection
 	const handleTemplateSelect = (templateId: string) => {
-		setSelectedTemplate(templateId);
+		formDispatch({ type: 'SET_SELECTED_TEMPLATE', payload: templateId });
 		if (templateId === 'none') {
 			// Clear all fields
-			setRepoName('');
-			setRepoLink('');
-			setPrLink('');
-			setLeadName('');
+			formDispatch({ type: 'CLEAR_TEMPLATE' });
 			return;
 		}
 
 		const template = templates.find((t) => t.id === templateId);
 		if (template) {
-			setRepoName(template.repoName);
-			setRepoLink(template.repoLink);
-			setLeadName(template.leadName || '');
+			formDispatch({
+				type: 'LOAD_TEMPLATE',
+				payload: {
+					repoName: template.repoName,
+					repoLink: template.repoLink,
+					leadName: template.leadName || '',
+				},
+			});
 		}
 	};
 
 	const handleAddCustomStatus = () => {
-		const trimmedStatus = newStatusInput.trim();
-		if (trimmedStatus && !selectedStatuses.includes(trimmedStatus)) {
-			setSelectedStatuses([...selectedStatuses, trimmedStatus]);
-			setNewStatusInput('');
-			setShowAddStatus(false);
+		const trimmedStatus = formState.newStatusInput.trim();
+		if (trimmedStatus) {
+			formDispatch({ type: 'ADD_CUSTOM_STATUS', payload: trimmedStatus });
 		}
 	};
 
 	const handleRemoveStatus = (statusToRemove: string) => {
-		setSelectedStatuses(selectedStatuses.filter((s) => s !== statusToRemove));
+		formDispatch({ type: 'REMOVE_STATUS', payload: statusToRemove });
 	};
 
 	const handleToggleStatus = (statusName: string) => {
-		if (selectedStatuses.includes(statusName)) {
-			setSelectedStatuses(selectedStatuses.filter((s) => s !== statusName));
-		} else {
-			setSelectedStatuses([...selectedStatuses, statusName]);
-		}
+		formDispatch({ type: 'TOGGLE_STATUS', payload: statusName });
 	};
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
-		if (repoName.trim() && repoLink.trim()) {
+		if (formState.repoName.trim() && formState.repoLink.trim()) {
 			onSubmit({
-				repoName: repoName.trim(),
-				repoLink: repoLink.trim(),
-				prLink: prLink.trim() || undefined,
-				leadName: leadName.trim() || undefined,
-				description: description.trim() || undefined,
-				customStatuses: selectedStatuses.length > 0 ? selectedStatuses : undefined,
+				repoName: formState.repoName.trim(),
+				repoLink: formState.repoLink.trim(),
+				prLink: formState.prLink.trim() || undefined,
+				leadName: formState.leadName.trim() || undefined,
+				description: formState.description.trim() || undefined,
+				customStatuses:
+					formState.selectedStatuses.length > 0 ? formState.selectedStatuses : undefined,
 			});
 		}
 	};
@@ -118,7 +219,7 @@ const ReleaseItemForm = ({ onSubmit, onCancel }: ReleaseItemFormProps) => {
 						<Sparkles className='w-4 h-4' />
 						Use Template (Optional)
 					</Label>
-					<Select value={selectedTemplate} onValueChange={handleTemplateSelect}>
+					<Select value={formState.selectedTemplate} onValueChange={handleTemplateSelect}>
 						<SelectTrigger className='w-full bg-white/10 border-white/20 text-white'>
 							<SelectValue placeholder='Select a template...' />
 						</SelectTrigger>
@@ -142,8 +243,8 @@ const ReleaseItemForm = ({ onSubmit, onCancel }: ReleaseItemFormProps) => {
 				</Label>
 				<Input
 					type='text'
-					value={repoName}
-					onChange={(e) => setRepoName(e.target.value)}
+					value={formState.repoName}
+					onChange={(e) => formDispatch({ type: 'SET_REPO_NAME', payload: e.target.value })}
 					placeholder='e.g., frontend-app'
 					className='w-full bg-white/10 border-white/20 text-white placeholder:text-white/40'
 					required
@@ -158,8 +259,8 @@ const ReleaseItemForm = ({ onSubmit, onCancel }: ReleaseItemFormProps) => {
 				</Label>
 				<Input
 					type='url'
-					value={repoLink}
-					onChange={(e) => setRepoLink(e.target.value)}
+					value={formState.repoLink}
+					onChange={(e) => formDispatch({ type: 'SET_REPO_LINK', payload: e.target.value })}
 					placeholder='https://github.com/username/repo'
 					className='w-full bg-white/10 border-white/20 text-white placeholder:text-white/40'
 					required
@@ -175,8 +276,8 @@ const ReleaseItemForm = ({ onSubmit, onCancel }: ReleaseItemFormProps) => {
 					</Label>
 					<Input
 						type='url'
-						value={prLink}
-						onChange={(e) => setPrLink(e.target.value)}
+						value={formState.prLink}
+						onChange={(e) => formDispatch({ type: 'SET_PR_LINK', payload: e.target.value })}
 						placeholder='https://github.com/username/repo/pull/123'
 						className='w-full bg-white/10 border-white/20 text-white placeholder:text-white/40'
 					/>
@@ -192,8 +293,8 @@ const ReleaseItemForm = ({ onSubmit, onCancel }: ReleaseItemFormProps) => {
 					</Label>
 					<Input
 						type='text'
-						value={leadName}
-						onChange={(e) => setLeadName(e.target.value)}
+						value={formState.leadName}
+						onChange={(e) => formDispatch({ type: 'SET_LEAD_NAME', payload: e.target.value })}
 						placeholder='e.g., John Doe'
 						className='w-full bg-white/10 border-white/20 text-white placeholder:text-white/40'
 					/>
@@ -208,8 +309,8 @@ const ReleaseItemForm = ({ onSubmit, onCancel }: ReleaseItemFormProps) => {
 						Description / Notes (Optional)
 					</Label>
 					<Textarea
-						value={description}
-						onChange={(e) => setDescription(e.target.value)}
+						value={formState.description}
+						onChange={(e) => formDispatch({ type: 'SET_DESCRIPTION', payload: e.target.value })}
 						placeholder='Add any context, notes, or important details...'
 						rows={4}
 						className='w-full bg-white/10 border-white/20 text-white placeholder:text-white/40 resize-none'
@@ -236,7 +337,7 @@ const ReleaseItemForm = ({ onSubmit, onCancel }: ReleaseItemFormProps) => {
 									type='button'
 									onClick={() => handleToggleStatus(status.name)}
 									className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${
-										selectedStatuses.includes(status.name)
+										formState.selectedStatuses.includes(status.name)
 											? 'bg-primary/80 text-white border border-accent-border'
 											: 'bg-white/5 text-white/60 border border-white/10 hover:bg-white/10'
 									}`}
@@ -248,13 +349,13 @@ const ReleaseItemForm = ({ onSubmit, onCancel }: ReleaseItemFormProps) => {
 				</div>
 
 				{/* Custom Statuses for this item */}
-				{selectedStatuses.some(
+				{formState.selectedStatuses.some(
 					(s) => !globalStatuses.find((gs) => gs.name === s && gs.isVisible)
 				) && (
 					<div className='space-y-2'>
 						<div className='text-xs text-white/60'>Custom statuses for this item:</div>
 						<div className='flex flex-wrap gap-2'>
-							{selectedStatuses
+							{formState.selectedStatuses
 								.filter((s) => !globalStatuses.find((gs) => gs.name === s && gs.isVisible))
 								.map((status) => (
 									<div
@@ -277,10 +378,10 @@ const ReleaseItemForm = ({ onSubmit, onCancel }: ReleaseItemFormProps) => {
 
 				{/* Add Custom Status */}
 				<div className='space-y-2'>
-					{!showAddStatus ? (
+					{!formState.showAddStatus ? (
 						<Button
 							type='button'
-							onClick={() => setShowAddStatus(true)}
+							onClick={() => formDispatch({ type: 'SET_SHOW_ADD_STATUS', payload: true })}
 							variant='outline'
 							className='w-full bg-white/5 hover:bg-white/10 border-white/20 text-text-secondary flex items-center gap-2'
 						>
@@ -291,8 +392,10 @@ const ReleaseItemForm = ({ onSubmit, onCancel }: ReleaseItemFormProps) => {
 						<div className='flex gap-2'>
 							<Input
 								type='text'
-								value={newStatusInput}
-								onChange={(e) => setNewStatusInput(e.target.value)}
+								value={formState.newStatusInput}
+								onChange={(e) =>
+									formDispatch({ type: 'SET_NEW_STATUS_INPUT', payload: e.target.value })
+								}
 								onKeyDown={(e) => {
 									if (e.key === 'Enter') {
 										e.preventDefault();
@@ -306,7 +409,7 @@ const ReleaseItemForm = ({ onSubmit, onCancel }: ReleaseItemFormProps) => {
 							<Button
 								type='button'
 								onClick={handleAddCustomStatus}
-								disabled={!newStatusInput.trim()}
+								disabled={!formState.newStatusInput.trim()}
 								className='bg-pink-500 hover:bg-pink-600 text-white'
 							>
 								Add
@@ -314,8 +417,8 @@ const ReleaseItemForm = ({ onSubmit, onCancel }: ReleaseItemFormProps) => {
 							<Button
 								type='button'
 								onClick={() => {
-									setShowAddStatus(false);
-									setNewStatusInput('');
+									formDispatch({ type: 'SET_SHOW_ADD_STATUS', payload: false });
+									formDispatch({ type: 'SET_NEW_STATUS_INPUT', payload: '' });
 								}}
 								variant='outline'
 								className='bg-white/5 hover:bg-white/10 border-white/20 text-text-secondary'
@@ -326,7 +429,7 @@ const ReleaseItemForm = ({ onSubmit, onCancel }: ReleaseItemFormProps) => {
 					)}
 				</div>
 
-				{selectedStatuses.length === 0 && (
+				{formState.selectedStatuses.length === 0 && (
 					<p className='text-xs text-yellow-400/80 flex items-center gap-1'>
 						<span>⚠️</span>
 						No statuses selected. Item will be created without status tracking.

@@ -1,5 +1,8 @@
+export { default as AnimatedBackgroundOrbs } from './AnimatedBackgroundOrbs/AnimatedBackgroundOrbs';
 export { default as DatePicker } from './DatePicker/DatePicker';
 export { default as Icon } from './Icon/Icon';
+export { default as LoadingSpinner } from './LoadingSpinner/LoadingSpinner';
+export { default as PopupHeader } from './PopupHeader/PopupHeader';
 export { default as ProgressBar } from './ProgressBar/ProgressBar';
 export { default as ReminderInput } from './ReminderInput/ReminderInput';
 export { default as ReminderToggle } from './ReminderToggle/ReminderToggle';

@@ -1,15 +1,20 @@
-import { Button } from '@/components/ui/button';
+import { AnimatedBackgroundOrbs, PopupHeader } from '@/components/atoms';
+import { BookmarkForm, BookmarkGroupForm } from '@/components/molecules';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { addBookmark } from '@/store/slices/bookmarksSlice';
+import { addBookmark, updateBookmark } from '@/store/slices/bookmarksSlice';
 import { motion } from 'framer-motion';
-import { Bookmark, BookmarkPlus } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 const Popup = () => {
 	const dispatch = useAppDispatch();
 	const bookmarks = useAppSelector((state) => state.bookmarks.bookmarks);
 	const [currentTab, setCurrentTab] = useState<{ title: string; url: string } | null>(null);
-	const [isBookmarking, setIsBookmarking] = useState(false);
+
+	// Find existing bookmark for current tab
+	const existingBookmark = useMemo(() => {
+		if (!currentTab) return null;
+		return bookmarks.find((b) => b.pageUrl.toLowerCase() === currentTab.url.toLowerCase()) || null;
+	}, [bookmarks, currentTab]);
 
 	useEffect(() => {
 		// Get current tab information
@@ -27,75 +32,33 @@ const Popup = () => {
 		});
 	}, []);
 
-	const handleBookmarkCurrentTab = () => {
-		if (!currentTab || isBookmarking) return;
-
-		// Check if bookmark already exists
-		const bookmarkExists = bookmarks.some(
-			(b) => b.pageUrl.toLowerCase() === currentTab.url.toLowerCase()
-		);
-
-		if (bookmarkExists) {
-			return;
+	const handleSaveBookmark = (data: { name: string; url: string; existingBookmarkId?: string }) => {
+		if (data.existingBookmarkId) {
+			// Update existing bookmark
+			dispatch(
+				updateBookmark({
+					id: data.existingBookmarkId,
+					updates: { name: data.name },
+				})
+			);
+		} else {
+			// Add new bookmark
+			dispatch(
+				addBookmark({
+					name: data.name,
+					pageUrl: data.url,
+				})
+			);
 		}
-
-		setIsBookmarking(true);
-		dispatch(
-			addBookmark({
-				name: currentTab.title,
-				pageUrl: currentTab.url,
-			})
-		);
-
-		// Reset after a brief delay for visual feedback
-		setTimeout(() => {
-			setIsBookmarking(false);
-		}, 500);
 	};
 
 	return (
-		<div className='w-[400px] h-[500px] relative overflow-hidden bg-background-gradient'>
-			{/* Animated Background Orbs */}
-			<div className='absolute inset-0 overflow-hidden pointer-events-none'>
-				<motion.div
-					animate={{
-						x: [0, 50, 0],
-						y: [0, -50, 0],
-						scale: [1, 1.1, 1],
-					}}
-					transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
-					className='absolute top-0 left-0 w-64 h-64 rounded-full blur-3xl bg-orb-from'
-				/>
-				<motion.div
-					animate={{
-						x: [0, -50, 0],
-						y: [0, 50, 0],
-						scale: [1, 1.2, 1],
-					}}
-					transition={{
-						duration: 20,
-						repeat: Infinity,
-						ease: 'easeInOut',
-						delay: 1,
-					}}
-					className='absolute bottom-0 right-0 w-64 h-64 rounded-full blur-3xl bg-orb-to'
-				/>
-			</div>
+		<div className='w-[400px] bg-black h-[500px] relative overflow-hidden bg-background-gradient'>
+			<AnimatedBackgroundOrbs variant='popup' />
 
 			{/* Content */}
 			<div className='relative z-10 h-full flex flex-col p-6'>
-				{/* Header with Branding */}
-				<motion.div
-					initial={{ opacity: 0, y: -20 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.5 }}
-					className='mb-6'
-				>
-					<h1 className='text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 mb-2'>
-						Work Diary
-					</h1>
-					<p className='text-text-secondary/60 text-sm'>Your productivity companion</p>
-				</motion.div>
+				<PopupHeader title='Work Diary' subtitle='Your productivity companion' />
 
 				{/* Features Section */}
 				<motion.div
@@ -104,66 +67,15 @@ const Popup = () => {
 					transition={{ duration: 0.5, delay: 0.1 }}
 					className='flex-1 flex flex-col gap-4'
 				>
-					{/* Bookmark Current Tab Feature */}
-					<div className='glass-strong rounded-xl p-4 border border-glass-border-strong'>
-						<div className='flex items-start justify-between gap-3 mb-3'>
-							<div className='flex-1 overflow-hidden'>
-								<h3 className='text-white font-semibold mb-1 flex items-center gap-2'>
-									<BookmarkPlus className='w-4 h-4 text-text-accent' />
-									Bookmark Current Tab
-								</h3>
-								{currentTab && (
-									<div
-										className='text-xs text-text-secondary/70 truncate'
-										title={currentTab.title}
-									>
-										{currentTab.title}
-									</div>
-								)}
-							</div>
-						</div>
-						<Button
-							onClick={handleBookmarkCurrentTab}
-							disabled={
-								!currentTab ||
-								isBookmarking ||
-								bookmarks.some(
-									(b) => b.pageUrl.toLowerCase() === (currentTab?.url || '').toLowerCase()
-								)
-							}
-							className='w-full bg-primary hover:bg-primary-hover text-white disabled:bg-primary/50 disabled:cursor-not-allowed'
-							size='sm'
-						>
-							{isBookmarking ? (
-								<>
-									<motion.div
-										animate={{ rotate: 360 }}
-										transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-										className='w-4 h-4 border-2 border-white border-t-transparent rounded-full'
-									/>
-									Bookmarking...
-								</>
-							) : bookmarks.some(
-									(b) => b.pageUrl.toLowerCase() === (currentTab?.url || '').toLowerCase()
-							  ) ? (
-								<>
-									<Bookmark className='w-4 h-4' />
-									Already Bookmarked
-								</>
-							) : (
-								<>
-									<Bookmark className='w-4 h-4' />
-									Bookmark Tab
-								</>
-							)}
-						</Button>
-					</div>
-					{/* Placeholder for future features */}
-					<div className='glass rounded-xl p-4 border border-glass-border'>
-						<p className='text-text-secondary/40 text-xs text-center'>
-							More features coming soon...
-						</p>
-					</div>
+					{currentTab && (
+						<BookmarkForm
+							title={currentTab.title}
+							url={currentTab.url}
+							existingBookmark={existingBookmark}
+							onSave={handleSaveBookmark}
+						/>
+					)}
+					<BookmarkGroupForm />
 				</motion.div>
 			</div>
 		</div>

@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
+import { ThemeProvider } from './components/providers/ThemeProvider';
 import './index.css';
 import Popup from './pages/Popup';
 import { createStore, loadPersistedState } from './store/store';
@@ -19,7 +20,9 @@ const initPopup = async () => {
 		ReactDOM.createRoot(rootElement).render(
 			<React.StrictMode>
 				<Provider store={store}>
-					<Popup />
+					<ThemeProvider>
+						<Popup />
+					</ThemeProvider>
 				</Provider>
 			</React.StrictMode>
 		);

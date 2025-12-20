@@ -1,3 +1,4 @@
+import { AnimatedBackgroundOrbs } from '@/components/atoms';
 import { SettingsModal } from '@/components/organisms';
 import { motion } from 'framer-motion';
 import { Home, Settings } from 'lucide-react';
@@ -15,53 +16,7 @@ const PageLayout = ({ children, showHomeButton = true }: PageLayoutProps) => {
 
 	return (
 		<div className='min-h-screen relative bg-background-gradient'>
-			{/* Animated Background Orbs */}
-			<div className='absolute inset-0 overflow-hidden pointer-events-none'>
-				{/* Orb 1 - Moves from top-left across the page */}
-				<motion.div
-					animate={{
-						x: [0, 1200, 300, 900, 0],
-						y: [0, 400, 800, 500, 0],
-						scale: [1, 1.3, 1.1, 1.4, 1],
-					}}
-					transition={{
-						duration: 30,
-						repeat: Infinity,
-						ease: 'easeInOut',
-					}}
-					className='absolute top-0 left-0 w-96 h-96 rounded-full blur-3xl bg-orb-from'
-				/>
-				{/* Orb 2 - Moves from bottom-right across the page */}
-				<motion.div
-					animate={{
-						x: [0, -1000, -450, -750, 0],
-						y: [0, -800, -250, -1000, 0],
-						scale: [1, 1.5, 1.2, 1.3, 1],
-					}}
-					transition={{
-						duration: 35,
-						repeat: Infinity,
-						ease: 'easeInOut',
-						delay: 2,
-					}}
-					className='absolute bottom-0 right-0 w-96 h-96 rounded-full blur-3xl bg-orb-to'
-				/>
-				{/* Orb 3 - Moves in a circular pattern from center */}
-				<motion.div
-					animate={{
-						x: [0, 600, -450, 300, 0],
-						y: [0, -600, 400, -300, 0],
-						scale: [1, 1.2, 1.4, 1.1, 1],
-					}}
-					transition={{
-						duration: 25,
-						repeat: Infinity,
-						ease: 'easeInOut',
-						delay: 1,
-					}}
-					className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full blur-3xl bg-orb-primary'
-				/>
-			</div>
+			<AnimatedBackgroundOrbs variant='full' />
 
 			{/* Content */}
 			<div className='relative z-10 min-h-screen'>

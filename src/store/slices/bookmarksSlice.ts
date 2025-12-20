@@ -8,12 +8,21 @@ export interface Bookmark {
 	createdAt: number;
 }
 
+export interface BookmarkGroup {
+	id: string;
+	name: string;
+	bookmarkIds: string[];
+	createdAt: number;
+}
+
 interface BookmarksState {
 	bookmarks: Bookmark[];
+	groups: BookmarkGroup[];
 }
 
 const initialState: BookmarksState = {
 	bookmarks: [],
+	groups: [],
 };
 
 const bookmarksSlice = createSlice({
@@ -54,8 +63,47 @@ const bookmarksSlice = createSlice({
 		setBookmarks: (state, action: PayloadAction<Bookmark[]>) => {
 			state.bookmarks = action.payload;
 		},
+
+		addBookmarkGroup: (state, action: PayloadAction<Omit<BookmarkGroup, 'id' | 'createdAt'>>) => {
+			const newGroup: BookmarkGroup = {
+				...action.payload,
+				id: nanoid(),
+				createdAt: Date.now(),
+			};
+			state.groups.unshift(newGroup);
+		},
+
+		updateBookmarkGroup: (
+			state,
+			action: PayloadAction<{ id: string; updates: Partial<BookmarkGroup> }>
+		) => {
+			const index = state.groups.findIndex((g) => g.id === action.payload.id);
+			if (index !== -1) {
+				state.groups[index] = {
+					...state.groups[index],
+					...action.payload.updates,
+				};
+			}
+		},
+
+		deleteBookmarkGroup: (state, action: PayloadAction<string>) => {
+			state.groups = state.groups.filter((g) => g.id !== action.payload);
+		},
+
+		setBookmarkGroups: (state, action: PayloadAction<BookmarkGroup[]>) => {
+			state.groups = action.payload || [];
+		},
 	},
 });
 
-export const { addBookmark, updateBookmark, deleteBookmark, setBookmarks } = bookmarksSlice.actions;
+export const {
+	addBookmark,
+	updateBookmark,
+	deleteBookmark,
+	setBookmarks,
+	addBookmarkGroup,
+	updateBookmarkGroup,
+	deleteBookmarkGroup,
+	setBookmarkGroups,
+} = bookmarksSlice.actions;
 export default bookmarksSlice.reducer;
