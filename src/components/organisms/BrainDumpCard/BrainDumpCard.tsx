@@ -98,15 +98,6 @@ export default function BrainDumpCard({ entry, onDelete, onUpdate }: BrainDumpCa
 					<span className={cn(textStyles.metaSize, 'text-gray-300/70 truncate')}>
 						{formatRelativeTime(new Date(entry.timestamp).toISOString())}
 					</span>
-					<span className={cn(textStyles.metaSize, 'text-gray-300/50')}>
-						{new Date(entry.timestamp).toLocaleString([], {
-							month: 'short',
-							day: 'numeric',
-							year: 'numeric',
-							hour: '2-digit',
-							minute: '2-digit',
-						})}
-					</span>
 				</div>
 
 				{/* Actions - Show on hover */}
@@ -123,7 +114,7 @@ export default function BrainDumpCard({ entry, onDelete, onUpdate }: BrainDumpCa
 								variant='ghost'
 								className={cn(
 									iconStyles.iconSize,
-									'p-0 border border-green-500/30 text-green-400/80 hover:text-green-300 hover:bg-green-500/10'
+									'p-0 text-green-400/80 hover:text-green-300 hover:bg-green-500/10'
 								)}
 								onClick={handleSave}
 							>
@@ -134,7 +125,7 @@ export default function BrainDumpCard({ entry, onDelete, onUpdate }: BrainDumpCa
 								variant='ghost'
 								className={cn(
 									iconStyles.iconSize,
-									'p-0 border border-glass-border text-text-accent/80 hover:text-text-primary hover:bg-primary/10'
+									'p-0 text-text-accent/80 hover:text-text-primary hover:bg-primary/10'
 								)}
 								onClick={handleCancel}
 							>
@@ -148,7 +139,7 @@ export default function BrainDumpCard({ entry, onDelete, onUpdate }: BrainDumpCa
 								variant='ghost'
 								className={cn(
 									iconStyles.iconSize,
-									'p-0 border border-glass-border text-text-accent/80 hover:text-text-primary hover:bg-primary/10'
+									'p-0 text-text-accent/80 hover:text-text-primary hover:bg-primary/10'
 								)}
 								onClick={handleEdit}
 							>
@@ -159,7 +150,7 @@ export default function BrainDumpCard({ entry, onDelete, onUpdate }: BrainDumpCa
 								variant='ghost'
 								className={cn(
 									iconStyles.iconSize,
-									'p-0 border border-red-500/30 text-red-400/80 hover:text-red-300 hover:bg-red-500/10'
+									'p-0 text-red-400/80 hover:text-red-300 hover:bg-red-500/10'
 								)}
 								onClick={handleDelete}
 							>
