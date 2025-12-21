@@ -53,7 +53,6 @@ const Base64Converter = () => {
 					value={input}
 					onChange={(e) => setInput(e.target.value)}
 					onClear={handleClear}
-					rows={30}
 				/>
 			}
 			output={<CodeViewer value={output} />}

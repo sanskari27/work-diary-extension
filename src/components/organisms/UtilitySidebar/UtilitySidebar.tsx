@@ -34,14 +34,14 @@ const UtilitySidebar = ({ onToolSelect }: UtilitySidebarProps) => {
 						header={
 							<div className='flex items-center gap-3'>
 								<GroupIcon className='w-5 h-5 text-text-accent flex-shrink-0' />
-								<span className='font-semibold text-white truncate'>{group.name}</span>
+								<span className='font-semibold text-sm text-white truncate'>{group.name}</span>
 								<span className='ml-auto text-xs text-text-secondary bg-white/5 px-2 py-0.5 rounded-full'>
 									{group.tools.length}
 								</span>
 							</div>
 						}
 						contentClassName='p-2'
-						headerClassName='p-3'
+						headerClassName='p-2'
 						className='mb-2'
 					>
 						<div className='space-y-1'>

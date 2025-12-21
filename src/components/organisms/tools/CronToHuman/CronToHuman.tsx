@@ -35,7 +35,6 @@ const CronToHuman = () => {
 					value={input}
 					onChange={(e) => setInput(e.target.value)}
 					onClear={handleClear}
-					rows={30}
 					placeholder='0 0 * * *'
 				/>
 			}

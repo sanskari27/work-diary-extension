@@ -37,12 +37,11 @@ const TextTabsSpaces = () => {
 			title='Convert tabs ↔ spaces'
 			description='Convert between tabs and spaces'
 			input={
-				<div className='space-y-3'>
+				<div className='space-y-3 h-full flex flex-col'>
 					<CodeEditor
 						value={input}
 						onChange={(e) => setInput(e.target.value)}
 						onClear={handleClear}
-						rows={25}
 					/>
 					<div className='grid grid-cols-2 gap-2'>
 						<Select value={from} onValueChange={(v) => setFrom(v as 'tabs' | 'spaces')}>

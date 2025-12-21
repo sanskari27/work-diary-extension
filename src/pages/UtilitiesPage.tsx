@@ -93,7 +93,7 @@ const UtilitiesPage = () => {
 		tool && toolComponents[tool.component] ? toolComponents[tool.component] : null;
 
 	return (
-		<UtilitiesPageTemplate sidebar={<UtilitySidebar />} showHomeButton={true}>
+		<UtilitiesPageTemplate sidebar={<UtilitySidebar />}>
 			{!toolId || !ToolComponent ? (
 				// Show all tool groups if no specific tool is selected
 				<div className='space-y-12'>

@@ -46,12 +46,11 @@ const JsonPickOmit = () => {
 			title='Pick / omit fields'
 			description='Select or exclude specific fields from JSON. Supports nested paths like "users[].address.coordinates.lat"'
 			input={
-				<div className='space-y-3'>
+				<div className='space-y-3 h-full flex flex-col'>
 					<CodeEditor
 						value={input}
 						onChange={(e) => setInput(e.target.value)}
 						onClear={handleClear}
-						rows={25}
 					/>
 					<div className='space-y-2'>
 						<Select value={mode} onValueChange={(v) => setMode(v as 'pick' | 'omit')}>

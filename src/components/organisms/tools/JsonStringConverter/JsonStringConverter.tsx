@@ -45,7 +45,6 @@ const JsonStringConverter = () => {
 					value={input}
 					onChange={(e) => setInput(e.target.value)}
 					onClear={handleClear}
-					rows={30}
 					placeholder={isStringToJson ? 'Escaped string...' : 'JSON object...'}
 				/>
 			}

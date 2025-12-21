@@ -45,7 +45,6 @@ const QueryParamsConverter = () => {
 					value={input}
 					onChange={(e) => setInput(e.target.value)}
 					onClear={handleClear}
-					rows={30}
 					placeholder={
 						isObjectToParams ? '{"key1":"value1","key2":"value2"}' : '?key1=value1&key2=value2'
 					}

@@ -12,11 +12,11 @@ interface CodeEditorProps extends React.ComponentProps<'textarea'> {
 const CodeEditor = forwardRef<HTMLTextAreaElement, CodeEditorProps>(
 	({ className, onClear, showClearButton = true, error = false, ...props }, ref) => {
 		return (
-			<div className='relative'>
+			<div className='relative h-full flex flex-col'>
 				<Textarea
 					ref={ref}
 					className={cn(
-						'font-mono text-sm resize-none',
+						'font-mono text-sm resize-none h-full',
 						'bg-white/5 border-glass-border text-white placeholder:text-white/40',
 						'focus-visible:ring-primary/50 focus-visible:border-primary/50',
 						error &&

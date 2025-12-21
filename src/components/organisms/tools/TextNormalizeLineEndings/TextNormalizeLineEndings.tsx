@@ -34,12 +34,11 @@ const TextNormalizeLineEndings = () => {
 			title='Normalize line endings'
 			description='Convert line endings to consistent format'
 			input={
-				<div className='space-y-3'>
+				<div className='space-y-3 h-full flex flex-col'>
 					<CodeEditor
 						value={input}
 						onChange={(e) => setInput(e.target.value)}
 						onClear={handleClear}
-						rows={25}
 					/>
 					<Select value={target} onValueChange={(v) => setTarget(v as 'lf' | 'crlf' | 'cr')}>
 						<SelectTrigger className='bg-white/5 border-glass-border text-white'>

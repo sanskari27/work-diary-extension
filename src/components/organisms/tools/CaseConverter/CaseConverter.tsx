@@ -36,12 +36,11 @@ const CaseConverter = () => {
 			title='Case Converter'
 			description='Convert between camelCase, snake_case, kebab-case, PascalCase, etc.'
 			input={
-				<div className='space-y-3'>
+				<div className='space-y-3 h-full flex flex-col'>
 					<CodeEditor
 						value={input}
 						onChange={(e) => setInput(e.target.value)}
 						onClear={handleClear}
-						rows={25}
 					/>
 					<Select value={targetCase} onValueChange={(v) => setTargetCase(v as any)}>
 						<SelectTrigger className='bg-white/5 border-glass-border text-white'>
