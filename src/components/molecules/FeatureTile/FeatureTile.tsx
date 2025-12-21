@@ -52,9 +52,9 @@ const FeatureTile = ({ name, icon, route }: FeatureTileProps) => {
 					<motion.div
 						whileHover={{ rotate: 15, scale: 1.15 }}
 						transition={{ type: 'spring', stiffness: 400, damping: 10 }}
-						className='p-2.5 rounded-xl bg-white/10 backdrop-blur-2xl border-2 border-glass-border shadow-xl'
+						className='p-2.5 rounded-xl bg-white/5 backdrop-blur-2xl border border-glass-border shadow-xl'
 					>
-						<Icon name={icon} className={cn(card.iconSize, 'text-primary drop-shadow-2xl')} />
+						<Icon name={icon} className={cn(card.iconSize, 'text-text-accent drop-shadow-2xl')} />
 					</motion.div>
 
 					<div>

@@ -33,9 +33,9 @@ const UtilitiesPageTemplate = ({
 						animate={{ opacity: 1, x: 0 }}
 						transition={{ duration: 0.5 }}
 						onClick={() => navigate('/')}
-						className='fixed top-8 left-8 z-30 glass-strong rounded-2xl p-4 hover:bg-white/30 transition-all duration-300 group'
+						className='fixed top-8 left-8 z-30 glass-strong rounded-2xl p-4 hover:bg-white/10 transition-all duration-300 group'
 					>
-						<Home className='w-5 h-5 text-primary group-hover:text-white transition-colors' />
+						<Home className='w-5 h-5 text-text-accent group-hover:text-text-primary transition-colors' />
 					</motion.button>
 				)}
 
@@ -45,12 +45,12 @@ const UtilitiesPageTemplate = ({
 					animate={{ opacity: 1, scale: 1 }}
 					transition={{ duration: 0.5, delay: 0.2 }}
 					onClick={() => setSidebarOpen(!sidebarOpen)}
-					className='fixed top-8 right-8 z-30 md:hidden glass-strong rounded-2xl p-4 hover:bg-white/30 transition-all duration-300 group'
+					className='fixed top-8 right-8 z-30 md:hidden glass-strong rounded-2xl p-4 hover:bg-white/10 transition-all duration-300 group'
 				>
 					{sidebarOpen ? (
-						<X className='w-5 h-5 text-primary group-hover:text-white transition-colors' />
+						<X className='w-5 h-5 text-text-accent group-hover:text-text-primary transition-colors' />
 					) : (
-						<Menu className='w-5 h-5 text-primary group-hover:text-white transition-colors' />
+						<Menu className='w-5 h-5 text-text-accent group-hover:text-text-primary transition-colors' />
 					)}
 				</motion.button>
 
@@ -60,12 +60,12 @@ const UtilitiesPageTemplate = ({
 					animate={{ opacity: 1, scale: 1 }}
 					transition={{ duration: 0.5, delay: 0.2 }}
 					onClick={() => setSidebarOpen(!sidebarOpen)}
-					className='fixed top-8 right-24 z-30 hidden md:block glass-strong rounded-2xl p-4 hover:bg-white/30 transition-all duration-300 group'
+					className='fixed top-8 right-24 z-30 hidden md:block glass-strong rounded-2xl p-4 hover:bg-white/10 transition-all duration-300 group'
 				>
 					{sidebarOpen ? (
-						<X className='w-5 h-5 text-primary group-hover:text-white transition-colors' />
+						<X className='w-5 h-5 text-text-accent group-hover:text-text-primary transition-colors' />
 					) : (
-						<Menu className='w-5 h-5 text-primary group-hover:text-white transition-colors' />
+						<Menu className='w-5 h-5 text-text-accent group-hover:text-text-primary transition-colors' />
 					)}
 				</motion.button>
 
@@ -130,9 +130,9 @@ const UtilitiesPageTemplate = ({
 					transition={{ duration: 0.5, delay: 0.8 }}
 					onClick={() => setSettingsOpen(true)}
 					tabIndex={-1}
-					className='fixed bottom-8 left-8 z-20 glass-strong rounded-2xl p-4 hover:bg-white/30 transition-all duration-300 group shadow-2xl'
+					className='fixed bottom-8 left-8 z-20 glass-strong rounded-2xl p-4 hover:bg-white/10 transition-all duration-300 group shadow-2xl'
 				>
-					<Settings className='w-6 h-6 text-primary group-hover:text-white transition-colors group-hover:rotate-90 duration-300' />
+					<Settings className='w-6 h-6 text-text-accent group-hover:text-text-primary transition-colors group-hover:rotate-90 duration-300' />
 				</motion.button>
 
 				{/* Settings Modal */}

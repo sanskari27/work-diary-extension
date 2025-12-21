@@ -49,7 +49,7 @@ export interface ReleaseEventDefaults {
 // Appearance Settings
 export interface AppearanceSettings {
 	theme: 'light' | 'dark' | 'system';
-	colorTheme: string; // Theme ID from themes (e.g., 'purple', 'blue', 'green')
+	colorTheme: string; // Theme ID from themes (e.g., 'purple', 'blue', 'green' (black theme))
 	compactMode: boolean;
 	showStatusCheckboxes: boolean;
 	showLeadSection: boolean;

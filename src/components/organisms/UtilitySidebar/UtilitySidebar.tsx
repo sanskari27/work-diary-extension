@@ -35,7 +35,7 @@ const UtilitySidebar = ({ onToolSelect }: UtilitySidebarProps) => {
 							<div className='flex items-center gap-3'>
 								<GroupIcon className='w-5 h-5 text-text-accent flex-shrink-0' />
 								<span className='font-semibold text-white truncate'>{group.name}</span>
-								<span className='ml-auto text-xs text-text-secondary bg-white/10 px-2 py-0.5 rounded-full'>
+								<span className='ml-auto text-xs text-text-secondary bg-white/5 px-2 py-0.5 rounded-full'>
 									{group.tools.length}
 								</span>
 							</div>
@@ -55,13 +55,13 @@ const UtilitySidebar = ({ onToolSelect }: UtilitySidebarProps) => {
 										onClick={() => handleToolClick(tool.id, group.id)}
 										className={cn(
 											'w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-all',
-											'text-sm text-text-secondary hover:text-white hover:bg-white/10',
-											isActive && 'bg-primary/20 text-white border border-primary/50'
+											'text-sm text-text-secondary hover:text-text-accent hover:bg-white/5',
+											isActive && 'bg-primary/20 text-text-accent border border-primary/50'
 										)}
 										whileHover={{ x: 4 }}
 										whileTap={{ scale: 0.98 }}
 									>
-										<ToolIcon className='w-4 h-4 flex-shrink-0' />
+										<ToolIcon className='w-4 h-4 flex-shrink-0 text-current' />
 										<span className='truncate flex-1'>{tool.name}</span>
 									</motion.button>
 								);
