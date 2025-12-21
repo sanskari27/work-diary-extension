@@ -7,6 +7,7 @@ import { initializeBrowserNotifications } from './services/BrowserNotificationSe
 import { initializeReleaseNotifications } from './services/ReleaseNotificationService';
 import { initializeTodoNotifications } from './services/TodoNotificationService';
 import { createStore, loadPersistedState } from './store/store';
+import { initializeSingleInstance, setupVisibilityHandler } from './utils/pwaInstanceManager';
 
 // Initialize the app with persisted state
 const initApp = async () => {
@@ -20,6 +21,10 @@ const initApp = async () => {
 	initializeReleaseNotifications(store);
 	initializeTodoNotifications(store);
 	initializeBrowserNotifications(store);
+
+	// Initialize PWA single instance behavior
+	await initializeSingleInstance();
+	setupVisibilityHandler();
 
 	// Render the app
 	ReactDOM.createRoot(document.getElementById('root')!).render(
