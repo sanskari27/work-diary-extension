@@ -26,6 +26,7 @@ const ACTIONS_TO_PERSIST = [
 	'bookmarks/',
 	'prs/',
 	'brainDump/',
+	'visualNotes/',
 ];
 
 // Create debounced save function
@@ -45,6 +46,7 @@ const debouncedSave = debounce(
 			{ key: 'redux:bookmarks', value: state.bookmarks },
 			{ key: 'redux:prs', value: state.prs },
 			{ key: 'redux:brainDump', value: state.brainDump },
+			{ key: 'redux:visualNotes', value: state.visualNotes },
 		];
 
 		await Promise.all(

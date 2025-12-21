@@ -10,6 +10,7 @@ interface CollapsibleProps {
 	className?: string;
 	headerClassName?: string;
 	contentClassName?: string;
+	hideCollapseButton?: boolean;
 }
 
 export const Collapsible = ({
@@ -19,6 +20,7 @@ export const Collapsible = ({
 	className,
 	headerClassName,
 	contentClassName,
+	hideCollapseButton = false,
 }: CollapsibleProps) => {
 	const [isOpen, setIsOpen] = useState(defaultOpen);
 
@@ -33,13 +35,15 @@ export const Collapsible = ({
 				)}
 			>
 				<div className='flex-1 overflow-hidden'>{header}</div>
-				<motion.div
-					animate={{ rotate: isOpen ? 0 : -90 }}
-					transition={{ duration: 0.2 }}
-					className='flex-shrink-0'
-				>
-					<ChevronDown className='w-4 h-4 text-text-accent group-hover:text-text-primary transition-colors' />
-				</motion.div>
+				{!hideCollapseButton && (
+					<motion.div
+						animate={{ rotate: isOpen ? 0 : -90 }}
+						transition={{ duration: 0.2 }}
+						className='flex-shrink-0'
+					>
+						<ChevronDown className='w-4 h-4 text-text-accent group-hover:text-text-primary transition-colors' />
+					</motion.div>
+				)}
 			</button>
 
 			{/* Content */}

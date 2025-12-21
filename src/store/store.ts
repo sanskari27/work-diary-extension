@@ -9,11 +9,13 @@ import releasesReducer from './slices/releasesSlice';
 import settingsReducer, { defaultSettingsState } from './slices/settingsSlice';
 import todosReducer from './slices/todosSlice';
 import uiReducer from './slices/uiSlice';
+import visualNotesReducer from './slices/visualNotesSlice';
 
 // Load persisted state from extension storage
 export const loadPersistedState = async () => {
 	try {
-		const [content, ui, releases, settings, todos, bookmarks, prs, brainDump] = await Promise.all([
+		const [content, ui, releases, settings, todos, bookmarks, prs, brainDump, visualNotes] =
+			await Promise.all([
 			loadStateFromExtensionStorage('content'),
 			loadStateFromExtensionStorage('ui'),
 			loadStateFromExtensionStorage('releases'),
@@ -22,6 +24,7 @@ export const loadPersistedState = async () => {
 			loadStateFromExtensionStorage('bookmarks'),
 			loadStateFromExtensionStorage('prs'),
 			loadStateFromExtensionStorage('brainDump'),
+				loadStateFromExtensionStorage('visualNotes'),
 		]);
 
 		// Ensure searchQuery is not persisted - always reset to empty string
@@ -43,6 +46,7 @@ export const loadPersistedState = async () => {
 			bookmarks: bookmarks || undefined,
 			prs: prs || undefined,
 			brainDump: brainDump || undefined,
+			visualNotes: visualNotes || undefined,
 		};
 	} catch (error) {
 		console.error('Error loading persisted state:', error);
@@ -63,6 +67,7 @@ export const createStore = (preloadedState?: any) => {
 			bookmarks: bookmarksReducer,
 			prs: prsReducer,
 			brainDump: brainDumpReducer,
+			visualNotes: visualNotesReducer,
 		},
 		preloadedState,
 		middleware: (getDefaultMiddleware) =>
