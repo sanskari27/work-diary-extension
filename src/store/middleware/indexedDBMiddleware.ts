@@ -1,5 +1,6 @@
 import { Middleware } from '@reduxjs/toolkit';
-import { saveStateToIndexedDB } from '../indexedDB';
+import { getIsExternalSyncUpdate, updateLastSavedState } from '../../services/StorageSyncService';
+import { saveStateToExtensionStorage } from '../extensionStorage';
 import { RootState } from '../store';
 
 // Debounce function to avoid saving on every action
@@ -14,7 +15,7 @@ const debounce = <T extends (...args: any[]) => void>(
 	};
 };
 
-// List of action types that should trigger a save to IndexedDB
+// List of action types that should trigger a save to extension storage
 // Add more action types here as needed
 const ACTIONS_TO_PERSIST = [
 	'content/',
@@ -33,30 +34,51 @@ const debouncedSave = debounce(
 		// Save each slice separately for better granularity
 		// Exclude searchQuery from ui slice when persisting
 		const { searchQuery, ...uiStateToPersist } = state.ui;
-		await Promise.all([
-			saveStateToIndexedDB('content', state.content),
-			saveStateToIndexedDB('ui', uiStateToPersist),
-			saveStateToIndexedDB('releases', state.releases),
-			saveStateToIndexedDB('settings', state.settings),
-			saveStateToIndexedDB('todos', state.todos),
-			saveStateToIndexedDB('bookmarks', state.bookmarks),
-			saveStateToIndexedDB('prs', state.prs),
-			saveStateToIndexedDB('brainDump', state.brainDump),
-		]);
+
+		// Save all slices and track what we saved
+		const savePromises = [
+			{ key: 'redux:content', value: state.content },
+			{ key: 'redux:ui', value: uiStateToPersist },
+			{ key: 'redux:releases', value: state.releases },
+			{ key: 'redux:settings', value: state.settings },
+			{ key: 'redux:todos', value: state.todos },
+			{ key: 'redux:bookmarks', value: state.bookmarks },
+			{ key: 'redux:prs', value: state.prs },
+			{ key: 'redux:brainDump', value: state.brainDump },
+		];
+
+		await Promise.all(
+			savePromises.map(async ({ key, value }) => {
+				await saveStateToExtensionStorage(key.replace('redux:', ''), value);
+				// Track what we saved to detect our own changes later
+				updateLastSavedState(key, value);
+			})
+		);
 	},
 	500 // Wait 500ms after the last action before saving
 );
 
-export const indexedDBMiddleware: Middleware<{}, RootState> = (store) => (next) => (action) => {
-	const result = next(action);
+export const extensionStorageMiddleware: Middleware<{}, RootState> =
+	(store) => (next) => (action) => {
+		const result = next(action);
 
-	// Check if this action should trigger a save
-	if (
-		ACTIONS_TO_PERSIST.some((pattern) => (action as any).type?.startsWith?.(pattern.split('/')[0]))
-	) {
-		const state = store.getState();
-		debouncedSave(state);
-	}
+		// Skip saving if this update came from external sync to prevent infinite loops
+		if (getIsExternalSyncUpdate()) {
+			return result;
+		}
 
-	return result;
-};
+		// Check if this action should trigger a save
+		if (
+			ACTIONS_TO_PERSIST.some((pattern) =>
+				(action as any).type?.startsWith?.(pattern.split('/')[0])
+			)
+		) {
+			const state = store.getState();
+			debouncedSave(state);
+		}
+
+		return result;
+	};
+
+// Keep the old name for backwards compatibility during migration
+export const indexedDBMiddleware = extensionStorageMiddleware;

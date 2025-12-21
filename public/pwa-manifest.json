@@ -1,0 +1,29 @@
+{
+	"name": "Work Diary",
+	"short_name": "Work Diary",
+	"description": "Productivity-focused new tab replacement",
+	"start_url": "/",
+	"scope": "/",
+	"display": "standalone",
+	"display_override": [
+		"standalone",
+		"window-controls-overlay"
+	],
+	"background_color": "#0f172a",
+	"theme_color": "#0f172a",
+	"orientation": "portrait-primary",
+	"icons": [
+		{
+			"src": "/icons/icon-192.png",
+			"sizes": "192x192",
+			"type": "image/png",
+			"purpose": "any maskable"
+		},
+		{
+			"src": "/icons/icon-512.png",
+			"sizes": "512x512",
+			"type": "image/png",
+			"purpose": "any maskable"
+		}
+	]
+}
