@@ -14,3 +14,5 @@ export { default as SettingsModal } from './SettingsModal/SettingsModal';
 export { default as TodoCard } from './TodoCard/TodoCard';
 export { default as TodoDetailsPanel } from './TodoDetailsPanel/TodoDetailsPanel';
 export { default as TodoForm } from './TodoForm/TodoForm';
+export { default as UtilitySidebar } from './UtilitySidebar/UtilitySidebar';
+export { default as UtilityToolCard } from './UtilityToolCard/UtilityToolCard';

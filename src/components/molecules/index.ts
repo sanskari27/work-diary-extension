@@ -3,7 +3,11 @@ export { default as BookmarkGroupForm } from './BookmarkGroupForm/BookmarkGroupF
 export { default as BookmarkSearchBadge } from './BookmarkSearchBadge/BookmarkSearchBadge';
 export { default as BrainDumpForm } from './BrainDumpForm/BrainDumpForm';
 export { default as BrainDumpInput } from './BrainDumpInput/BrainDumpInput';
+export { default as CodeEditor } from './CodeEditor/CodeEditor';
+export { default as CodeViewer } from './CodeViewer/CodeViewer';
 export { default as CollapsibleSection } from './CollapsibleSection/CollapsibleSection';
+export { default as CopyButton } from './CopyButton/CopyButton';
+export { default as ErrorDisplay } from './ErrorDisplay/ErrorDisplay';
 export { default as FeatureTile } from './FeatureTile/FeatureTile';
 export { default as Greeting } from './Greeting/Greeting';
 export { default as ReleaseSearchBadge } from './ReleaseSearchBadge/ReleaseSearchBadge';

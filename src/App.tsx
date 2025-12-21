@@ -6,6 +6,7 @@ import BrainDumpsPage from './pages/BrainDumpsPage';
 import HomePage from './pages/HomePage';
 import ReleasesPage from './pages/ReleasesPage';
 import TodosPage from './pages/TodosPage';
+import UtilitiesPage from './pages/UtilitiesPage';
 
 function App() {
 	return (
@@ -18,6 +19,7 @@ function App() {
 					<Route path='/todos' element={<TodosPage />} />
 					<Route path='/bookmarks' element={<BookmarksPage />} />
 					<Route path='/brain-dumps' element={<BrainDumpsPage />} />
+					<Route path='/utilities' element={<UtilitiesPage />} />
 				</Routes>
 			</HashRouter>
 		</ThemeProvider>
