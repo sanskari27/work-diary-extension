@@ -40,6 +40,8 @@ const UtilitySidebar = ({ onToolSelect }: UtilitySidebarProps) => {
 								</span>
 							</div>
 						}
+						contentClassName='p-2'
+						headerClassName='p-3'
 						className='mb-2'
 					>
 						<div className='space-y-1'>

@@ -43,7 +43,7 @@ const JsonValidator = () => {
 					value={input}
 					onChange={(e) => setInput(e.target.value)}
 					onClear={handleClear}
-					rows={12}
+					rows={30}
 					error={!!error}
 				/>
 			}

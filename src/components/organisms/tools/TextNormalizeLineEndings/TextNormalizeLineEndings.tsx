@@ -39,7 +39,7 @@ const TextNormalizeLineEndings = () => {
 						value={input}
 						onChange={(e) => setInput(e.target.value)}
 						onClear={handleClear}
-						rows={10}
+						rows={25}
 					/>
 					<Select value={target} onValueChange={(v) => setTarget(v as 'lf' | 'crlf' | 'cr')}>
 						<SelectTrigger className='bg-white/5 border-glass-border text-white'>

@@ -66,10 +66,13 @@ const UtilityToolCard = ({
 						<Button
 							onClick={onToggle}
 							variant='outline'
-							className='glass-strong border-glass-border hover:bg-white/20 flex h-10 w-10 items-center justify-center rounded-full'
+							className={cn(
+								'glass-strong border-glass-border flex-center h-10 w-10 rounded-full',
+								'hover:bg-gradient-to-br hover:from-gradient-from hover:to-gradient-to'
+							)}
 							title='Toggle mode'
 						>
-							<ArrowLeftRight className='w-4 h-4' />
+							<ArrowLeftRight className='w-4 h-4 text-white' />
 						</Button>
 					)}
 

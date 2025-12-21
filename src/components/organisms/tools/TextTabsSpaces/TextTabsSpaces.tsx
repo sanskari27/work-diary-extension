@@ -42,7 +42,7 @@ const TextTabsSpaces = () => {
 						value={input}
 						onChange={(e) => setInput(e.target.value)}
 						onClear={handleClear}
-						rows={10}
+						rows={25}
 					/>
 					<div className='grid grid-cols-2 gap-2'>
 						<Select value={from} onValueChange={(v) => setFrom(v as 'tabs' | 'spaces')}>

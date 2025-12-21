@@ -45,7 +45,7 @@ const EpochDateConverter = () => {
 					value={input}
 					onChange={(e) => setInput(e.target.value)}
 					onClear={handleClear}
-					rows={8}
+					rows={30}
 					placeholder={isDateToEpoch ? '2024-01-01T00:00:00Z' : '1699123456'}
 				/>
 			}

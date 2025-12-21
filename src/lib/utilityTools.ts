@@ -2,6 +2,8 @@
  * Utility functions for all utility tools
  */
 
+import { cloneDeep, get, has, set } from 'lodash';
+
 // ==================== JSON Tools ====================
 
 export const prettyPrintJson = (json: string): { result: string; error?: string } => {
@@ -110,36 +112,206 @@ export const pickOmitJsonFields = (
 	}
 };
 
+/**
+ * Picks nested fields from an object using lodash
+ * Supports nested paths like "users[].address.coordinates.lat" or "address.coordinates.lat"
+ */
 const pickFields = (obj: any, fields: string[]): any => {
-	if (Array.isArray(obj)) {
-		return obj.map((item) => pickFields(item, fields));
+	if (!obj || typeof obj !== 'object') {
+		return obj;
 	}
-	if (obj !== null && typeof obj === 'object') {
-		const picked: any = {};
-		fields.forEach((field) => {
-			if (field in obj) {
-				picked[field] = obj[field];
-			}
-		});
-		return picked;
-	}
-	return obj;
+
+	const cloned = cloneDeep(obj);
+	const result: any = Array.isArray(cloned) ? [] : {};
+
+	// Process each field path
+	fields.forEach((fieldPath) => {
+		// Handle array notation like "users[].address.coordinates.lat"
+		if (fieldPath.includes('[]')) {
+			processArrayPath(cloned, fieldPath, result, 'pick');
+		} else {
+			// Handle regular nested paths like "address.coordinates.lat"
+			processNestedPathForPick(cloned, fieldPath, result);
+		}
+	});
+
+	return result;
 };
 
+/**
+ * Omits nested fields from an object using lodash
+ * Supports nested paths like "users[].address.coordinates.lat" or "address.coordinates.lat"
+ */
 const omitFields = (obj: any, fields: string[]): any => {
-	if (Array.isArray(obj)) {
-		return obj.map((item) => omitFields(item, fields));
+	if (!obj || typeof obj !== 'object') {
+		return obj;
 	}
-	if (obj !== null && typeof obj === 'object') {
-		const omitted: any = {};
-		Object.keys(obj).forEach((key) => {
-			if (!fields.includes(key)) {
-				omitted[key] = omitFields(obj[key], fields);
+
+	const cloned = cloneDeep(obj);
+
+	// Process each field path to remove
+	fields.forEach((fieldPath) => {
+		// Handle array notation like "users[].address.coordinates.lat"
+		if (fieldPath.includes('[]')) {
+			processArrayPath(cloned, fieldPath, cloned, 'omit');
+		} else {
+			// Handle regular nested paths like "address.coordinates.lat"
+			processNestedPathForOmit(cloned, fieldPath);
+		}
+	});
+
+	return cloned;
+};
+
+/**
+ * Processes paths with array notation (e.g., "users[].address.coordinates.lat")
+ */
+const processArrayPath = (
+	obj: any,
+	fieldPath: string,
+	result: any,
+	mode: 'pick' | 'omit'
+): void => {
+	// Parse the path: "users[].address.coordinates.lat" -> arrayPath: "users", remainingPath: "address.coordinates.lat"
+	const match = fieldPath.match(/^([^[\]]+)\[\]\.?(.*)$/);
+	if (!match) {
+		return;
+	}
+
+	const arrayPath = match[1];
+	const remainingPath = match[2] || '';
+
+	// Get the array at the specified path
+	const arrayValue = arrayPath ? get(obj, arrayPath) : obj;
+
+	if (!Array.isArray(arrayValue)) {
+		return;
+	}
+
+	if (mode === 'pick') {
+		// For pick mode, process each item and build the result structure
+		const processedArray = arrayValue.map((item) => {
+			if (remainingPath) {
+				// There's a remaining path, recursively pick from the item
+				return pickFields(item, [remainingPath]);
+			} else {
+				// No remaining path, return the whole item
+				return item;
 			}
 		});
-		return omitted;
+
+		// Set the processed array in result
+		if (arrayPath) {
+			// If we already have this path in result, merge the arrays
+			if (has(result, arrayPath)) {
+				const existingArray = get(result, arrayPath);
+				if (Array.isArray(existingArray)) {
+					// Merge objects at each index
+					processedArray.forEach((item, index) => {
+						if (
+							existingArray[index] &&
+							typeof existingArray[index] === 'object' &&
+							typeof item === 'object'
+						) {
+							Object.assign(existingArray[index], item);
+						} else if (!existingArray[index]) {
+							existingArray[index] = item;
+						}
+					});
+				}
+			} else {
+				set(result, arrayPath, processedArray);
+			}
+		} else {
+			// Root level array
+			if (Array.isArray(result)) {
+				result.push(...processedArray);
+			} else {
+				// This shouldn't happen for root arrays, but handle it
+				return;
+			}
+		}
+	} else {
+		// For omit mode, remove the field from each item in the array
+		arrayValue.forEach((item) => {
+			if (remainingPath) {
+				// Recursively omit from the item
+				processNestedPathForOmit(item, remainingPath);
+			}
+		});
 	}
-	return obj;
+};
+
+/**
+ * Processes regular nested paths for pick mode (e.g., "address.coordinates.lat")
+ * This preserves the parent structure when picking nested fields
+ */
+const processNestedPathForPick = (obj: any, fieldPath: string, result: any): void => {
+	const value = get(obj, fieldPath);
+	if (value !== undefined) {
+		// Build the nested structure in result, preserving parent objects
+		const pathParts = fieldPath.split('.');
+		let current = result;
+
+		// Build the full path structure
+		for (let i = 0; i < pathParts.length - 1; i++) {
+			const part = pathParts[i];
+			// Only create new object if it doesn't exist or isn't an object
+			if (!current[part] || typeof current[part] !== 'object' || Array.isArray(current[part])) {
+				current[part] = {};
+			}
+			current = current[part];
+		}
+
+		const lastPart = pathParts[pathParts.length - 1];
+		// Merge if both are objects, otherwise replace
+		if (
+			current[lastPart] &&
+			typeof current[lastPart] === 'object' &&
+			typeof value === 'object' &&
+			!Array.isArray(value) &&
+			!Array.isArray(current[lastPart])
+		) {
+			Object.assign(current[lastPart], value);
+		} else {
+			current[lastPart] = value;
+		}
+	}
+};
+
+/**
+ * Processes regular nested paths for omit mode (e.g., "address.coordinates.lat")
+ */
+const processNestedPathForOmit = (obj: any, fieldPath: string): void => {
+	const pathParts = fieldPath.split('.');
+
+	if (pathParts.length === 1) {
+		// Top-level field
+		if (Array.isArray(obj)) {
+			obj.forEach((item) => {
+				if (item && typeof item === 'object') {
+					delete item[fieldPath];
+				}
+			});
+		} else if (obj && typeof obj === 'object') {
+			delete obj[fieldPath];
+		}
+	} else {
+		// Nested field - need to traverse and remove
+		const parentPath = pathParts.slice(0, -1).join('.');
+		const fieldName = pathParts[pathParts.length - 1];
+		const parent = get(obj, parentPath);
+
+		if (Array.isArray(parent)) {
+			parent.forEach((item) => {
+				if (item && typeof item === 'object') {
+					delete item[fieldName];
+				}
+			});
+		} else if (parent && typeof parent === 'object') {
+			delete parent[fieldName];
+		}
+	}
 };
 
 export const jsonToString = (json: string): { result: string; error?: string } => {

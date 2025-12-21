@@ -115,11 +115,11 @@ const UtilitiesPageTemplate = ({
 					{/* Main Content */}
 					<main
 						className={cn(
-							'flex-1 overflow-y-auto transition-all duration-300',
+							'flex-1 overflow-y-auto transition-all duration-300 h-full',
 							sidebarOpen && 'md:ml-[280px]'
 						)}
 					>
-						<div className='max-w-7xl mx-auto p-6 md:p-12'>{children}</div>
+						<div className='max-w-7xl mx-auto p-6 h-full'>{children}</div>
 					</main>
 				</div>
 

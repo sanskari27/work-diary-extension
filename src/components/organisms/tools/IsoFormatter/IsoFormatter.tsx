@@ -35,7 +35,7 @@ const IsoFormatter = () => {
 					value={input}
 					onChange={(e) => setInput(e.target.value)}
 					onClear={handleClear}
-					rows={8}
+					rows={30}
 				/>
 			}
 			output={<CodeViewer value={output} />}
