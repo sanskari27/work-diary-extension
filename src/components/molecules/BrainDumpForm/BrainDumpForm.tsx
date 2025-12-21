@@ -1,6 +1,6 @@
 import { LoadingSpinner } from '@/components/atoms';
+import TagBasedInput from '@/components/molecules/TagBasedInput/TagBasedInput';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { addEntry } from '@/store/slices/brainDumpSlice';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -54,9 +54,9 @@ const BrainDumpForm = () => {
 						transition={{ duration: 0.2 }}
 					>
 						<div className='space-y-2'>
-							<Textarea
+							<TagBasedInput
 								value={content}
-								onChange={(e) => setContent(e.target.value)}
+								onChange={setContent}
 								onKeyDown={handleKeyDown}
 								placeholder={"Dump it. We'll deal with it later.\nPress Cmd/Ctrl + Enter to submit"}
 								className='w-full glass-strong text-white placeholder:text-gray-200/50 text-sm resize-none min-h-[80px]'

@@ -1,12 +1,15 @@
+import TagBadge from '@/components/molecules/TagBadge/TagBadge';
+import TagBasedInput from '@/components/molecules/TagBasedInput/TagBasedInput';
+import TagParser from '@/components/molecules/TagParser/TagParser';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { useAppearanceStyles } from '@/hooks/useAppearanceStyles';
 import { formatRelativeTime } from '@/lib/dateUtils';
+import { extractTags } from '@/lib/tagUtils';
 import { cn } from '@/lib/utils';
 import { BrainDumpEntry } from '@/store/slices/brainDumpSlice';
 import { motion } from 'framer-motion';
 import { Brain, Check, Pencil, Trash2, X } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface BrainDumpCardProps {
 	entry: BrainDumpEntry;
@@ -17,22 +20,13 @@ interface BrainDumpCardProps {
 export default function BrainDumpCard({ entry, onDelete, onUpdate }: BrainDumpCardProps) {
 	const [isEditing, setIsEditing] = useState(false);
 	const [editContent, setEditContent] = useState(entry.content);
-	const textareaRef = useRef<HTMLTextAreaElement>(null);
 	const { styles } = useAppearanceStyles();
 	const cardStyles = styles.card();
 	const iconStyles = styles.icon();
 	const textStyles = styles.text();
 
-	// Focus textarea when editing starts
-	useEffect(() => {
-		if (isEditing && textareaRef.current) {
-			textareaRef.current.focus();
-			textareaRef.current.setSelectionRange(
-				textareaRef.current.value.length,
-				textareaRef.current.value.length
-			);
-		}
-	}, [isEditing]);
+	// Extract unique tags from content
+	const tags = Array.from(new Set(extractTags(entry.content)));
 
 	// Update editContent when entry content changes externally
 	useEffect(() => {
@@ -163,27 +157,31 @@ export default function BrainDumpCard({ entry, onDelete, onUpdate }: BrainDumpCa
 
 			{/* Content */}
 			{isEditing ? (
-				<Textarea
-					ref={textareaRef}
+				<TagBasedInput
 					value={editContent}
-					onChange={(e) => setEditContent(e.target.value)}
+					onChange={setEditContent}
 					onBlur={() => handleSave()}
 					onKeyDown={handleKeyDown}
 					className={cn(
 						cardStyles.textSize,
 						'bg-white/10 border-glass-border-strong text-white placeholder:text-white/50 focus-visible:ring-primary/50 resize-none min-h-[100px]'
 					)}
-					onClick={(e) => e.stopPropagation()}
+					onClickCapture={(e) => e.stopPropagation()}
 				/>
 			) : (
-				<p
-					className={cn(
-						cardStyles.textSize,
-						'text-white/90 whitespace-pre-wrap break-words leading-relaxed'
-					)}
-				>
-					{entry.content}
-				</p>
+				<TagParser
+					content={entry.content}
+					className={cn(cardStyles.textSize, 'text-white/90 break-words leading-relaxed block')}
+				/>
+			)}
+
+			{/* Tag List */}
+			{tags.length > 0 && (
+				<div className='flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-white/10'>
+					{tags.map((tag) => (
+						<TagBadge key={tag} tag={tag} variant='list' />
+					))}
+				</div>
 			)}
 
 			{isEditing && (

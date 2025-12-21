@@ -1,5 +1,5 @@
+import TagBasedInput from '@/components/molecules/TagBasedInput/TagBasedInput';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { useAppDispatch } from '@/store/hooks';
 import { addEntry } from '@/store/slices/brainDumpSlice';
 import { motion } from 'framer-motion';
@@ -44,9 +44,9 @@ const BrainDumpInput = () => {
 					<Brain className='w-5 h-5 text-text-accent' />
 					<h3 className='text-lg font-semibold text-white'>Instant Brain Dump</h3>
 				</div>
-				<Textarea
+				<TagBasedInput
 					value={content}
-					onChange={(e) => setContent(e.target.value)}
+					onChange={setContent}
 					onKeyDown={handleKeyDown}
 					placeholder="Dump it. We'll deal with it later."
 					className='w-full glass-strong text-white placeholder:text-gray-200/50 text-sm resize-none min-h-[120px]'
