@@ -1,124 +1,113 @@
 /**
  * Extension Storage Service
- * Centralized storage that uses the Chrome extension as the data store.
- * The PWA sends all read/write requests to the extension via chrome.runtime.sendMessage.
- * The extension stores data in chrome.storage.sync (with local fallback).
+ * Now uses IndexedDB for local data persistence.
+ * Uses BroadcastChannel for cross-tab/window synchronization.
  */
 
-import { sendMessage } from '../lib/chromeUtils';
+import { deleteFromIndexedDB, loadStateFromIndexedDB, saveStateToIndexedDB } from './indexedDB';
 
-// Storage key prefix for Redux state
-const STORAGE_PREFIX = 'redux:';
+// BroadcastChannel for cross-tab communication
+const STORAGE_CHANNEL_NAME = 'chrome-homepage-storage-sync';
+let broadcastChannel: BroadcastChannel | null = null;
 
 /**
- * Check if Chrome extension APIs are available
+ * Get or create the broadcast channel for storage sync
  */
-function isExtensionAvailable(): boolean {
-	return (
-		typeof chrome !== 'undefined' &&
-		!!chrome.runtime &&
-		typeof chrome.runtime.sendMessage === 'function'
-	);
+function getBroadcastChannel(): BroadcastChannel | null {
+	if (typeof BroadcastChannel === 'undefined') {
+		return null;
+	}
+	if (!broadcastChannel) {
+		broadcastChannel = new BroadcastChannel(STORAGE_CHANNEL_NAME);
+	}
+	return broadcastChannel;
 }
 
 /**
- * Save state to extension storage
+ * Broadcast a storage change event to other tabs/windows
+ */
+function broadcastStorageChange(key: string, newValue: any, oldValue: any) {
+	const channel = getBroadcastChannel();
+	if (channel) {
+		channel.postMessage({
+			type: 'STORAGE_CHANGE',
+			key: `redux:${key}`,
+			newValue,
+			oldValue,
+		});
+	}
+}
+
+/**
+ * Save state to IndexedDB
  */
 export const saveStateToExtensionStorage = async (key: string, state: any): Promise<void> => {
-	if (!isExtensionAvailable()) {
-		console.warn('Chrome extension not available, cannot save to extension storage');
-		return;
-	}
-
 	try {
-		const storageKey = `${STORAGE_PREFIX}${key}`;
-		await sendMessage({
-			type: 'STORAGE_SET',
-			items: {
-				[storageKey]: state,
-			},
-		});
+		// Load old value before saving to broadcast the change
+		const oldValue = await loadStateFromIndexedDB(key);
+
+		// Save to IndexedDB
+		await saveStateToIndexedDB(key, state);
+
+		// Broadcast the change to other tabs/windows
+		broadcastStorageChange(key, state, oldValue);
 	} catch (error) {
-		console.error('Error saving to extension storage:', error);
+		console.error('Error saving to IndexedDB:', error);
 	}
 };
 
 /**
- * Load state from extension storage
+ * Load state from IndexedDB
  */
 export const loadStateFromExtensionStorage = async (key: string): Promise<any> => {
-	if (!isExtensionAvailable()) {
-		console.warn('Chrome extension not available, cannot load from extension storage');
-		return undefined;
-	}
-
 	try {
-		const storageKey = `${STORAGE_PREFIX}${key}`;
-		const response = await sendMessage<{ success: boolean; data?: any; error?: string }>({
-			type: 'STORAGE_GET',
-			keys: [storageKey],
-		});
-
-		if (response.success && response.data) {
-			return response.data[storageKey];
-		}
-		return undefined;
+		return await loadStateFromIndexedDB(key);
 	} catch (error) {
-		console.error('Error loading from extension storage:', error);
+		console.error('Error loading from IndexedDB:', error);
 		return undefined;
 	}
 };
 
 /**
- * Clear all Redux state from extension storage
+ * Clear all Redux state from IndexedDB
  */
 export const clearExtensionStorage = async (): Promise<void> => {
-	if (!isExtensionAvailable()) {
-		console.warn('Chrome extension not available, cannot clear extension storage');
-		return;
-	}
-
 	try {
-		// Get all keys with the prefix
-		const response = await sendMessage<{ success: boolean; data?: any; error?: string }>({
-			type: 'STORAGE_GET',
-			keys: null, // Get all keys
-		});
-
-		if (response.success && response.data) {
-			// Find all keys that start with our prefix
-			const keysToRemove = Object.keys(response.data).filter((key) =>
-				key.startsWith(STORAGE_PREFIX)
-			);
-
-			if (keysToRemove.length > 0) {
-				await sendMessage({
-					type: 'STORAGE_REMOVE',
-					keys: keysToRemove,
-				});
-			}
-		}
+		// Get all Redux keys and delete them
+		const keys = [
+			'content',
+			'ui',
+			'releases',
+			'settings',
+			'todos',
+			'bookmarks',
+			'prs',
+			'brainDump',
+		];
+		await Promise.all(keys.map((key) => deleteFromIndexedDB(key)));
 	} catch (error) {
-		console.error('Error clearing extension storage:', error);
+		console.error('Error clearing IndexedDB:', error);
 	}
 };
 
 /**
- * Delete specific key from extension storage
+ * Delete specific key from IndexedDB
  */
 export const deleteFromExtensionStorage = async (key: string): Promise<void> => {
-	if (!isExtensionAvailable()) {
-		console.warn('Chrome extension not available, cannot delete from extension storage');
-		return;
-	}
-
 	try {
-		const storageKey = `${STORAGE_PREFIX}${key}`;
-		await sendMessage({
-			type: 'STORAGE_REMOVE',
-			keys: [storageKey],
-		});
+		const oldValue = await loadStateFromIndexedDB(key);
+		await deleteFromIndexedDB(key);
+		// Broadcast the deletion
+		broadcastStorageChange(key, undefined, oldValue);
 	} catch (error) {
-		console.error('Error deleting from extension storage:', error);
+		console.error('Error deleting from IndexedDB:', error);
 	}
 };
+
+/**
+ * Get the broadcast channel for listening to storage changes
+ * This is used by StorageSyncService
+ */
+export function getStorageBroadcastChannel(): BroadcastChannel | null {
+	return getBroadcastChannel();
+}

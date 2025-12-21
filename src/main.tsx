@@ -18,13 +18,14 @@ const initApp = async () => {
 	// Create store with persisted state
 	const store = createStore(persistedState);
 
+	// Initialize storage sync to listen for changes from other instances
+	// This also initializes lastSavedState with the current store state
+	initializeStorageSync(store);
+
 	// Initialize notification services (runs once on app load)
 	initializeReleaseNotifications(store);
 	initializeTodoNotifications(store);
 	initializeBrowserNotifications(store);
-
-	// Initialize storage sync to listen for changes from other instances
-	initializeStorageSync(store);
 
 	// Initialize PWA single instance behavior
 	await initializeSingleInstance();

@@ -5,6 +5,7 @@
  */
 
 import { Store } from '@reduxjs/toolkit';
+import { getStorageBroadcastChannel } from '../store/extensionStorage';
 import { setBookmarkGroups } from '../store/slices/bookmarksSlice';
 import { setEntries } from '../store/slices/brainDumpSlice';
 import { setContent } from '../store/slices/contentSlice';
@@ -58,72 +59,93 @@ const SLICE_ACTIONS: Record<
 };
 
 /**
- * Initialize storage sync service
- * Listens for storage changes and updates the Redux store accordingly
+ * Initialize the last saved state with the current store state
+ * This should be called after the store is created with persisted state
  */
-export function initializeStorageSync(store: Store<RootState>): () => void {
-	if (typeof chrome === 'undefined' || !chrome.runtime || !chrome.runtime.onMessage) {
-		console.warn('Chrome extension APIs not available, storage sync disabled');
-		return () => {}; // Return no-op cleanup function
-	}
+export function initializeLastSavedState(store: Store<RootState>) {
+	const state = store.getState();
+	const { searchQuery, ...uiStateToPersist } = state.ui;
 
-	// Listen for storage change messages from background script
-	const messageListener = (
-		message: any,
-		_sender: ChromeMessageSender,
-		sendResponse: (response?: any) => void
-	) => {
-		if (message.type === 'STORAGE_CHANGED') {
-			handleStorageChanges(message.changes, store, () => {
-				setIsExternalSyncUpdate(true);
-			});
-			sendResponse({ success: true });
-		}
-		return true; // Keep the message channel open for async response
+	lastSavedState = {
+		'redux:content': state.content,
+		'redux:ui': uiStateToPersist,
+		'redux:releases': state.releases,
+		'redux:settings': state.settings,
+		'redux:todos': state.todos,
+		'redux:bookmarks': state.bookmarks,
+		'redux:prs': state.prs,
+		'redux:brainDump': state.brainDump,
 	};
 
-	chrome.runtime.onMessage.addListener(messageListener);
+	// Mark initialization as complete after a short delay to allow store to stabilize
+	if (initializationTimeout) {
+		clearTimeout(initializationTimeout);
+	}
+	initializationTimeout = setTimeout(() => {
+		isInitializing = false;
+		initializationTimeout = null;
+	}, 1000);
+}
 
-	// Also listen directly to chrome.storage.onChanged if available
-	// This provides a backup mechanism and works even if background script is inactive
-	let storageListener:
-		| ((changes: { [key: string]: ChromeStorageChange }, areaName: string) => void)
-		| null = null;
+/**
+ * Initialize storage sync service
+ * Listens for storage changes via BroadcastChannel and updates the Redux store accordingly
+ */
+export function initializeStorageSync(store: Store<RootState>): () => void {
+	// Initialize lastSavedState with current store state
+	initializeLastSavedState(store);
 
-	if (chrome.storage && chrome.storage.onChanged) {
-		storageListener = (changes, areaName) => {
-			// Only handle sync or local storage changes
-			if (areaName === 'sync' || areaName === 'local') {
-				// Filter for Redux state changes
-				const reduxChanges: { [key: string]: ChromeStorageChange } = {};
-				for (const key in changes) {
-					if (key.startsWith('redux:')) {
-						reduxChanges[key] = changes[key];
+	// Use BroadcastChannel for cross-tab/window synchronization
+	let broadcastChannel: BroadcastChannel | null = null;
+
+	if (typeof BroadcastChannel !== 'undefined') {
+		broadcastChannel = getStorageBroadcastChannel();
+
+		if (broadcastChannel) {
+			const messageHandler = (event: MessageEvent) => {
+				// Skip processing during initialization to prevent overwriting loaded state
+				if (isInitializing) {
+					return;
+				}
+
+				if (event.data && event.data.type === 'STORAGE_CHANGE') {
+					const { key, newValue, oldValue } = event.data;
+
+					// Only process Redux state changes
+					if (key && key.startsWith('redux:')) {
+						// Convert BroadcastChannel message to ChromeStorageChange format
+						const changes: { [key: string]: ChromeStorageChange } = {
+							[key]: {
+								newValue,
+								oldValue,
+							} as ChromeStorageChange,
+						};
+
+						handleStorageChanges(changes, store, () => {
+							setIsExternalSyncUpdate(true);
+						});
 					}
 				}
+			};
 
-				if (Object.keys(reduxChanges).length > 0) {
-					handleStorageChanges(reduxChanges, store, () => {
-						setIsExternalSyncUpdate(true);
-					});
-				}
-			}
-		};
-
-		chrome.storage.onChanged.addListener(storageListener);
+			broadcastChannel.addEventListener('message', messageHandler);
+		}
 	}
 
 	// Cleanup function
 	return () => {
-		chrome.runtime.onMessage.removeListener(messageListener);
-		if (storageListener) {
-			chrome.storage.onChanged.removeListener(storageListener);
+		if (broadcastChannel) {
+			broadcastChannel.close();
 		}
 	};
 }
 
 // Track the last state we saved to detect our own changes
 let lastSavedState: { [key: string]: any } = {};
+
+// Flag to prevent processing storage changes during initial load
+let isInitializing = true;
+let initializationTimeout: ReturnType<typeof setTimeout> | null = null;
 
 /**
  * Check if a change came from this instance by comparing with last saved state
