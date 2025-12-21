@@ -1,5 +1,6 @@
 import { StatusAlert } from '@/components/atoms';
 import { Button } from '@/components/ui/button';
+import { isChromeAvailable, sendMessage } from '@/lib/chromeUtils';
 import { downloadBackup, prepareImportData, readBackupFile } from '@/services/BackupService';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { addBookmark, setBookmarks } from '@/store/slices/bookmarksSlice';
@@ -99,11 +100,11 @@ const BackupSyncSection = () => {
 		}
 	};
 
-	const handleImportBrowserBookmarks = () => {
+	const handleImportBrowserBookmarks = async () => {
 		if (isImportingBrowserBookmarks) return;
 
 		// Ensure we can talk to the background script
-		if (typeof chrome === 'undefined' || !chrome.runtime || !chrome.runtime.sendMessage) {
+		if (!isChromeAvailable()) {
 			setImportStatus({
 				type: 'error',
 				message:
@@ -116,87 +117,78 @@ const BackupSyncSection = () => {
 		setIsImportingBrowserBookmarks(true);
 		setImportStatus({ type: null, message: 'Importing bookmarks from browser...' });
 
-		chrome.runtime.sendMessage(
-			{ type: 'IMPORT_BROWSER_BOOKMARKS' },
-			(response: {
+		try {
+			const response = await sendMessage<{
 				success: boolean;
 				error?: string;
 				bookmarks?: { title: string; url: string }[];
-			}) => {
-				try {
-					if (chrome.runtime.lastError) {
-						throw new Error(
-							chrome.runtime.lastError.message || 'Failed to communicate with background script.'
-						);
-					}
+			}>({ type: 'IMPORT_BROWSER_BOOKMARKS' });
 
-					if (!response || !response.success) {
-						throw new Error(
-							response?.error ||
-								'Failed to import browser bookmarks. Background script returned an error.'
-						);
-					}
+			if (!response || !response.success) {
+				throw new Error(
+					response?.error ||
+						'Failed to import browser bookmarks. Background script returned an error.'
+				);
+			}
 
-					const collected = response.bookmarks || [];
+			const collected = response.bookmarks || [];
 
-					if (collected.length === 0) {
-						setImportStatus({
-							type: 'success',
-							message: 'No browser bookmarks were found to import.',
-						});
-						setTimeout(() => setImportStatus({ type: null, message: '' }), 5000);
-						return;
-					}
+			if (collected.length === 0) {
+				setImportStatus({
+					type: 'success',
+					message: 'No browser bookmarks were found to import.',
+				});
+				setTimeout(() => setImportStatus({ type: null, message: '' }), 5000);
+				return;
+			}
 
-					const existing = state.bookmarks.bookmarks || [];
-					const existingUrls = new Set(existing.map((b) => b.pageUrl.toLowerCase()));
+			const existing = state.bookmarks.bookmarks || [];
+			const existingUrls = new Set(existing.map((b) => b.pageUrl.toLowerCase()));
 
-					let importedCount = 0;
+			let importedCount = 0;
 
-					for (const { title, url } of collected) {
-						const lowerUrl = url.toLowerCase();
-						if (!existingUrls.has(lowerUrl)) {
-							existingUrls.add(lowerUrl);
-							dispatch(
-								addBookmark({
-									name: title || url,
-									pageUrl: url,
-								})
-							);
-							importedCount += 1;
-						}
-					}
-
-					if (importedCount === 0) {
-						setImportStatus({
-							type: 'success',
-							message: 'All browser bookmarks are already imported. No new bookmarks were added.',
-						});
-					} else {
-						setImportStatus({
-							type: 'success',
-							message: `Imported ${importedCount} browser bookmark${
-								importedCount === 1 ? '' : 's'
-							} successfully.`,
-						});
-					}
-
-					setTimeout(() => setImportStatus({ type: null, message: '' }), 5000);
-				} catch (error) {
-					console.error('Browser bookmarks import error:', error);
-					setImportStatus({
-						type: 'error',
-						message:
-							error instanceof Error
-								? `Failed to import browser bookmarks: ${error.message}`
-								: 'Failed to import browser bookmarks.',
-					});
-					setTimeout(() => setImportStatus({ type: null, message: '' }), 5000);
-				} finally {
-					setIsImportingBrowserBookmarks(false);
+			for (const { title, url } of collected) {
+				const lowerUrl = url.toLowerCase();
+				if (!existingUrls.has(lowerUrl)) {
+					existingUrls.add(lowerUrl);
+					dispatch(
+						addBookmark({
+							name: title || url,
+							pageUrl: url,
+						})
+					);
+					importedCount += 1;
 				}
 			}
-		);
+
+			if (importedCount === 0) {
+				setImportStatus({
+					type: 'success',
+					message: 'All browser bookmarks are already imported. No new bookmarks were added.',
+				});
+			} else {
+				setImportStatus({
+					type: 'success',
+					message: `Imported ${importedCount} browser bookmark${
+						importedCount === 1 ? '' : 's'
+					} successfully.`,
+				});
+			}
+
+			setTimeout(() => setImportStatus({ type: null, message: '' }), 5000);
+		} catch (error) {
+			console.error('Browser bookmarks import error:', error);
+			setImportStatus({
+				type: 'error',
+				message:
+					error instanceof Error
+						? `Failed to import browser bookmarks: ${error.message}`
+						: 'Failed to import browser bookmarks.',
+			});
+			setTimeout(() => setImportStatus({ type: null, message: '' }), 5000);
+		} finally {
+			setIsImportingBrowserBookmarks(false);
+		}
 	};
 
 	return (

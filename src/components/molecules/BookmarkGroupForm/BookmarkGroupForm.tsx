@@ -4,6 +4,7 @@ import { Collapsible } from '@/components/ui/collapsible';
 import { CommandItem } from '@/components/ui/command';
 import { Input } from '@/components/ui/input';
 import { MultiSelect } from '@/components/ui/multiselect';
+import { getCurrentWindowTabs } from '@/lib/chromeUtils';
 import { useAppDispatch } from '@/store/hooks';
 import { addBookmarkGroup } from '@/store/slices/bookmarksSlice';
 import { FolderPlus } from 'lucide-react';
@@ -92,22 +93,15 @@ const BookmarkGroupForm = () => {
 
 	// Fetch all tabs in current window
 	useEffect(() => {
-		chrome.tabs.query({ currentWindow: true }, (chromeTabs) => {
-			const formattedTabs: Tab[] = chromeTabs
-				.filter(
-					(tab) =>
-						tab.url &&
-						!tab.url.startsWith('chrome://') &&
-						!tab.url.startsWith('chrome-extension://')
-				)
-				.map((tab) => ({
-					id: tab.id!,
-					title: (tab.title || 'Untitled').replace(/^\(\d+\)\s*/, '').replace(/\s*\(\d+\)$/, ''),
-					url: tab.url || '',
-				}));
-			formDispatch({ type: 'SET_TABS', payload: formattedTabs });
-			formDispatch({ type: 'SET_IS_LOADING', payload: false });
-		});
+		getCurrentWindowTabs()
+			.then((formattedTabs) => {
+				formDispatch({ type: 'SET_TABS', payload: formattedTabs });
+				formDispatch({ type: 'SET_IS_LOADING', payload: false });
+			})
+			.catch((error) => {
+				console.error('Error fetching tabs:', error);
+				formDispatch({ type: 'SET_IS_LOADING', payload: false });
+			});
 	}, []);
 
 	const handleMultiselectChange = (values: string[]) => {

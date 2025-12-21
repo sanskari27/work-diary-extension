@@ -1,6 +1,7 @@
 import { AnimatedBackgroundOrbs, PopupHeader } from '@/components/atoms';
 import { BookmarkForm, BookmarkGroupForm, BrainDumpForm } from '@/components/molecules';
 import { Collapsible } from '@/components/ui/collapsible';
+import { getCurrentTab } from '@/lib/chromeUtils';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { addBookmark, updateBookmark } from '@/store/slices/bookmarksSlice';
 import { motion } from 'framer-motion';
@@ -20,18 +21,18 @@ const Popup = () => {
 
 	useEffect(() => {
 		// Get current tab information
-		chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-			if (tabs[0]) {
-				// Remove notification count from title (e.g., "(3) Title" or "Title (3)")
-				const rawTitle = tabs[0].title || 'Untitled';
-				const cleanTitle = rawTitle.replace(/^\(\d+\)\s*/, '').replace(/\s*\(\d+\)$/, '');
-
-				setCurrentTab({
-					title: cleanTitle,
-					url: tabs[0].url || '',
-				});
-			}
-		});
+		getCurrentTab()
+			.then((tab) => {
+				if (tab) {
+					setCurrentTab({
+						title: tab.title,
+						url: tab.url,
+					});
+				}
+			})
+			.catch((error) => {
+				console.error('Error getting current tab:', error);
+			});
 	}, []);
 
 	const handleSaveBookmark = (data: { name: string; url: string; existingBookmarkId?: string }) => {

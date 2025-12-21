@@ -2,6 +2,7 @@ import { SearchBar, Text } from '@/components/atoms';
 import { BookmarkCard, BookmarkGroupCard } from '@/components/organisms';
 import { PageLayout } from '@/components/templates';
 import { useAppearanceStyles } from '@/hooks/useAppearanceStyles';
+import { openUrlsAsTabGroup, openUrlsInNewWindow } from '@/lib/chromeUtils';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
 	Bookmark,
@@ -70,14 +71,23 @@ export default function BookmarksPage() {
 		dispatch(updateBookmarkGroup({ id: groupId, updates }));
 	};
 
-	const handleOpenGroup = (group: BookmarkGroup) => {
+	const handleOpenGroup = async (group: BookmarkGroup, event?: React.MouseEvent) => {
 		if (group.items.length === 0) return;
 
-		// Create a new window and open all bookmarks in it
 		const urls = group.items.map((item) => item.url);
-		chrome.windows.create({ url: urls }, () => {
-			// Window created successfully
-		});
+		const isModifierPressed = event?.ctrlKey || event?.metaKey;
+
+		try {
+			if (isModifierPressed) {
+				// Open in new window if Ctrl/Cmd is pressed
+				await openUrlsInNewWindow(urls);
+			} else {
+				// Open in current window as Chrome tab group
+				await openUrlsAsTabGroup(urls, group.name, 'blue');
+			}
+		} catch (error) {
+			console.error('Error opening bookmark group:', error);
+		}
 	};
 
 	return (

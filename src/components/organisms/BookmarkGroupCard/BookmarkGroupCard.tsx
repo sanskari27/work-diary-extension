@@ -10,7 +10,7 @@ interface BookmarkGroupCardProps {
 	group: BookmarkGroup;
 	onDelete: (groupId: string) => void;
 	onUpdate: (groupId: string, updates: Partial<BookmarkGroup>) => void;
-	onOpenGroup: (group: BookmarkGroup) => void;
+	onOpenGroup: (group: BookmarkGroup, event?: React.MouseEvent) => void;
 }
 
 export default function BookmarkGroupCard({
@@ -41,7 +41,7 @@ export default function BookmarkGroupCard({
 	const handleOpenGroup = (e: React.MouseEvent) => {
 		e.stopPropagation();
 		if (!isEditing) {
-			onOpenGroup(group);
+			onOpenGroup(group, e);
 		}
 	};
 

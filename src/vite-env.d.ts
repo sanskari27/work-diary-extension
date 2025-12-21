@@ -99,6 +99,26 @@ declare global {
 				queryInfo: { active?: boolean; currentWindow?: boolean; [key: string]: any },
 				callback: (tabs: ChromeTabsTab[]) => void
 			): void;
+			create(
+				createProperties: { windowId?: number; url?: string; active?: boolean; [key: string]: any },
+				callback?: (tab?: ChromeTabsTab) => void
+			): void;
+			group(
+				options: {
+					tabIds: number[];
+					createProperties?: { windowId?: number };
+					groupId?: number;
+				},
+				callback?: (groupId: number) => void
+			): void;
+			TAB_GROUP_ID_NONE: number;
+		};
+		tabGroups: {
+			update(
+				groupId: number,
+				updateProperties: { title?: string; color?: string; [key: string]: any },
+				callback?: (group?: any) => void
+			): void;
 		};
 		windows: {
 			create(

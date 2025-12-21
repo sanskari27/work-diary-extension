@@ -1,6 +1,7 @@
 import { ReminderInput } from '@/components/atoms';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { getNotificationPermission } from '@/lib/chromeUtils';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { updateReminderPreferences } from '@/store/slices/settingsSlice';
 import { Clock } from 'lucide-react';
@@ -14,15 +15,8 @@ const ReminderPreferencesSection = () => {
 	>('default');
 
 	useEffect(() => {
-		// Check Chrome notifications permission (for extensions)
-		if (typeof chrome !== 'undefined' && chrome.notifications) {
-			// Chrome extensions with "notifications" permission in manifest have permission granted
-			// We can check if the API is available
-			setNotificationPermission('granted');
-		} else if (typeof window !== 'undefined' && 'Notification' in window) {
-			// Fallback to standard Notification API
-			setNotificationPermission(Notification.permission);
-		}
+		// Check notification permission
+		setNotificationPermission(getNotificationPermission());
 	}, []);
 
 	const handleUpdate = (updates: any) => {
@@ -65,9 +59,7 @@ const ReminderPreferencesSection = () => {
 				<div className='glass rounded-xl p-5 border border-glass-border'>
 					<div className='flex items-center justify-between'>
 						<div className='flex-1'>
-							<Label className='text-text-primary font-medium'>
-								Enable Reminders by Default
-							</Label>
+							<Label className='text-text-primary font-medium'>Enable Reminders by Default</Label>
 							<p className='text-sm text-text-secondary mt-1'>
 								Automatically enable reminders for new release events
 							</p>
@@ -83,9 +75,7 @@ const ReminderPreferencesSection = () => {
 				<div className='glass rounded-xl p-5 border border-glass-border'>
 					<div className='flex items-center justify-between'>
 						<div className='flex-1'>
-							<Label className='text-text-primary font-medium'>
-								Enable Browser Notifications
-							</Label>
+							<Label className='text-text-primary font-medium'>Enable Browser Notifications</Label>
 							<p className='text-sm text-text-secondary mt-1'>
 								Receive browser notifications at 12:00 PM for active reminders (once per day)
 							</p>
