@@ -66,7 +66,7 @@ const KEYWORD_GROUPS: Record<
 			'track',
 		],
 		color: 'blue',
-		hint: 'follow.?up | remind | later | todo | check | review | revisit | pending | ask',
+		hint: 'follow up | remind | later | todo | check | review | revisit | pending | ask',
 	},
 	decision: {
 		keywords: [
@@ -174,6 +174,21 @@ export function getBaseSuggestions(): TagSuggestion[] {
 }
 
 /**
+ * Extract query text from value at a given cursor index
+ * Returns the text after the last @ symbol before the index, or empty string if no @ found
+ */
+export function getQuery(value: string, index: number): string {
+	const beforeCursor = value.slice(0, index);
+	const lastAtIndex = beforeCursor.lastIndexOf('@');
+
+	if (lastAtIndex === -1) {
+		return '';
+	}
+
+	return beforeCursor.slice(lastAtIndex + 1);
+}
+
+/**
  * Get filtered suggestions based on query
  * Returns suggestions that match the query, or base suggestions if query is empty
  */
@@ -226,5 +241,3 @@ export function getTagSuggestions(query: string): TagSuggestion[] {
 	// If no matches, return empty (user can type freely)
 	return suggestions.slice(0, 4); // Limit to 4 suggestions
 }
-
-

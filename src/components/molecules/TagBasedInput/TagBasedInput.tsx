@@ -1,6 +1,8 @@
 import TagAutocomplete from '@/components/molecules/TagAutocomplete/TagAutocomplete';
 import { Textarea } from '@/components/ui/textarea';
-import { useRef, useState } from 'react';
+import { getQuery } from '@/lib/tagUtils';
+import { getCaretPosition } from '@/lib/utils';
+import { useEffect, useRef, useState } from 'react';
 
 interface TagBasedInputProps
 	extends Omit<
@@ -26,7 +28,12 @@ export default function TagBasedInput({
 }: TagBasedInputProps) {
 	const [showAutocomplete, setShowAutocomplete] = useState(false);
 	const [cursorPosition, setCursorPosition] = useState(0);
+	const [autocompletePosition, setAutocompletePosition] = useState<{
+		top: number;
+		left: number;
+	} | null>(null);
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
+	const wrapperRef = useRef<HTMLDivElement>(null);
 
 	const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
 		const newValue = e.target.value;
@@ -110,8 +117,26 @@ export default function TagBasedInput({
 		onClick?.(e);
 	};
 
+	// Calculate caret position when autocomplete should be shown
+	useEffect(() => {
+		if (showAutocomplete && textareaRef.current && wrapperRef.current) {
+			const position = getCaretPosition(textareaRef, wrapperRef);
+			if (!position) {
+				setShowAutocomplete(false);
+				return;
+			} else {
+				setAutocompletePosition({
+					top: position.top + 20,
+					left: position.left,
+				});
+			}
+		} else {
+			setAutocompletePosition(null);
+		}
+	}, [showAutocomplete, cursorPosition, value]);
+
 	return (
-		<div className='relative'>
+		<div ref={wrapperRef} className='relative'>
 			<Textarea
 				ref={textareaRef}
 				value={value}
@@ -124,11 +149,11 @@ export default function TagBasedInput({
 			/>
 			{showAutocomplete && (
 				<TagAutocomplete
-					value={value}
-					selectionStart={cursorPosition}
+					query={getQuery(value, cursorPosition)}
 					onSelect={handleTagSelect}
 					onClose={() => setShowAutocomplete(false)}
 					textareaRef={textareaRef}
+					position={autocompletePosition || undefined}
 				/>
 			)}
 		</div>
