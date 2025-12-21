@@ -313,7 +313,7 @@ const BackupSyncSection = () => {
 					<p className='text-sm text-blue-300'>
 						<strong>Note:</strong> Export creates a unique backup file with version information.
 						Import will merge data with your existing data, so no information will be lost. Your
-						data is also safely stored locally in your browser's IndexedDB.
+						data is safely stored in Chrome extension storage and synced across your devices.
 					</p>
 				</div>
 			</div>

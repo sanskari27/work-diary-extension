@@ -1,5 +1,5 @@
 import { Middleware } from '@reduxjs/toolkit';
-import { saveStateToIndexedDB } from '../indexedDB';
+import { saveStateToExtensionStorage } from '../extensionStorage';
 import { RootState } from '../store';
 
 // Debounce function to avoid saving on every action
@@ -14,7 +14,7 @@ const debounce = <T extends (...args: any[]) => void>(
 	};
 };
 
-// List of action types that should trigger a save to IndexedDB
+// List of action types that should trigger a save to extension storage
 // Add more action types here as needed
 const ACTIONS_TO_PERSIST = [
 	'content/',
@@ -34,29 +34,35 @@ const debouncedSave = debounce(
 		// Exclude searchQuery from ui slice when persisting
 		const { searchQuery, ...uiStateToPersist } = state.ui;
 		await Promise.all([
-			saveStateToIndexedDB('content', state.content),
-			saveStateToIndexedDB('ui', uiStateToPersist),
-			saveStateToIndexedDB('releases', state.releases),
-			saveStateToIndexedDB('settings', state.settings),
-			saveStateToIndexedDB('todos', state.todos),
-			saveStateToIndexedDB('bookmarks', state.bookmarks),
-			saveStateToIndexedDB('prs', state.prs),
-			saveStateToIndexedDB('brainDump', state.brainDump),
+			saveStateToExtensionStorage('content', state.content),
+			saveStateToExtensionStorage('ui', uiStateToPersist),
+			saveStateToExtensionStorage('releases', state.releases),
+			saveStateToExtensionStorage('settings', state.settings),
+			saveStateToExtensionStorage('todos', state.todos),
+			saveStateToExtensionStorage('bookmarks', state.bookmarks),
+			saveStateToExtensionStorage('prs', state.prs),
+			saveStateToExtensionStorage('brainDump', state.brainDump),
 		]);
 	},
 	500 // Wait 500ms after the last action before saving
 );
 
-export const indexedDBMiddleware: Middleware<{}, RootState> = (store) => (next) => (action) => {
-	const result = next(action);
+export const extensionStorageMiddleware: Middleware<{}, RootState> =
+	(store) => (next) => (action) => {
+		const result = next(action);
 
-	// Check if this action should trigger a save
-	if (
-		ACTIONS_TO_PERSIST.some((pattern) => (action as any).type?.startsWith?.(pattern.split('/')[0]))
-	) {
-		const state = store.getState();
-		debouncedSave(state);
-	}
+		// Check if this action should trigger a save
+		if (
+			ACTIONS_TO_PERSIST.some((pattern) =>
+				(action as any).type?.startsWith?.(pattern.split('/')[0])
+			)
+		) {
+			const state = store.getState();
+			debouncedSave(state);
+		}
 
-	return result;
-};
+		return result;
+	};
+
+// Keep the old name for backwards compatibility during migration
+export const indexedDBMiddleware = extensionStorageMiddleware;

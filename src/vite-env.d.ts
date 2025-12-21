@@ -141,6 +141,7 @@ declare global {
 		};
 		storage: {
 			local: ChromeStorageArea;
+			sync?: ChromeStorageArea;
 		};
 		runtime: {
 			lastError: ChromeRuntimeError | undefined;

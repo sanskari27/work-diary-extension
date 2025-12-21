@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { loadStateFromIndexedDB } from './indexedDB';
-import { indexedDBMiddleware } from './middleware/indexedDBMiddleware';
+import { loadStateFromExtensionStorage } from './extensionStorage';
+import { extensionStorageMiddleware } from './middleware/indexedDBMiddleware';
 import bookmarksReducer from './slices/bookmarksSlice';
 import brainDumpReducer from './slices/brainDumpSlice';
 import contentReducer from './slices/contentSlice';
@@ -10,18 +10,18 @@ import settingsReducer, { defaultSettingsState } from './slices/settingsSlice';
 import todosReducer from './slices/todosSlice';
 import uiReducer from './slices/uiSlice';
 
-// Load persisted state from IndexedDB
+// Load persisted state from extension storage
 export const loadPersistedState = async () => {
 	try {
 		const [content, ui, releases, settings, todos, bookmarks, prs, brainDump] = await Promise.all([
-			loadStateFromIndexedDB('content'),
-			loadStateFromIndexedDB('ui'),
-			loadStateFromIndexedDB('releases'),
-			loadStateFromIndexedDB('settings'),
-			loadStateFromIndexedDB('todos'),
-			loadStateFromIndexedDB('bookmarks'),
-			loadStateFromIndexedDB('prs'),
-			loadStateFromIndexedDB('brainDump'),
+			loadStateFromExtensionStorage('content'),
+			loadStateFromExtensionStorage('ui'),
+			loadStateFromExtensionStorage('releases'),
+			loadStateFromExtensionStorage('settings'),
+			loadStateFromExtensionStorage('todos'),
+			loadStateFromExtensionStorage('bookmarks'),
+			loadStateFromExtensionStorage('prs'),
+			loadStateFromExtensionStorage('brainDump'),
 		]);
 
 		// Ensure searchQuery is not persisted - always reset to empty string
@@ -71,7 +71,7 @@ export const createStore = (preloadedState?: any) => {
 					// Ignore these action types for serialization check
 					ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
 				},
-			}).concat(indexedDBMiddleware as any) as any,
+			}).concat(extensionStorageMiddleware as any) as any,
 	});
 	return store;
 };

@@ -8,7 +8,7 @@ import { createStore, loadPersistedState } from './store/store';
 
 // Initialize the popup with persisted state
 const initPopup = async () => {
-	// Load persisted state from IndexedDB
+	// Load persisted state from extension storage
 	const persistedState = await loadPersistedState();
 
 	// Create store with persisted state

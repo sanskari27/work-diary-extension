@@ -11,7 +11,7 @@ import { initializeSingleInstance, setupVisibilityHandler } from './utils/pwaIns
 
 // Initialize the app with persisted state
 const initApp = async () => {
-	// Load persisted state from IndexedDB
+	// Load persisted state from extension storage
 	const persistedState = await loadPersistedState();
 
 	// Create store with persisted state

@@ -107,6 +107,106 @@ function getTodayDateString(): string {
 	).padStart(2, '0')}`;
 }
 
+/**
+ * Storage helper: Try sync first, fallback to local
+ */
+async function getStorageData(
+	keys: string | string[] | { [key: string]: any } | null
+): Promise<any> {
+	try {
+		// Try sync storage first
+		if (chrome.storage.sync) {
+			return new Promise((resolve) => {
+				chrome.storage.sync!.get(keys, (items: any) => {
+					if (chrome.runtime.lastError) {
+						// If sync fails, fallback to local
+						chrome.storage.local.get(keys, resolve);
+					} else {
+						resolve(items);
+					}
+				});
+			});
+		}
+		// Fallback to local if sync is not available
+		return new Promise((resolve) => {
+			chrome.storage.local.get(keys, resolve);
+		});
+	} catch (error) {
+		console.error('Error getting storage data:', error);
+		// Final fallback to local
+		return new Promise((resolve) => {
+			chrome.storage.local.get(keys, resolve);
+		});
+	}
+}
+
+async function setStorageData(items: { [key: string]: any }): Promise<void> {
+	try {
+		// Try sync storage first
+		if (chrome.storage.sync) {
+			return new Promise((resolve, reject) => {
+				chrome.storage.sync!.set(items, () => {
+					if (chrome.runtime.lastError) {
+						// If sync fails (e.g., quota exceeded), fallback to local
+						chrome.storage.local.set(items, () => {
+							if (chrome.runtime.lastError) {
+								reject(new Error(chrome.runtime.lastError.message));
+							} else {
+								resolve();
+							}
+						});
+					} else {
+						resolve();
+					}
+				});
+			});
+		}
+		// Fallback to local if sync is not available
+		return new Promise((resolve, reject) => {
+			chrome.storage.local.set(items, () => {
+				if (chrome.runtime.lastError) {
+					reject(new Error(chrome.runtime.lastError.message));
+				} else {
+					resolve();
+				}
+			});
+		});
+	} catch (error) {
+		console.error('Error setting storage data:', error);
+		// Final fallback to local
+		return new Promise((resolve, reject) => {
+			chrome.storage.local.set(items, () => {
+				if (chrome.runtime.lastError) {
+					reject(new Error(chrome.runtime.lastError.message));
+				} else {
+					resolve();
+				}
+			});
+		});
+	}
+}
+
+async function removeStorageData(keys: string | string[]): Promise<void> {
+	try {
+		// Remove from both sync and local to ensure cleanup
+		const removeFromStorage = (storage: ChromeStorageArea) => {
+			return new Promise<void>((resolve) => {
+				storage.remove(keys, () => {
+					// Ignore errors for cleanup operations
+					resolve();
+				});
+			});
+		};
+
+		await Promise.all([
+			chrome.storage.sync ? removeFromStorage(chrome.storage.sync!) : Promise.resolve(),
+			removeFromStorage(chrome.storage.local),
+		]);
+	} catch (error) {
+		console.error('Error removing storage data:', error);
+	}
+}
+
 // Listen for messages from the extension pages
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 	try {
@@ -160,6 +260,36 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 					});
 				}
 			});
+		} else if (message.type === 'STORAGE_GET') {
+			// Handle storage get requests
+			getStorageData(message.keys)
+				.then((data) => {
+					sendResponse({ success: true, data });
+				})
+				.catch((error) => {
+					sendResponse({ success: false, error: error.message });
+				});
+			return true; // Keep the message channel open for async response
+		} else if (message.type === 'STORAGE_SET') {
+			// Handle storage set requests
+			setStorageData(message.items)
+				.then(() => {
+					sendResponse({ success: true });
+				})
+				.catch((error) => {
+					sendResponse({ success: false, error: error.message });
+				});
+			return true; // Keep the message channel open for async response
+		} else if (message.type === 'STORAGE_REMOVE') {
+			// Handle storage remove requests
+			removeStorageData(message.keys)
+				.then(() => {
+					sendResponse({ success: true });
+				})
+				.catch((error) => {
+					sendResponse({ success: false, error: error.message });
+				});
+			return true; // Keep the message channel open for async response
 		}
 	} catch (error) {
 		console.error('Error handling message:', error);
