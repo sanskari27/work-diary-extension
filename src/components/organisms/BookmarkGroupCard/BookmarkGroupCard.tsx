@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useAppearanceStyles } from '@/hooks/useAppearanceStyles';
 import { cn } from '@/lib/utils';
 import { BookmarkGroup } from '@/store/slices/bookmarksSlice';
 import { motion } from 'framer-motion';
@@ -22,6 +23,11 @@ export default function BookmarkGroupCard({
 	const [isEditing, setIsEditing] = useState(false);
 	const [editName, setEditName] = useState(group.name);
 	const inputRef = useRef<HTMLInputElement>(null);
+	const { styles } = useAppearanceStyles();
+	const cardStyles = styles.card();
+	const inputStyles = styles.input();
+	const iconStyles = styles.icon();
+	const textStyles = styles.text();
 
 	// Focus input when editing starts
 	useEffect(() => {
@@ -86,9 +92,10 @@ export default function BookmarkGroupCard({
 			whileHover={{ scale: 1.02, y: -2 }}
 			whileTap={{ scale: 0.98 }}
 			className={cn(
-				'h-full group relative rounded-xl glass-strong p-2.5 cursor-pointer',
+				'h-full group relative rounded-xl glass-strong cursor-pointer',
 				'border border-white/20 shadow-lg hover:shadow-xl transition-all',
 				'flex flex-col',
+				cardStyles.padding,
 				isEditing ? 'min-w-[24rem]' : 'w-[10rem]'
 			)}
 			onClick={handleOpenGroup}
@@ -97,7 +104,9 @@ export default function BookmarkGroupCard({
 			<div className='flex-1 flex flex-col justify-between min-h-0'>
 				{/* Icon and Title */}
 				<div className='mb-1.5 flex items-start gap-1.5'>
-					<FolderOpen className='w-3.5 h-3.5 text-text-accent flex-shrink-0 mt-0.5' />
+					<FolderOpen
+						className={cn(iconStyles.iconSize, 'text-text-accent flex-shrink-0 mt-0.5')}
+					/>
 					{isEditing ? (
 						<Input
 							ref={inputRef}
@@ -105,12 +114,20 @@ export default function BookmarkGroupCard({
 							onChange={(e) => setEditName(e.target.value)}
 							onBlur={handleSave}
 							onKeyDown={handleKeyDown}
-							className='text-xs h-6 px-1.5 py-0.5 bg-white/10 border-glass-border-strong text-white placeholder:text-white/50 focus-visible:ring-primary/50 flex-1'
+							className={cn(
+								inputStyles.textSize,
+								inputStyles.height,
+								inputStyles.padding,
+								'bg-white/10 border-glass-border-strong text-white placeholder:text-white/50 focus-visible:ring-primary/50 flex-1'
+							)}
 							onClick={(e) => e.stopPropagation()}
 						/>
 					) : (
 						<h3
-							className='text-xs font-semibold text-white group-hover:text-text-primary transition-colors line-clamp-2 leading-tight flex-1'
+							className={cn(
+								textStyles.textSize,
+								'font-semibold text-white group-hover:text-text-primary transition-colors line-clamp-2 leading-tight flex-1'
+							)}
 							title={group.name}
 						>
 							{group.name}
@@ -120,7 +137,7 @@ export default function BookmarkGroupCard({
 
 				{/* Bookmark count */}
 				<div className='mb-auto'>
-					<p className='text-[10px] text-text-secondary/70'>
+					<p className={cn(textStyles.metaSize, 'text-text-secondary/70')}>
 						{group.items.length} bookmark{group.items.length === 1 ? '' : 's'}
 					</p>
 				</div>
@@ -136,33 +153,42 @@ export default function BookmarkGroupCard({
 						<Button
 							size='icon'
 							variant='ghost'
-							className='h-6 w-6 p-0 border border-glass-border text-text-accent/80 hover:text-text-primary hover:bg-primary/10'
+							className={cn(
+								iconStyles.iconSize,
+								'p-0 border border-glass-border text-text-accent/80 hover:text-text-primary hover:bg-primary/10'
+							)}
 							onClick={handleEdit}
 							title='Edit group name'
 						>
-							<Pencil className='h-2.5 w-2.5' />
+							<Pencil className={cn(iconStyles.iconSize, 'scale-75')} />
 						</Button>
 					)}
 					{!isEditing && (
 						<Button
 							size='icon'
 							variant='ghost'
-							className='h-6 w-6 p-0 border border-glass-border text-text-accent/80 hover:text-text-primary hover:bg-primary/10'
+							className={cn(
+								iconStyles.iconSize,
+								'p-0 border border-glass-border text-text-accent/80 hover:text-text-primary hover:bg-primary/10'
+							)}
 							onClick={handleOpenGroup}
 							title='Open all bookmarks in new window'
 						>
-							<ExternalLink className='h-2.5 w-2.5' />
+							<ExternalLink className={cn(iconStyles.iconSize, 'scale-75')} />
 						</Button>
 					)}
 					{!isEditing && (
 						<Button
 							size='icon'
 							variant='ghost'
-							className='h-6 w-6 p-0 border border-red-500/30 text-red-400/80 hover:text-red-300 hover:bg-red-500/10'
+							className={cn(
+								iconStyles.iconSize,
+								'p-0 border border-red-500/30 text-red-400/80 hover:text-red-300 hover:bg-red-500/10'
+							)}
 							onClick={handleDelete}
 							title='Delete group'
 						>
-							<Trash2 className='h-2.5 w-2.5' />
+							<Trash2 className={cn(iconStyles.iconSize, 'scale-75')} />
 						</Button>
 					)}
 				</div>

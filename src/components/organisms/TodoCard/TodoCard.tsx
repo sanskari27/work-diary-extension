@@ -1,6 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { useAppearanceStyles } from '@/hooks/useAppearanceStyles';
 import { formatRelativeTime } from '@/lib/dateUtils';
 import { formatTodoDueDate, isTodoOverdue } from '@/lib/todoUtils';
 import { cn } from '@/lib/utils';
@@ -21,6 +22,8 @@ export default function TodoCard({ todo, onClick }: TodoCardProps) {
 	const dispatch = useDispatch();
 	const releases = useSelector((state: RootState) => state.releases.events);
 	const [isHovered, setIsHovered] = useState(false);
+	const { styles, appearance } = useAppearanceStyles();
+	const cardStyles = styles.card();
 
 	const linkedRelease = todo.linkedReleaseId
 		? releases.find((r) => r.id === todo.linkedReleaseId)
@@ -65,17 +68,21 @@ export default function TodoCard({ todo, onClick }: TodoCardProps) {
 
 	const availableActions = getAvailableActions();
 
+	const badgeStyles = styles.badge();
+	const buttonStyles = styles.button();
+
 	return (
 		<div
 			className={cn(
-				'group relative rounded-2xl border border-white/20 glass-strong p-4 shadow-lg transition-all hover:shadow-xl',
+				'group relative rounded-2xl border border-white/20 glass-strong shadow-lg transition-all hover:shadow-xl',
+				cardStyles.padding,
 				isCompleted && 'opacity-60',
 				isOverdue && !isCompleted && 'border-red-400/40 bg-red-500/10'
 			)}
 			onMouseEnter={() => setIsHovered(true)}
 			onMouseLeave={() => setIsHovered(false)}
 		>
-			<div className='flex items-start gap-3'>
+			<div className={cn('flex items-start gap-3', cardStyles.spacing)}>
 				{/* Checkbox */}
 				<Checkbox
 					checked={isCompleted}
@@ -88,27 +95,50 @@ export default function TodoCard({ todo, onClick }: TodoCardProps) {
 				<div className='flex-1 cursor-pointer' onClick={() => onClick(todo)}>
 					{/* Title */}
 					<div className='flex items-center gap-2'>
-						<h3 className={cn('text-base font-semibold text-white', isCompleted && 'line-through')}>
+						<h3
+							className={cn(
+								cardStyles.titleSize,
+								'font-semibold text-white',
+								isCompleted && 'line-through'
+							)}
+						>
 							{todo.title}
 						</h3>
 						<div className='flex flex-wrap items-center gap-2'>
 							{/* Status Badge */}
-							<Badge variant='secondary' className={cn('text-xs', statusColors[todo.status])}>
+							<Badge
+								variant='secondary'
+								className={cn(badgeStyles.textSize, badgeStyles.padding, statusColors[todo.status])}
+							>
 								{todo.status === 'in-progress' ? 'In Progress' : todo.status}
 							</Badge>
 
 							{/* Urgent Badge */}
 							{todo.isUrgent && (
-								<Badge variant='destructive' className='flex items-center gap-1 text-xs'>
-									<Flag className='h-3 w-3' />
+								<Badge
+									variant='destructive'
+									className={cn(
+										'flex items-center gap-1',
+										badgeStyles.textSize,
+										badgeStyles.padding
+									)}
+								>
+									<Flag className={badgeStyles.iconSize} />
 									Urgent
 								</Badge>
 							)}
 
 							{/* Linked Release Badge */}
 							{linkedRelease && (
-								<Badge variant='outline' className='flex items-center gap-1 text-xs'>
-									<Link2 className='h-3 w-3' />
+								<Badge
+									variant='outline'
+									className={cn(
+										'flex items-center gap-1',
+										badgeStyles.textSize,
+										badgeStyles.padding
+									)}
+								>
+									<Link2 className={badgeStyles.iconSize} />
 									{linkedRelease.title}
 								</Badge>
 							)}
@@ -118,7 +148,8 @@ export default function TodoCard({ todo, onClick }: TodoCardProps) {
 					{/* Due Date */}
 					<p
 						className={cn(
-							'mt-1 text-sm gap-1 inline-flex items-center',
+							'mt-1 gap-1 inline-flex items-center',
+							cardStyles.textSize,
 							isOverdue && !isCompleted ? 'font-medium text-red-400' : 'text-text-secondary'
 						)}
 					>
@@ -131,7 +162,7 @@ export default function TodoCard({ todo, onClick }: TodoCardProps) {
 
 				{/* Quick Status Actions */}
 				{availableActions.length > 0 && (
-					<div className='flex flex-col items-end gap-2'>
+					<div className={cn('flex flex-col items-end', cardStyles.spacing)}>
 						<div className='flex flex-wrap justify-end gap-2'>
 							{availableActions.map(({ label, value }) => (
 								<Button
@@ -139,7 +170,9 @@ export default function TodoCard({ todo, onClick }: TodoCardProps) {
 									size='sm'
 									variant='ghost'
 									className={cn(
-										'h-8 px-3 text-xs transition-colors border border-white/10 text-text-secondary hover:text-white hover:bg-white/10',
+										buttonStyles.padding,
+										buttonStyles.textSize,
+										'transition-colors border border-white/10 text-text-secondary hover:text-white hover:bg-white/10',
 										isHovered ? 'opacity-100' : 'opacity-80'
 									)}
 									onClick={(e) => {

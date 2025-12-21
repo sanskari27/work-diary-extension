@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { useAppearanceStyles } from '@/hooks/useAppearanceStyles';
 import { formatRelativeTime } from '@/lib/dateUtils';
 import { cn } from '@/lib/utils';
 import { BrainDumpEntry } from '@/store/slices/brainDumpSlice';
@@ -17,6 +18,10 @@ export default function BrainDumpCard({ entry, onDelete, onUpdate }: BrainDumpCa
 	const [isEditing, setIsEditing] = useState(false);
 	const [editContent, setEditContent] = useState(entry.content);
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
+	const { styles } = useAppearanceStyles();
+	const cardStyles = styles.card();
+	const iconStyles = styles.icon();
+	const textStyles = styles.text();
 
 	// Focus textarea when editing starts
 	useEffect(() => {
@@ -79,19 +84,21 @@ export default function BrainDumpCard({ entry, onDelete, onUpdate }: BrainDumpCa
 			whileHover={{ scale: 1.01, y: -2 }}
 			whileTap={{ scale: 0.99 }}
 			className={cn(
-				'group relative rounded-xl glass-strong p-4',
+				'group relative rounded-xl glass-strong',
 				'border border-white/20 shadow-lg hover:shadow-xl transition-all',
-				'flex flex-col gap-3'
+				'flex flex-col',
+				cardStyles.padding,
+				cardStyles.spacing
 			)}
 		>
 			{/* Header */}
 			<div className='flex items-start justify-between gap-3'>
 				<div className='flex items-center gap-2 flex-1 min-w-0'>
-					<Brain className='w-4 h-4 text-text-accent flex-shrink-0' />
-					<span className='text-xs text-gray-300/70 truncate'>
+					<Brain className={cn(iconStyles.iconSize, 'text-text-accent flex-shrink-0')} />
+					<span className={cn(textStyles.metaSize, 'text-gray-300/70 truncate')}>
 						{formatRelativeTime(new Date(entry.timestamp).toISOString())}
 					</span>
-					<span className='text-xs text-gray-300/50'>
+					<span className={cn(textStyles.metaSize, 'text-gray-300/50')}>
 						{new Date(entry.timestamp).toLocaleString([], {
 							month: 'short',
 							day: 'numeric',
@@ -114,18 +121,24 @@ export default function BrainDumpCard({ entry, onDelete, onUpdate }: BrainDumpCa
 							<Button
 								size='icon'
 								variant='ghost'
-								className='h-7 w-7 p-0 border border-green-500/30 text-green-400/80 hover:text-green-300 hover:bg-green-500/10'
+								className={cn(
+									iconStyles.iconSize,
+									'p-0 border border-green-500/30 text-green-400/80 hover:text-green-300 hover:bg-green-500/10'
+								)}
 								onClick={handleSave}
 							>
-								<Check className='h-3.5 w-3.5' />
+								<Check className={iconStyles.iconSize} />
 							</Button>
 							<Button
 								size='icon'
 								variant='ghost'
-								className='h-7 w-7 p-0 border border-glass-border text-text-accent/80 hover:text-text-primary hover:bg-primary/10'
+								className={cn(
+									iconStyles.iconSize,
+									'p-0 border border-glass-border text-text-accent/80 hover:text-text-primary hover:bg-primary/10'
+								)}
 								onClick={handleCancel}
 							>
-								<X className='h-3.5 w-3.5' />
+								<X className={iconStyles.iconSize} />
 							</Button>
 						</>
 					) : (
@@ -133,18 +146,24 @@ export default function BrainDumpCard({ entry, onDelete, onUpdate }: BrainDumpCa
 							<Button
 								size='icon'
 								variant='ghost'
-								className='h-7 w-7 p-0 border border-glass-border text-text-accent/80 hover:text-text-primary hover:bg-primary/10'
+								className={cn(
+									iconStyles.iconSize,
+									'p-0 border border-glass-border text-text-accent/80 hover:text-text-primary hover:bg-primary/10'
+								)}
 								onClick={handleEdit}
 							>
-								<Pencil className='h-3.5 w-3.5' />
+								<Pencil className={iconStyles.iconSize} />
 							</Button>
 							<Button
 								size='icon'
 								variant='ghost'
-								className='h-7 w-7 p-0 border border-red-500/30 text-red-400/80 hover:text-red-300 hover:bg-red-500/10'
+								className={cn(
+									iconStyles.iconSize,
+									'p-0 border border-red-500/30 text-red-400/80 hover:text-red-300 hover:bg-red-500/10'
+								)}
 								onClick={handleDelete}
 							>
-								<Trash2 className='h-3.5 w-3.5' />
+								<Trash2 className={iconStyles.iconSize} />
 							</Button>
 						</>
 					)}
@@ -159,17 +178,25 @@ export default function BrainDumpCard({ entry, onDelete, onUpdate }: BrainDumpCa
 					onChange={(e) => setEditContent(e.target.value)}
 					onBlur={() => handleSave()}
 					onKeyDown={handleKeyDown}
-					className='text-sm bg-white/10 border-glass-border-strong text-white placeholder:text-white/50 focus-visible:ring-primary/50 resize-none min-h-[100px]'
+					className={cn(
+						cardStyles.textSize,
+						'bg-white/10 border-glass-border-strong text-white placeholder:text-white/50 focus-visible:ring-primary/50 resize-none min-h-[100px]'
+					)}
 					onClick={(e) => e.stopPropagation()}
 				/>
 			) : (
-				<p className='text-sm text-white/90 whitespace-pre-wrap break-words leading-relaxed'>
+				<p
+					className={cn(
+						cardStyles.textSize,
+						'text-white/90 whitespace-pre-wrap break-words leading-relaxed'
+					)}
+				>
 					{entry.content}
 				</p>
 			)}
 
 			{isEditing && (
-				<p className='text-xs text-gray-300/50 mt-1'>
+				<p className={cn(textStyles.metaSize, 'text-gray-300/50 mt-1')}>
 					Press Cmd/Ctrl + Enter to save, Esc to cancel
 				</p>
 			)}
