@@ -2,6 +2,7 @@ import {
 	Bookmark,
 	Brain,
 	CheckSquare,
+	FileText,
 	GitPullRequest,
 	LucideIcon,
 	Rocket,
@@ -52,6 +53,12 @@ export const FEATURES: Feature[] = [
 		route: '/utilities',
 		icon: 'wrench',
 	},
+	{
+		id: 'visual-notes',
+		name: 'Visual Notes',
+		route: '/visual-notes',
+		icon: 'fileText',
+	},
 ];
 
 export const iconMap: Record<string, LucideIcon> = {
@@ -61,4 +68,5 @@ export const iconMap: Record<string, LucideIcon> = {
 	gitPullRequest: GitPullRequest,
 	brain: Brain,
 	wrench: Wrench,
+	fileText: FileText,
 };

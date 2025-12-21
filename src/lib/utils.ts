@@ -183,22 +183,6 @@ export const getCaretPosition = (
 		const left = (textareaRect.left - wrapperRect.left) + caretInTextareaLeft;
 		const top = (textareaRect.top - wrapperRect.top) + caretInTextareaTop;
 
-		console.log('Caret position calculation:', {
-			textareaClientWidth: contentWidth,
-			textareaBoundingWidth: textareaRect.width,
-			markerRect,
-			measureDivRect,
-			scroll: { scrollLeft, scrollTop },
-			padding: { paddingLeft, paddingTop },
-			border: { borderLeft, borderTop },
-			relative: { relativeLeft, relativeTop },
-			textareaContent: { textareaContentLeft, textareaContentTop },
-			caretInTextarea: { caretInTextareaLeft, caretInTextareaTop },
-			final: { left, top },
-			lastLine: `"${lastLine}"`,
-			lastLineLength: lastLine.length
-		});
-
 		return { left, top };
 	} catch (error) {
 		console.error('Error calculating caret position:', error);
