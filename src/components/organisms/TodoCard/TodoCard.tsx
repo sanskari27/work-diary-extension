@@ -3,11 +3,12 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useAppearanceStyles } from '@/hooks/useAppearanceStyles';
 import { formatRelativeTime } from '@/lib/dateUtils';
-import { formatTodoDueDate, isTodoOverdue } from '@/lib/todoUtils';
+import { formatTodoDueDate, getTodoUrgencyLevel, isTodoOverdue } from '@/lib/todoUtils';
 import { cn } from '@/lib/utils';
 import { Todo, toggleTodoStatus, updateTodoStatus } from '@/store/slices/todosSlice';
 import { RootState } from '@/store/store';
-import { Flag, Link2 } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Calendar, FileText, Flag, Link2, Search } from 'lucide-react';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -31,6 +32,14 @@ export default function TodoCard({ todo, onClick }: TodoCardProps) {
 
 	const isOverdue = isTodoOverdue(todo);
 	const isCompleted = todo.status === 'completed';
+	const urgencyLevel = getTodoUrgencyLevel(todo);
+
+	// Urgency styling based on level
+	const urgencyStyles = {
+		overdue: 'border-red-400/40 bg-red-500/10 shadow-red-500/20',
+		'due-today': 'border-amber-400/40 bg-amber-500/10 shadow-amber-500/20',
+		upcoming: 'border-white/20',
+	};
 
 	const handleCheckboxChange = () => {
 		dispatch(toggleTodoStatus(todo.id));
@@ -72,24 +81,40 @@ export default function TodoCard({ todo, onClick }: TodoCardProps) {
 	const buttonStyles = styles.button();
 
 	return (
-		<div
+		<motion.div
+			initial={{ opacity: 0, y: 10 }}
+			animate={{ opacity: 1, y: 0 }}
+			exit={{ opacity: 0, scale: 0.95 }}
+			whileHover={{ scale: 1.02, y: -2 }}
+			whileTap={{ scale: 0.98 }}
+			transition={{
+				duration: 0.2,
+				hover: { duration: 0.15 },
+				tap: { duration: 0.1 },
+			}}
 			className={cn(
-				'group relative rounded-2xl border border-white/20 glass-strong shadow-lg transition-all hover:shadow-xl',
+				'group relative rounded-2xl border glass-strong shadow-lg transition-all hover:shadow-xl',
 				cardStyles.padding,
 				isCompleted && 'opacity-60',
-				isOverdue && !isCompleted && 'border-red-400/40 bg-red-500/10'
+				!isCompleted && urgencyStyles[urgencyLevel]
 			)}
 			onMouseEnter={() => setIsHovered(true)}
 			onMouseLeave={() => setIsHovered(false)}
 		>
 			<div className={cn('flex items-start gap-3', cardStyles.spacing)}>
 				{/* Checkbox */}
-				<Checkbox
-					checked={isCompleted}
-					onClick={(e) => e.stopPropagation()}
-					onCheckedChange={handleCheckboxChange}
-					className='mt-1'
-				/>
+				<motion.div
+					whileHover={{ scale: 1.1 }}
+					whileTap={{ scale: 0.9 }}
+					transition={{ duration: 0.15 }}
+				>
+					<Checkbox
+						checked={isCompleted}
+						onClick={(e) => e.stopPropagation()}
+						onCheckedChange={handleCheckboxChange}
+						className='mt-1'
+					/>
+				</motion.div>
 
 				{/* Content */}
 				<div className='flex-1 cursor-pointer' onClick={() => onClick(todo)}>
@@ -142,6 +167,27 @@ export default function TodoCard({ todo, onClick }: TodoCardProps) {
 									{linkedRelease.title}
 								</Badge>
 							)}
+
+							{/* Origin Badge */}
+							{todo.origin && (
+								<Badge
+									variant='outline'
+									className={cn(
+										'flex items-center gap-1 text-text-secondary/70 border-text-secondary/30',
+										badgeStyles.textSize,
+										badgeStyles.padding
+									)}
+									title={`Created from ${todo.origin}`}
+								>
+									{todo.origin === 'search' && <Search className={badgeStyles.iconSize} />}
+									{todo.origin === 'release' && <Calendar className={badgeStyles.iconSize} />}
+									{todo.origin === 'brain-dump' && <FileText className={badgeStyles.iconSize} />}
+									{todo.origin === 'manual' && null}
+									<span className='capitalize'>
+										{todo.origin === 'brain-dump' ? 'Brain dump' : todo.origin}
+									</span>
+								</Badge>
+							)}
 						</div>
 					</div>
 
@@ -187,6 +233,6 @@ export default function TodoCard({ todo, onClick }: TodoCardProps) {
 					</div>
 				)}
 			</div>
-		</div>
+		</motion.div>
 	);
 }

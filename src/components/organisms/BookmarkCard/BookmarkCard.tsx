@@ -43,6 +43,7 @@ export default function BookmarkCard({ bookmark, onDelete, onUpdate }: BookmarkC
 	const handleOpenLink = (e: React.MouseEvent) => {
 		e.stopPropagation();
 		if (!isEditing) {
+			// Track when bookmark is opened
 			window.open(bookmark.pageUrl, '_blank', 'noopener,noreferrer');
 		}
 	};
@@ -95,8 +96,16 @@ export default function BookmarkCard({ bookmark, onDelete, onUpdate }: BookmarkC
 
 	return (
 		<motion.div
-			whileHover={{ scale: 1.02, y: -2 }}
-			whileTap={{ scale: 0.98 }}
+			initial={{ opacity: 0, scale: 0.95 }}
+			animate={{ opacity: 1, scale: 1 }}
+			exit={{ opacity: 0, scale: 0.95 }}
+			whileHover={{ scale: 1.05, y: -4, rotate: 1 }}
+			whileTap={{ scale: 0.97 }}
+			transition={{
+				duration: 0.2,
+				hover: { duration: 0.2, type: 'spring', stiffness: 300 },
+				tap: { duration: 0.1 },
+			}}
 			className={cn(
 				'h-full group relative rounded-xl glass-strong cursor-pointer',
 				'border border-white/20 shadow-lg hover:shadow-xl transition-all',

@@ -15,6 +15,7 @@ export interface Todo {
 	reminderEnabled: boolean;
 	reminderDelta?: string; // e.g., "1h", "30m", "1d" - overrides release reminder if linked
 	repeat?: 'daily' | 'weekly' | 'monthly'; // Future feature
+	origin?: 'search' | 'release' | 'brain-dump' | 'manual'; // Where the todo was created from
 	createdAt: number;
 	completedAt?: number;
 }

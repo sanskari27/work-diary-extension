@@ -165,6 +165,12 @@ export default function TodoForm({ isOpen, onClose, todoToEdit }: TodoFormProps)
 			reminderDelta: formState.reminderEnabled ? formState.reminderDelta : undefined,
 			// Status defaults to 'pending' for new todos, preserve existing status when editing
 			...(todoToEdit ? { status: todoToEdit.status } : { status: 'pending' as const }),
+			// Origin: if linked to release, set to 'release', otherwise preserve existing or default to 'manual'
+			origin:
+				todoToEdit?.origin ||
+				(formState.linkedReleaseId && formState.linkedReleaseId !== '__none__'
+					? ('release' as const)
+					: ('manual' as const)),
 		};
 
 		if (todoToEdit) {

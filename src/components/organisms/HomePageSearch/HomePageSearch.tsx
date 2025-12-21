@@ -51,6 +51,7 @@ const HomePageSearch = () => {
 			reminderDelta: reminderPreferences.defaultReminderEnabled
 				? reminderPreferences.defaultReminderDelta
 				: undefined,
+			origin: 'search' as const,
 		};
 
 		dispatch(addTodo(todoData));

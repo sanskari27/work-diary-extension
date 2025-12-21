@@ -253,6 +253,30 @@ export default function TodosPage() {
 						>
 							{todos.length > 0 ? (
 								<div className={spacing.sectionGap}>
+									{/* No Urgent Todos Message */}
+									{urgentCount === 0 && activeTodos.length > 0 && (
+										<motion.div
+											initial={{ opacity: 0, y: 10 }}
+											animate={{ opacity: 1, y: 0 }}
+											className='glass-strong rounded-xl border border-green-400/30 bg-green-500/10 p-4 mb-4'
+										>
+											<p className='text-sm font-medium text-green-300'>
+												Nothing urgent. You're clear.
+											</p>
+										</motion.div>
+									)}
+
+									{/* All Completed Message */}
+									{activeTodos.length === 0 && completedCount > 0 && (
+										<motion.div
+											initial={{ opacity: 0, y: 10 }}
+											animate={{ opacity: 1, y: 0 }}
+											className='glass-strong rounded-xl border border-green-400/30 bg-green-500/10 p-4 mb-4'
+										>
+											<p className='text-sm font-medium text-green-300'>All caught up!</p>
+										</motion.div>
+									)}
+
 									{/* Urgent & Overdue Section */}
 									{groupedTodos.urgentAndOverdue.length > 0 && (
 										<CollapsibleSection

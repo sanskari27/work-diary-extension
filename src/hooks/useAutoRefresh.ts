@@ -21,6 +21,11 @@ export interface UseAutoRefreshOptions {
 	 * Whether the hook is enabled (default: true)
 	 */
 	enabled?: boolean;
+	/**
+	 * Whether to pause when battery saver mode is detected (default: false)
+	 * Note: Battery API is experimental and may not be available in all browsers
+	 */
+	pauseOnBatterySaver?: boolean;
 }
 
 /**
@@ -44,16 +49,52 @@ export const useAutoRefresh = ({
 	pauseOnHidden = true,
 	immediate = true,
 	enabled = true,
+	pauseOnBatterySaver = false,
 }: UseAutoRefreshOptions) => {
 	const intervalRef = useRef<number | null>(null);
 	const timeoutRef = useRef<number | null>(null);
 	const callbackRef = useRef(callback);
 	const isPageVisibleRef = useRef(true);
+	const batterySaverRef = useRef(false);
 
 	// Keep callback ref up to date
 	useEffect(() => {
 		callbackRef.current = callback;
 	}, [callback]);
+
+	// Check if battery saver mode is active
+	useEffect(() => {
+		if (!pauseOnBatterySaver || !enabled) return;
+
+		// Check for Battery Status API (experimental)
+		const checkBatterySaver = async () => {
+			try {
+				// @ts-ignore - Battery API is experimental
+				if ('getBattery' in navigator) {
+					// @ts-ignore
+					const battery = await navigator.getBattery();
+					batterySaverRef.current = !battery.charging && battery.level < 0.2;
+
+					const handleBatteryChange = () => {
+						batterySaverRef.current = !battery.charging && battery.level < 0.2;
+					};
+
+					battery.addEventListener('chargingchange', handleBatteryChange);
+					battery.addEventListener('levelchange', handleBatteryChange);
+
+					return () => {
+						battery.removeEventListener('chargingchange', handleBatteryChange);
+						battery.removeEventListener('levelchange', handleBatteryChange);
+					};
+				}
+			} catch (error) {
+				// Battery API not available or error
+				console.debug('Battery API not available:', error);
+			}
+		};
+
+		checkBatterySaver();
+	}, [pauseOnBatterySaver, enabled]);
 
 	// Handle page visibility changes
 	useEffect(() => {
@@ -64,7 +105,7 @@ export const useAutoRefresh = ({
 			isPageVisibleRef.current = isVisible;
 
 			// If page becomes visible and we have a valid interval, restart the timer
-			if (isVisible && minutes > 0) {
+			if (isVisible && minutes > 0 && !batterySaverRef.current) {
 				// Clear any existing timers
 				if (intervalRef.current) {
 					clearInterval(intervalRef.current);
@@ -90,8 +131,8 @@ export const useAutoRefresh = ({
 				// Set up interval
 				const intervalMs = minutes * 60 * 1000;
 				intervalRef.current = setInterval(executeCallback, intervalMs);
-			} else if (!isVisible) {
-				// Page is hidden, clear timers
+			} else if (!isVisible || batterySaverRef.current) {
+				// Page is hidden or battery saver active, clear timers
 				if (intervalRef.current) {
 					clearInterval(intervalRef.current);
 					intervalRef.current = null;
@@ -128,6 +169,11 @@ export const useAutoRefresh = ({
 
 		// Don't set up if page is hidden and we're pausing on hidden
 		if (pauseOnHidden && document.hidden) {
+			return;
+		}
+
+		// Don't set up if battery saver is active
+		if (pauseOnBatterySaver && batterySaverRef.current) {
 			return;
 		}
 
@@ -171,7 +217,7 @@ export const useAutoRefresh = ({
 				timeoutRef.current = null;
 			}
 		};
-	}, [minutes, immediate, enabled, pauseOnHidden]);
+	}, [minutes, immediate, enabled, pauseOnHidden, pauseOnBatterySaver]);
 
 	// Cleanup on unmount
 	useEffect(() => {

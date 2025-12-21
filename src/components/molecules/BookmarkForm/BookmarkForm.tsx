@@ -1,10 +1,13 @@
 import { LoadingSpinner } from '@/components/atoms';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Collapsible } from '@/components/ui/custom-collapsible';
 import { Input } from '@/components/ui/input';
+import { detectBookmarkType } from '@/lib/bookmarkUtils';
+import { useAppSelector } from '@/store/hooks';
 import { Bookmark as BookmarkType } from '@/store/slices/bookmarksSlice';
-import { Bookmark, BookmarkPlus } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { Bookmark, BookmarkPlus, Info } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
 
 interface BookmarkFormProps {
 	title: string;
@@ -16,6 +19,10 @@ interface BookmarkFormProps {
 const BookmarkForm = ({ title, url, existingBookmark, onSave }: BookmarkFormProps) => {
 	const [bookmarkName, setBookmarkName] = useState(title);
 	const [isBookmarking, setIsBookmarking] = useState(false);
+	const groups = useAppSelector((state) => state.bookmarks.groups);
+
+	// Detect bookmark type and suggest group
+	const bookmarkType = useMemo(() => detectBookmarkType(url), [url]);
 
 	// Update bookmark name when title or existing bookmark changes
 	useEffect(() => {
@@ -68,6 +75,19 @@ const BookmarkForm = ({ title, url, existingBookmark, onSave }: BookmarkFormProp
 			defaultOpen={false}
 		>
 			<div className='space-y-3'>
+				{/* Detected Type and Suggested Group */}
+				{!existingBookmark && (
+					<div className='flex items-center gap-2 flex-wrap'>
+						<Badge
+							variant='outline'
+							className='text-xs border-white/20 text-text-secondary/70 flex items-center gap-1'
+						>
+							<Info className='w-3 h-3' />
+							Type: <span className='capitalize font-medium'>{bookmarkType}</span>
+						</Badge>
+					</div>
+				)}
+
 				<Input
 					type='text'
 					value={bookmarkName}

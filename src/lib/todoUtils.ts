@@ -131,6 +131,31 @@ export function isTodoOverdue(todo: Todo): boolean {
 }
 
 /**
+ * Gets the urgency level of a todo
+ * Returns 'overdue' | 'due-today' | 'upcoming'
+ */
+export function getTodoUrgencyLevel(todo: Todo): 'overdue' | 'due-today' | 'upcoming' {
+	if (todo.status === 'completed') return 'upcoming';
+
+	const now = new Date();
+	now.setHours(0, 0, 0, 0);
+
+	const todoDate = new Date(todo.date);
+	todoDate.setHours(0, 0, 0, 0);
+
+	const diffTime = todoDate.getTime() - now.getTime();
+	const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+	if (diffDays < 0) {
+		return 'overdue';
+	} else if (diffDays === 0) {
+		return 'due-today';
+	} else {
+		return 'upcoming';
+	}
+}
+
+/**
  * Gets the reminder time for a todo (considering release linkage)
  */
 export function getTodoReminderTime(todo: Todo, linkedReleaseReminderDelta?: string): Date | null {

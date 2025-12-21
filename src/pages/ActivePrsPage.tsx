@@ -1,4 +1,4 @@
-import { StatusAlert, Text } from '@/components/atoms';
+import { SkeletonLoader, StatusAlert, Text } from '@/components/atoms';
 import { PrCard } from '@/components/organisms';
 import { PageLayout } from '@/components/templates';
 import { Button } from '@/components/ui/button';
@@ -29,6 +29,7 @@ const ActivePrsPage = () => {
 	useAutoRefresh({
 		minutes: githubSettings.prRefreshIntervalMinutes,
 		callback: handleRefresh,
+		pauseOnBatterySaver: true, // Pause PR refresh when battery saver is active
 	});
 
 	// // Initial fetch on page load if GitHub is configured
@@ -150,9 +151,7 @@ const ActivePrsPage = () => {
 					{/* Content */}
 					<div className='flex-1 mt-2'>
 						{isLoading && prsToRender.length === 0 ? (
-							<div className='flex items-center justify-center h-64'>
-								<p className='text-text-secondary'>Loading your pull requests…</p>
-							</div>
+							<SkeletonLoader variant='card' count={3} />
 						) : prsToRender.length > 0 ? (
 							<div className='space-y-3'>
 								{prsToRender.map((pr) => (
