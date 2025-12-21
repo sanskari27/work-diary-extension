@@ -1,3 +1,4 @@
+import ExpandableText from '@/components/atoms/ExpandableText/ExpandableText';
 import TagBadge from '@/components/molecules/TagBadge/TagBadge';
 import TagBasedInput from '@/components/molecules/TagBasedInput/TagBasedInput';
 import TagParser from '@/components/molecules/TagParser/TagParser';
@@ -169,9 +170,15 @@ export default function BrainDumpCard({ entry, onDelete, onUpdate }: BrainDumpCa
 					onClickCapture={(e) => e.stopPropagation()}
 				/>
 			) : (
-				<TagParser
+				<ExpandableText
 					content={entry.content}
-					className={cn(cardStyles.textSize, 'text-white/90 break-words leading-relaxed block')}
+					charLimit={300}
+					renderContent={(content) => (
+						<TagParser
+							content={content}
+							className={cn(cardStyles.textSize, 'text-white/90 break-words leading-relaxed block')}
+						/>
+					)}
 				/>
 			)}
 

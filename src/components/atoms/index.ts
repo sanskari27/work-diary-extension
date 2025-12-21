@@ -1,5 +1,6 @@
 export { default as AnimatedBackgroundOrbs } from './AnimatedBackgroundOrbs/AnimatedBackgroundOrbs';
 export { default as DatePicker } from './DatePicker/DatePicker';
+export { default as ExpandableText } from './ExpandableText/ExpandableText';
 export { default as Icon } from './Icon/Icon';
 export { default as LoadingSpinner } from './LoadingSpinner/LoadingSpinner';
 export { default as PopupHeader } from './PopupHeader/PopupHeader';
