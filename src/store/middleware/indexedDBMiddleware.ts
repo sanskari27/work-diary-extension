@@ -1,4 +1,5 @@
 import { Middleware } from '@reduxjs/toolkit';
+import { getIsExternalSyncUpdate, updateLastSavedState } from '../../services/StorageSyncService';
 import { saveStateToExtensionStorage } from '../extensionStorage';
 import { RootState } from '../store';
 
@@ -33,16 +34,26 @@ const debouncedSave = debounce(
 		// Save each slice separately for better granularity
 		// Exclude searchQuery from ui slice when persisting
 		const { searchQuery, ...uiStateToPersist } = state.ui;
-		await Promise.all([
-			saveStateToExtensionStorage('content', state.content),
-			saveStateToExtensionStorage('ui', uiStateToPersist),
-			saveStateToExtensionStorage('releases', state.releases),
-			saveStateToExtensionStorage('settings', state.settings),
-			saveStateToExtensionStorage('todos', state.todos),
-			saveStateToExtensionStorage('bookmarks', state.bookmarks),
-			saveStateToExtensionStorage('prs', state.prs),
-			saveStateToExtensionStorage('brainDump', state.brainDump),
-		]);
+
+		// Save all slices and track what we saved
+		const savePromises = [
+			{ key: 'redux:content', value: state.content },
+			{ key: 'redux:ui', value: uiStateToPersist },
+			{ key: 'redux:releases', value: state.releases },
+			{ key: 'redux:settings', value: state.settings },
+			{ key: 'redux:todos', value: state.todos },
+			{ key: 'redux:bookmarks', value: state.bookmarks },
+			{ key: 'redux:prs', value: state.prs },
+			{ key: 'redux:brainDump', value: state.brainDump },
+		];
+
+		await Promise.all(
+			savePromises.map(async ({ key, value }) => {
+				await saveStateToExtensionStorage(key.replace('redux:', ''), value);
+				// Track what we saved to detect our own changes later
+				updateLastSavedState(key, value);
+			})
+		);
 	},
 	500 // Wait 500ms after the last action before saving
 );
@@ -50,6 +61,11 @@ const debouncedSave = debounce(
 export const extensionStorageMiddleware: Middleware<{}, RootState> =
 	(store) => (next) => (action) => {
 		const result = next(action);
+
+		// Skip saving if this update came from external sync to prevent infinite loops
+		if (getIsExternalSyncUpdate()) {
+			return result;
+		}
 
 		// Check if this action should trigger a save
 		if (

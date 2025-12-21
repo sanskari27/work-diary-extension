@@ -88,4 +88,3 @@ export const setupVisibilityHandler = (): (() => void) => {
 		document.removeEventListener('visibilitychange', handleVisibilityChange);
 	};
 };
-

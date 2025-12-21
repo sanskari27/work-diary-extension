@@ -5,6 +5,7 @@ import App from './App.tsx';
 import './index.css';
 import { initializeBrowserNotifications } from './services/BrowserNotificationService';
 import { initializeReleaseNotifications } from './services/ReleaseNotificationService';
+import { initializeStorageSync } from './services/StorageSyncService';
 import { initializeTodoNotifications } from './services/TodoNotificationService';
 import { createStore, loadPersistedState } from './store/store';
 import { initializeSingleInstance, setupVisibilityHandler } from './utils/pwaInstanceManager';
@@ -21,6 +22,9 @@ const initApp = async () => {
 	initializeReleaseNotifications(store);
 	initializeTodoNotifications(store);
 	initializeBrowserNotifications(store);
+
+	// Initialize storage sync to listen for changes from other instances
+	initializeStorageSync(store);
 
 	// Initialize PWA single instance behavior
 	await initializeSingleInstance();

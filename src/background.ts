@@ -370,6 +370,35 @@ chrome.runtime.onStartup.addListener(() => {
 	}
 });
 
+// Listen for storage changes and broadcast to all connected pages
+chrome.storage.onChanged.addListener((changes, areaName) => {
+	// Only broadcast changes from sync or local storage (not session storage)
+	if (areaName === 'sync' || areaName === 'local') {
+		// Filter for Redux state changes (prefixed with 'redux:')
+		const reduxChanges: { [key: string]: chrome.storage.StorageChange } = {};
+		for (const key in changes) {
+			if (key.startsWith('redux:')) {
+				reduxChanges[key] = changes[key];
+			}
+		}
+
+		// If there are Redux state changes, broadcast them
+		if (Object.keys(reduxChanges).length > 0) {
+			// Broadcast to all connected extension pages and content scripts
+			chrome.runtime
+				.sendMessage({
+					type: 'STORAGE_CHANGED',
+					changes: reduxChanges,
+					areaName,
+				})
+				.catch(() => {
+					// Ignore errors if no listeners are available
+					// This is expected when no pages are open
+				});
+		}
+	}
+});
+
 chrome.runtime.onInstalled.addListener(() => {
 	try {
 		scheduleDailyCheck();

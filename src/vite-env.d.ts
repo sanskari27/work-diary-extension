@@ -64,6 +64,19 @@ declare global {
 		clear(callback?: () => void): void;
 	}
 
+	interface ChromeStorageChange {
+		oldValue?: any;
+		newValue?: any;
+	}
+
+	interface ChromeStorageEvent
+		extends ChromeEvent<
+			(
+				changes: { [key: string]: ChromeStorageChange },
+				areaName: 'sync' | 'local' | 'session'
+			) => void
+		> {}
+
 	interface ChromeRuntimeError {
 		message?: string;
 	}
@@ -142,6 +155,7 @@ declare global {
 		storage: {
 			local: ChromeStorageArea;
 			sync?: ChromeStorageArea;
+			onChanged: ChromeStorageEvent;
 		};
 		runtime: {
 			lastError: ChromeRuntimeError | undefined;
