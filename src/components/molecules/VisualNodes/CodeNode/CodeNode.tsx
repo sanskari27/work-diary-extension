@@ -2,9 +2,55 @@ import { cn } from '@/lib/utils';
 import { useAppDispatch } from '@/store/hooks';
 import { deleteNodeFromNote, updateNodeInNote } from '@/store/slices/visualNotesSlice';
 import { CodeNodeData, VisualNode } from '@/types/visualNotes';
+import { loader } from '@monaco-editor/react';
 import { Handle, NodeProps, Position } from '@xyflow/react';
 import { X } from 'lucide-react';
+import * as monaco from 'monaco-editor';
 import { Suspense, lazy, useEffect, useState } from 'react';
+// Import Monaco workers using Vite's worker syntax
+// These are used in the getWorker function below
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import jsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import cssWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import htmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker';
+
+// Configure loader to use local monaco-editor package (prevents CDN loading)
+// This must be done before @monaco-editor/react initializes
+loader.config({ monaco });
+
+// Configure Monaco Environment at module level (before @monaco-editor/react loads)
+// This must be done before the Editor component is imported
+// @monaco-editor/react will use this environment configuration
+if (typeof window !== 'undefined') {
+	// Set up MonacoEnvironment with getWorker to use Vite-bundled workers
+	// This prevents @monaco-editor/react from trying to load from CDN
+	(window as any).MonacoEnvironment = {
+		getWorker: function (_moduleId: string, label: string) {
+			// Use Vite-bundled workers (imported with ?worker suffix)
+			// This ensures workers are bundled locally and comply with CSP
+			if (label === 'json') {
+				return new jsonWorker();
+			}
+			if (label === 'css' || label === 'scss' || label === 'less') {
+				return new cssWorker();
+			}
+			if (label === 'html' || label === 'handlebars' || label === 'razor') {
+				return new htmlWorker();
+			}
+			if (label === 'typescript' || label === 'javascript') {
+				return new tsWorker();
+			}
+			// Default editor worker
+			return new editorWorker();
+		},
+	};
+}
 
 const Editor = lazy(() => import('@monaco-editor/react'));
 
@@ -21,7 +67,6 @@ const CodeNode = ({ data, selected }: CodeNodeProps) => {
 	const nodeData = node.data as CodeNodeData;
 	const [content, setContent] = useState(nodeData.content);
 	const [language, setLanguage] = useState(nodeData.language || 'javascript');
-	const [isFocused, setIsFocused] = useState(false);
 
 	useEffect(() => {
 		setContent(nodeData.content);
@@ -119,14 +164,10 @@ const CodeNode = ({ data, selected }: CodeNodeProps) => {
 					<X className='w-3 h-3 text-white' />
 				</button>
 			</div>
-			<div
-				className='flex-1 min-h-0'
-				onFocus={() => setIsFocused(true)}
-				onBlur={() => setIsFocused(false)}
-			>
+			<div className='h-[500px]'>
 				<Suspense fallback={<div className='p-4 text-white/40 text-sm'>Loading editor...</div>}>
 					<Editor
-						height='100%'
+						height='500px'
 						language={language}
 						value={content}
 						onChange={handleEditorChange}

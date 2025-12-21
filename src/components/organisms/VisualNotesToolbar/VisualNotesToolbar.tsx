@@ -1,12 +1,14 @@
 import { SearchBar } from '@/components/atoms';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { addNodeToNote } from '@/store/slices/visualNotesSlice';
+import { addNodeToNote, updateNote } from '@/store/slices/visualNotesSlice';
 import { CodeNodeData, TextNodeData } from '@/types/visualNotes';
 import { useReactFlow } from '@xyflow/react';
-import { Code, Maximize2, Plus, Type, ZoomIn, ZoomOut } from 'lucide-react';
+import { Code, Edit, Maximize2, Plus, Type, ZoomIn, ZoomOut } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 interface VisualNotesToolbarProps {
@@ -29,6 +31,8 @@ const VisualNotesToolbar = ({ noteId }: VisualNotesToolbarProps) => {
 	const [selectedIndex, setSelectedIndex] = useState(0);
 	const [isSearchOpen, setIsSearchOpen] = useState(false);
 	const resultsRef = useRef<HTMLDivElement>(null);
+	const [isEditNoteOpen, setIsEditNoteOpen] = useState(false);
+	const [noteTitle, setNoteTitle] = useState('');
 
 	const handleAddNode = (type: 'text' | 'code') => {
 		const centerX = window.innerWidth / 2 - 100;
@@ -155,6 +159,26 @@ const VisualNotesToolbar = ({ noteId }: VisualNotesToolbarProps) => {
 		}
 	};
 
+	const handleEditNote = () => {
+		if (note) {
+			setNoteTitle(note.title);
+			setIsEditNoteOpen(true);
+		}
+	};
+
+	const handleSaveNote = () => {
+		if (noteTitle.trim() && note) {
+			dispatch(
+				updateNote({
+					id: note.id,
+					updates: { title: noteTitle.trim() },
+				})
+			);
+			setIsEditNoteOpen(false);
+			setNoteTitle('');
+		}
+	};
+
 	return (
 		<div className='flex items-center gap-2 glass-strong rounded-lg p-2 border border-white/20 relative'>
 			{/* Search Bar */}
@@ -209,25 +233,33 @@ const VisualNotesToolbar = ({ noteId }: VisualNotesToolbarProps) => {
 						Add Node
 					</Button>
 				</PopoverTrigger>
-				<PopoverContent className='glass-strong border-white/20 w-48 p-2'>
+				<PopoverContent className='glass-strong border-white/20 w-fit p-2'>
 					<div className='space-y-1'>
-						<button
-							onClick={() => handleAddNode('text')}
-							className='w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors text-left'
-						>
+						<Button className='w-full' variant={'ghost'} onClick={() => handleAddNode('text')}>
 							<Type className='w-4 h-4' />
 							Text
-						</button>
-						<button
-							onClick={() => handleAddNode('code')}
-							className='w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors text-left'
-						>
+						</Button>
+						<Button className='w-full' variant={'ghost'} onClick={() => handleAddNode('code')}>
 							<Code className='w-4 h-4' />
 							Code
-						</button>
+						</Button>
 					</div>
 				</PopoverContent>
 			</Popover>
+
+			{/* Separator */}
+			<div className='w-px h-6 bg-white/20' />
+
+			{/* Edit Note Button */}
+			<Button
+				variant='outline'
+				size='sm'
+				onClick={handleEditNote}
+				className='glass-strong hover:bg-white/10 border-white/20'
+				title='Edit Note'
+			>
+				<Edit className='w-4 h-4' />
+			</Button>
 
 			{/* Separator */}
 			<div className='w-px h-6 bg-white/20' />
@@ -260,6 +292,44 @@ const VisualNotesToolbar = ({ noteId }: VisualNotesToolbarProps) => {
 			>
 				<Maximize2 className='w-4 h-4' />
 			</Button>
+
+			{/* Edit Note Dialog */}
+			<Dialog open={isEditNoteOpen} onOpenChange={setIsEditNoteOpen}>
+				<DialogContent className='glass-strong border-white/20'>
+					<DialogHeader>
+						<DialogTitle className='text-white'>Edit Note</DialogTitle>
+					</DialogHeader>
+					<div className='space-y-4 mt-4'>
+						<Input
+							placeholder='Note title'
+							value={noteTitle}
+							onChange={(e) => setNoteTitle(e.target.value)}
+							onKeyDown={(e) => {
+								if (e.key === 'Enter') {
+									handleSaveNote();
+								}
+							}}
+							className='glass-strong'
+							autoFocus
+						/>
+						<div className='flex gap-2'>
+							<Button onClick={handleSaveNote} className='flex-1'>
+								Save
+							</Button>
+							<Button
+								variant='outline'
+								onClick={() => {
+									setIsEditNoteOpen(false);
+									setNoteTitle('');
+								}}
+								className='flex-1'
+							>
+								Cancel
+							</Button>
+						</div>
+					</div>
+				</DialogContent>
+			</Dialog>
 		</div>
 	);
 };

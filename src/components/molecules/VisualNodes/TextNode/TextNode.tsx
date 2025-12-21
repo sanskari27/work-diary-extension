@@ -67,7 +67,7 @@ const TextNode = ({ data, selected }: TextNodeProps) => {
 	return (
 		<div
 			className={cn(
-				'glass-strong rounded-lg border border-white/20 p-3 min-w-[200px] min-h-[100px] relative group',
+				'glass-strong rounded-lg border border-white/20 p-3 min-w-[200px] min-h-[100px] relative group text-[0.4rem] ',
 				selected && 'ring-2 ring-primary'
 			)}
 		>

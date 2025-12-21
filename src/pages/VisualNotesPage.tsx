@@ -49,7 +49,7 @@ const VisualNotesPage = () => {
 
 			{/* Content */}
 			<div className='relative z-10 min-h-screen'>
-				<SidebarProvider defaultOpen={true}>
+				<SidebarProvider defaultOpen={true} width='24rem'>
 					<Sidebar
 						side='left'
 						variant='sidebar'
