@@ -1,6 +1,7 @@
 import { Icon, Text } from '@/components/atoms';
+import { useAppearanceStyles } from '@/hooks/useAppearanceStyles';
+import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import { ArrowUpRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 interface FeatureTileProps {
@@ -11,6 +12,7 @@ interface FeatureTileProps {
 
 const FeatureTile = ({ name, icon, route }: FeatureTileProps) => {
 	const navigate = useNavigate();
+	const { card } = useAppearanceStyles();
 	return (
 		<motion.div
 			onClick={() => navigate(route)}
@@ -19,10 +21,12 @@ const FeatureTile = ({ name, icon, route }: FeatureTileProps) => {
 			tabIndex={-1}
 			className='cursor-pointer group h-full'
 		>
-			<div className={`relative h-full rounded-2xl overflow-hidden min-h-[140px]`}>
+			<div className={cn('relative h-full rounded-2xl overflow-hidden')}>
 				{/* Gradient Background Layer */}
 				<div
-					className={`absolute inset-0 bg-gradient-to-br from-gradient-from/10 to-gradient-to/10 opacity-70`}
+					className={cn(
+						'absolute inset-0 bg-gradient-to-br from-gradient-from/10 to-gradient-to/10 opacity-70'
+					)}
 				/>
 
 				{/* Strong Frosted Glass Layer */}
@@ -42,29 +46,25 @@ const FeatureTile = ({ name, icon, route }: FeatureTileProps) => {
 				/>
 
 				{/* Content Container */}
-				<div className='relative z-10 h-full p-5 flex flex-col justify-between'>
-					<div className='flex items-start justify-between mb-3'>
-						<motion.div
-							whileHover={{ rotate: 15, scale: 1.15 }}
-							transition={{ type: 'spring', stiffness: 400, damping: 10 }}
-							className='p-2.5 rounded-xl bg-white/10 backdrop-blur-2xl border-2 border-glass-border shadow-xl'
-						>
-							<Icon name={icon} size={20} className='text-primary drop-shadow-2xl' />
-						</motion.div>
-
-						<motion.div
-							initial={{ x: -5, y: 5, opacity: 0 }}
-							whileHover={{ x: 0, y: 0, opacity: 1 }}
-							transition={{ duration: 0.2 }}
-						>
-							<ArrowUpRight className='w-4 h-4 text-secondary' />
-						</motion.div>
-					</div>
+				<div
+					className={cn('relative z-10 h-full', card.padding, 'flex flex-row gap-4 items-center')}
+				>
+					<motion.div
+						whileHover={{ rotate: 15, scale: 1.15 }}
+						transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+						className='p-2.5 rounded-xl bg-white/10 backdrop-blur-2xl border-2 border-glass-border shadow-xl'
+					>
+						<Icon name={icon} className={cn(card.iconSize, 'text-primary drop-shadow-2xl')} />
+					</motion.div>
 
 					<div>
 						<Text
 							variant='h3'
-							className='text-primary font-bold text-base group-hover:translate-x-1 transition-transform duration-200 drop-shadow-lg'
+							className={cn(
+								'text-primary font-bold',
+								card.titleSize,
+								'group-hover:translate-x-1 transition-transform duration-200 drop-shadow-lg'
+							)}
 						>
 							{name}
 						</Text>

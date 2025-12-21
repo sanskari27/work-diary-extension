@@ -14,12 +14,12 @@ const PopupHeader = ({ title, subtitle, className, animate = true }: PageHeaderP
 			initial={animate ? { opacity: 0, y: -20 } : false}
 			animate={animate ? { opacity: 1, y: 0 } : false}
 			transition={{ duration: 0.5 }}
-			className={cn('mb-6', className)}
+			className={cn('mb-2', className)}
 		>
-			<h1 className='text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 mb-2'>
+			<h1 className='text-sm font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 mb-1'>
 				{title}
 			</h1>
-			{subtitle && <p className='text-text-secondary/60 text-sm'>{subtitle}</p>}
+			{subtitle && <p className='text-text-secondary/60 text-xs'>{subtitle}</p>}
 		</motion.div>
 	);
 };
