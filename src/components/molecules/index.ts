@@ -11,4 +11,8 @@ export { default as ErrorDisplay } from './ErrorDisplay/ErrorDisplay';
 export { default as FeatureTile } from './FeatureTile/FeatureTile';
 export { default as Greeting } from './Greeting/Greeting';
 export { default as ReleaseSearchBadge } from './ReleaseSearchBadge/ReleaseSearchBadge';
+export { default as TagAutocomplete } from './TagAutocomplete/TagAutocomplete';
+export { default as TagBadge } from './TagBadge/TagBadge';
+export { default as TagBasedInput } from './TagBasedInput/TagBasedInput';
+export { default as TagParser } from './TagParser/TagParser';
 export { default as TodoSearchBadge } from './TodoSearchBadge/TodoSearchBadge';
