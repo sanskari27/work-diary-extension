@@ -1,24 +1,15 @@
 import { AnimatedBackgroundOrbs } from '@/components/atoms';
-import { SettingsModal } from '@/components/organisms';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import { Home, Menu, Settings, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { ReactNode, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 interface UtilitiesPageTemplateProps {
 	children: ReactNode;
 	sidebar: ReactNode;
-	showHomeButton?: boolean;
 }
 
-const UtilitiesPageTemplate = ({
-	children,
-	sidebar,
-	showHomeButton = true,
-}: UtilitiesPageTemplateProps) => {
-	const navigate = useNavigate();
-	const [settingsOpen, setSettingsOpen] = useState(false);
+const UtilitiesPageTemplate = ({ children, sidebar }: UtilitiesPageTemplateProps) => {
 	const [sidebarOpen, setSidebarOpen] = useState(true);
 
 	return (
@@ -27,50 +18,23 @@ const UtilitiesPageTemplate = ({
 
 			{/* Content */}
 			<div className='relative z-10 min-h-screen'>
-				{showHomeButton && (
-					<motion.button
-						initial={{ opacity: 0, x: -20 }}
-						animate={{ opacity: 1, x: 0 }}
-						transition={{ duration: 0.5 }}
-						onClick={() => navigate('/')}
-						className='fixed top-8 left-8 z-30 glass-strong rounded-2xl p-4 hover:bg-white/10 transition-all duration-300 group'
-					>
-						<Home className='w-5 h-5 text-text-accent group-hover:text-text-primary transition-colors' />
-					</motion.button>
-				)}
-
 				{/* Mobile Sidebar Toggle */}
 				<motion.button
 					initial={{ opacity: 0, scale: 0.8 }}
 					animate={{ opacity: 1, scale: 1 }}
 					transition={{ duration: 0.5, delay: 0.2 }}
 					onClick={() => setSidebarOpen(!sidebarOpen)}
-					className='fixed top-8 right-8 z-30 md:hidden glass-strong rounded-2xl p-4 hover:bg-white/10 transition-all duration-300 group'
+					className='fixed top-8 right-8 z-30 md:hidden glass-strong rounded-xl p-2 hover:bg-white/10 transition-all duration-300 group'
 				>
 					{sidebarOpen ? (
-						<X className='w-5 h-5 text-text-accent group-hover:text-text-primary transition-colors' />
+						<X className='w-4 h-4 text-text-accent group-hover:text-text-primary transition-colors' />
 					) : (
-						<Menu className='w-5 h-5 text-text-accent group-hover:text-text-primary transition-colors' />
-					)}
-				</motion.button>
-
-				{/* Desktop Sidebar Toggle */}
-				<motion.button
-					initial={{ opacity: 0, scale: 0.8 }}
-					animate={{ opacity: 1, scale: 1 }}
-					transition={{ duration: 0.5, delay: 0.2 }}
-					onClick={() => setSidebarOpen(!sidebarOpen)}
-					className='fixed top-8 right-24 z-30 hidden md:block glass-strong rounded-2xl p-4 hover:bg-white/10 transition-all duration-300 group'
-				>
-					{sidebarOpen ? (
-						<X className='w-5 h-5 text-text-accent group-hover:text-text-primary transition-colors' />
-					) : (
-						<Menu className='w-5 h-5 text-text-accent group-hover:text-text-primary transition-colors' />
+						<Menu className='w-4 h-4 text-text-accent group-hover:text-text-primary transition-colors' />
 					)}
 				</motion.button>
 
 				{/* Main Layout */}
-				<div className='flex h-screen pt-20'>
+				<div className='flex h-screen'>
 					{/* Sidebar */}
 					<motion.aside
 						initial={false}
@@ -85,8 +49,27 @@ const UtilitiesPageTemplate = ({
 							sidebarOpen && 'block'
 						)}
 					>
-						<div className='h-full overflow-y-auto pt-20'>{sidebar}</div>
+						<div className='h-full overflow-y-auto '>{sidebar}</div>
 					</motion.aside>
+
+					{/* Desktop Sidebar Toggle - Beside Sidebar */}
+					<motion.button
+						initial={{ opacity: 0, scale: 0.8 }}
+						animate={{
+							opacity: 1,
+							scale: 1,
+							left: sidebarOpen ? '280px' : '0px',
+						}}
+						transition={{ duration: 0.3, delay: 0.2 }}
+						onClick={() => setSidebarOpen(!sidebarOpen)}
+						className='fixed top-8 z-30 hidden md:block glass-strong rounded-xl p-2 hover:bg-white/10 transition-all duration-300 group'
+					>
+						{sidebarOpen ? (
+							<X className='w-4 h-4 text-text-accent group-hover:text-text-primary transition-colors' />
+						) : (
+							<Menu className='w-4 h-4 text-text-accent group-hover:text-text-primary transition-colors' />
+						)}
+					</motion.button>
 
 					{/* Mobile Sidebar Overlay */}
 					{sidebarOpen && (
@@ -106,7 +89,7 @@ const UtilitiesPageTemplate = ({
 						transition={{ duration: 0.3, ease: 'easeInOut' }}
 						className={cn(
 							'md:hidden fixed left-0 top-0 h-full w-64 z-20',
-							'bg-background-gradient border-r border-glass-border overflow-y-auto pt-20'
+							'bg-background-gradient border-r border-glass-border overflow-y-auto '
 						)}
 					>
 						{sidebar}
@@ -122,21 +105,6 @@ const UtilitiesPageTemplate = ({
 						<div className='max-w-7xl mx-auto p-6 h-full'>{children}</div>
 					</main>
 				</div>
-
-				{/* Floating Settings Button */}
-				<motion.button
-					initial={{ opacity: 0, scale: 0.8 }}
-					animate={{ opacity: 1, scale: 1 }}
-					transition={{ duration: 0.5, delay: 0.8 }}
-					onClick={() => setSettingsOpen(true)}
-					tabIndex={-1}
-					className='fixed bottom-8 left-8 z-20 glass-strong rounded-2xl p-4 hover:bg-white/10 transition-all duration-300 group shadow-2xl'
-				>
-					<Settings className='w-6 h-6 text-text-accent group-hover:text-text-primary transition-colors group-hover:rotate-90 duration-300' />
-				</motion.button>
-
-				{/* Settings Modal */}
-				<SettingsModal open={settingsOpen} onOpenChange={setSettingsOpen} />
 			</div>
 		</div>
 	);

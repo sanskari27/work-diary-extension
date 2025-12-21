@@ -1,7 +1,7 @@
 import { LoadingSpinner } from '@/components/atoms';
 import { Button } from '@/components/ui/button';
-import { Collapsible } from '@/components/ui/collapsible';
 import { CommandItem } from '@/components/ui/command';
+import { Collapsible } from '@/components/ui/custom-collapsible';
 import { Input } from '@/components/ui/input';
 import { MultiSelect } from '@/components/ui/multiselect';
 import { getCurrentWindowTabs } from '@/lib/chromeUtils';

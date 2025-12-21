@@ -1,6 +1,6 @@
 import { AnimatedBackgroundOrbs, PopupHeader } from '@/components/atoms';
 import { BookmarkForm, BookmarkGroupForm, BrainDumpForm } from '@/components/molecules';
-import { Collapsible } from '@/components/ui/collapsible';
+import { Collapsible } from '@/components/ui/custom-collapsible';
 import { getCurrentTab } from '@/lib/chromeUtils';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { addBookmark, updateBookmark } from '@/store/slices/bookmarksSlice';

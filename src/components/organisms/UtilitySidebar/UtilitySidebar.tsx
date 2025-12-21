@@ -1,4 +1,4 @@
-import { Collapsible } from '@/components/ui/collapsible';
+import { Collapsible } from '@/components/ui/custom-collapsible';
 import { TOOL_GROUPS, utilityIconMap } from '@/config/utilities';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';

@@ -1,6 +1,6 @@
 import { LoadingSpinner } from '@/components/atoms';
 import { Button } from '@/components/ui/button';
-import { Collapsible } from '@/components/ui/collapsible';
+import { Collapsible } from '@/components/ui/custom-collapsible';
 import { Input } from '@/components/ui/input';
 import { Bookmark as BookmarkType } from '@/store/slices/bookmarksSlice';
 import { Bookmark, BookmarkPlus } from 'lucide-react';
