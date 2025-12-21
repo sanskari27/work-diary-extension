@@ -77,7 +77,10 @@ export function MultiSelect({
 					disabled={disabled}
 					aria-expanded={open}
 					size='sm'
-					className='w-full justify-between'
+					className={cn(
+						'w-full justify-between glass-strong',
+						value.length > 0 ? 'text-white' : 'text-gray-300'
+					)}
 				>
 					{selectedLabels || placeholder}
 					<ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />

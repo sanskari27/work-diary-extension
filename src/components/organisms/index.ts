@@ -1,5 +1,6 @@
 export { default as BookmarkCard } from './BookmarkCard/BookmarkCard';
 export { default as BookmarkGroupCard } from './BookmarkGroupCard/BookmarkGroupCard';
+export { default as BrainDumpCard } from './BrainDumpCard/BrainDumpCard';
 export { default as FeatureGrid } from './FeatureGrid/FeatureGrid';
 export { default as HomePageSearch } from './HomePageSearch/HomePageSearch';
 export { default as MasterSearchBadge } from './MasterSearchBadge/MasterSearchBadge';

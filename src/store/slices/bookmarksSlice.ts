@@ -8,10 +8,15 @@ export interface Bookmark {
 	createdAt: number;
 }
 
+export interface BookmarkGroupItem {
+	title: string;
+	url: string;
+}
+
 export interface BookmarkGroup {
 	id: string;
 	name: string;
-	bookmarkIds: string[];
+	items: BookmarkGroupItem[];
 	createdAt: number;
 }
 

@@ -1,12 +1,13 @@
 import { LoadingSpinner } from '@/components/atoms';
 import { Button } from '@/components/ui/button';
+import { Collapsible } from '@/components/ui/collapsible';
 import { CommandItem } from '@/components/ui/command';
 import { Input } from '@/components/ui/input';
 import { MultiSelect } from '@/components/ui/multiselect';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { addBookmark, addBookmarkGroup } from '@/store/slices/bookmarksSlice';
+import { useAppDispatch } from '@/store/hooks';
+import { addBookmarkGroup } from '@/store/slices/bookmarksSlice';
 import { FolderPlus } from 'lucide-react';
-import { useEffect, useMemo, useReducer, useRef } from 'react';
+import { useEffect, useMemo, useReducer } from 'react';
 
 interface Tab {
 	id: number;
@@ -61,6 +62,7 @@ const bookmarkGroupFormReducer = (
 		case 'RESET':
 			return {
 				...initialState,
+				isLoading: state.isLoading,
 				tabs: state.tabs, // Keep tabs, only reset form fields
 			};
 		default:
@@ -70,10 +72,7 @@ const bookmarkGroupFormReducer = (
 
 const BookmarkGroupForm = () => {
 	const dispatch = useAppDispatch();
-	const bookmarks = useAppSelector((state) => state.bookmarks.bookmarks);
 	const [formState, formDispatch] = useReducer(bookmarkGroupFormReducer, initialState);
-	const pendingGroupNameRef = useRef<string>('');
-	const pendingTabIdsRef = useRef<number[]>([]);
 
 	// Convert tabs to multiselect items format
 	const multiselectItems = useMemo(
@@ -130,45 +129,7 @@ const BookmarkGroupForm = () => {
 
 	const handleCancel = () => {
 		formDispatch({ type: 'RESET' });
-		pendingGroupNameRef.current = '';
-		pendingTabIdsRef.current = [];
 	};
-
-	// Handle creating the group after bookmarks are created
-	useEffect(() => {
-		if (
-			!formState.isCreating ||
-			!pendingGroupNameRef.current ||
-			pendingTabIdsRef.current.length === 0
-		)
-			return;
-
-		const selectedTabs = formState.tabs.filter((t) => pendingTabIdsRef.current.includes(t.id));
-		const bookmarkIds: string[] = [];
-
-		// Find bookmarks for selected tabs
-		selectedTabs.forEach((tab) => {
-			const bookmark = bookmarks.find((b) => b.pageUrl.toLowerCase() === tab.url.toLowerCase());
-			if (bookmark) {
-				bookmarkIds.push(bookmark.id);
-			}
-		});
-
-		// If we have all bookmark IDs, create the group
-		if (bookmarkIds.length === selectedTabs.length && bookmarkIds.length > 0) {
-			dispatch(
-				addBookmarkGroup({
-					name: pendingGroupNameRef.current,
-					bookmarkIds,
-				})
-			);
-
-			// Reset form
-			handleCancel();
-			pendingGroupNameRef.current = '';
-			pendingTabIdsRef.current = [];
-		}
-	}, [bookmarks, formState.isCreating, formState.tabs, dispatch]);
 
 	const handleCreateGroup = () => {
 		if (
@@ -179,58 +140,38 @@ const BookmarkGroupForm = () => {
 			return;
 
 		formDispatch({ type: 'SET_IS_CREATING', payload: true });
-		pendingGroupNameRef.current = formState.groupName.trim();
-		pendingTabIdsRef.current = [...formState.selectedTabIds];
 
 		const selectedTabs = formState.tabs.filter((t) => formState.selectedTabIds.includes(t.id));
-		let hasNewBookmarks = false;
 
-		// Create all missing bookmarks first
-		selectedTabs.forEach((tab) => {
-			const exists = bookmarks.find((b) => b.pageUrl.toLowerCase() === tab.url.toLowerCase());
-			if (!exists) {
-				dispatch(addBookmark({ name: tab.title, pageUrl: tab.url }));
-				hasNewBookmarks = true;
-			}
-		});
+		// Create items array directly from selected tabs
+		const items = selectedTabs.map((tab) => ({
+			title: tab.title,
+			url: tab.url,
+		}));
 
-		// If no new bookmarks were created, check if we can create the group immediately
-		if (!hasNewBookmarks) {
-			// Trigger the useEffect by checking if all bookmarks exist
-			const bookmarkIds: string[] = [];
-			selectedTabs.forEach((tab) => {
-				const bookmark = bookmarks.find((b) => b.pageUrl.toLowerCase() === tab.url.toLowerCase());
-				if (bookmark) {
-					bookmarkIds.push(bookmark.id);
-				}
-			});
+		// Create the group directly with items
+		dispatch(
+			addBookmarkGroup({
+				name: formState.groupName.trim(),
+				items,
+			})
+		);
 
-			if (bookmarkIds.length === selectedTabs.length && bookmarkIds.length > 0) {
-				dispatch(
-					addBookmarkGroup({
-						name: pendingGroupNameRef.current,
-						bookmarkIds,
-					})
-				);
-
-				handleCancel();
-			}
-		}
-
-		// The useEffect above will handle creating the group once bookmarks are updated (if new ones were added)
+		// Reset form
+		formDispatch({ type: 'SET_IS_CREATING', payload: false });
+		handleCancel();
 	};
 
 	return (
-		<div className='glass-strong rounded-xl p-4 border border-glass-border-strong'>
-			<div className='flex items-start justify-between gap-3 mb-3'>
-				<div className='flex-1 overflow-hidden'>
-					<h3 className='text-white font-semibold mb-1 flex items-center gap-2'>
-						<FolderPlus className='w-4 h-4 text-text-accent' />
-						Create Bookmark Group
-					</h3>
-				</div>
-			</div>
-
+		<Collapsible
+			header={
+				<h3 className='text-white font-semibold flex items-center gap-2'>
+					<FolderPlus className='w-4 h-4 text-text-accent' />
+					Create Bookmark Group
+				</h3>
+			}
+			defaultOpen={false}
+		>
 			{!formState.showNameInput ? (
 				<div className='space-y-3'>
 					{formState.isLoading ? (
@@ -319,7 +260,7 @@ const BookmarkGroupForm = () => {
 					</div>
 				</div>
 			)}
-		</div>
+		</Collapsible>
 	);
 };
 

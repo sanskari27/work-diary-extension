@@ -24,6 +24,7 @@ const ACTIONS_TO_PERSIST = [
 	'todos/',
 	'bookmarks/',
 	'prs/',
+	'brainDump/',
 ];
 
 // Create debounced save function
@@ -40,6 +41,7 @@ const debouncedSave = debounce(
 			saveStateToIndexedDB('todos', state.todos),
 			saveStateToIndexedDB('bookmarks', state.bookmarks),
 			saveStateToIndexedDB('prs', state.prs),
+			saveStateToIndexedDB('brainDump', state.brainDump),
 		]);
 	},
 	500 // Wait 500ms after the last action before saving

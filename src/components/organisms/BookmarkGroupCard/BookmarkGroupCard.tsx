@@ -1,22 +1,20 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import { Bookmark, BookmarkGroup } from '@/store/slices/bookmarksSlice';
+import { BookmarkGroup } from '@/store/slices/bookmarksSlice';
 import { motion } from 'framer-motion';
 import { ExternalLink, FolderOpen, Pencil, Trash2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 interface BookmarkGroupCardProps {
 	group: BookmarkGroup;
-	bookmarks: Bookmark[];
 	onDelete: (groupId: string) => void;
 	onUpdate: (groupId: string, updates: Partial<BookmarkGroup>) => void;
-	onOpenGroup: (group: BookmarkGroup, bookmarks: Bookmark[]) => void;
+	onOpenGroup: (group: BookmarkGroup) => void;
 }
 
 export default function BookmarkGroupCard({
 	group,
-	bookmarks,
 	onDelete,
 	onUpdate,
 	onOpenGroup,
@@ -24,9 +22,6 @@ export default function BookmarkGroupCard({
 	const [isEditing, setIsEditing] = useState(false);
 	const [editName, setEditName] = useState(group.name);
 	const inputRef = useRef<HTMLInputElement>(null);
-
-	// Get bookmarks that belong to this group
-	const groupBookmarks = bookmarks.filter((b) => group.bookmarkIds.includes(b.id));
 
 	// Focus input when editing starts
 	useEffect(() => {
@@ -46,7 +41,7 @@ export default function BookmarkGroupCard({
 	const handleOpenGroup = (e: React.MouseEvent) => {
 		e.stopPropagation();
 		if (!isEditing) {
-			onOpenGroup(group, groupBookmarks);
+			onOpenGroup(group);
 		}
 	};
 
@@ -126,7 +121,7 @@ export default function BookmarkGroupCard({
 				{/* Bookmark count */}
 				<div className='mb-auto'>
 					<p className='text-[10px] text-text-secondary/70'>
-						{groupBookmarks.length} bookmark{groupBookmarks.length === 1 ? '' : 's'}
+						{group.items.length} bookmark{group.items.length === 1 ? '' : 's'}
 					</p>
 				</div>
 

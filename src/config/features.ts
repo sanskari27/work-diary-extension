@@ -1,4 +1,4 @@
-import { Bookmark, CheckSquare, GitPullRequest, LucideIcon, Rocket } from 'lucide-react';
+import { Bookmark, Brain, CheckSquare, GitPullRequest, LucideIcon, Rocket } from 'lucide-react';
 
 export interface Feature {
 	id: string;
@@ -32,6 +32,12 @@ export const FEATURES: Feature[] = [
 		route: '/prs',
 		icon: 'gitPullRequest',
 	},
+	{
+		id: 'brain-dumps',
+		name: 'Brain Dumps',
+		route: '/brain-dumps',
+		icon: 'brain',
+	},
 ];
 
 export const iconMap: Record<string, LucideIcon> = {
@@ -39,4 +45,5 @@ export const iconMap: Record<string, LucideIcon> = {
 	checkSquare: CheckSquare,
 	bookmark: Bookmark,
 	gitPullRequest: GitPullRequest,
+	brain: Brain,
 };

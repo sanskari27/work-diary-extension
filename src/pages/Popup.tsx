@@ -1,8 +1,10 @@
 import { AnimatedBackgroundOrbs, PopupHeader } from '@/components/atoms';
-import { BookmarkForm, BookmarkGroupForm } from '@/components/molecules';
+import { BookmarkForm, BookmarkGroupForm, BrainDumpForm } from '@/components/molecules';
+import { Collapsible } from '@/components/ui/collapsible';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { addBookmark, updateBookmark } from '@/store/slices/bookmarksSlice';
 import { motion } from 'framer-motion';
+import { Brain } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
 const Popup = () => {
@@ -65,8 +67,21 @@ const Popup = () => {
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.5, delay: 0.1 }}
-					className='flex-1 flex flex-col gap-4'
+					className='flex-1 flex flex-col gap-4 overflow-y-auto'
 				>
+					{/* Instant Brain Dump - Pressure Valve */}
+					<Collapsible
+						header={
+							<h3 className='text-white font-semibold flex items-center gap-2'>
+								<Brain className='w-4 h-4 text-text-accent' />
+								Instant Brain Dump
+							</h3>
+						}
+						defaultOpen={true}
+					>
+						<BrainDumpForm />
+					</Collapsible>
+
 					{currentTab && (
 						<BookmarkForm
 							title={currentTab.title}

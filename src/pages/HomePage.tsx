@@ -1,4 +1,4 @@
-import { Greeting } from '@/components/molecules';
+import { BrainDumpInput, Greeting } from '@/components/molecules';
 import { FeatureGrid, HomePageSearch, NotificationPanel } from '@/components/organisms';
 import { PageLayout } from '@/components/templates';
 import { FEATURES } from '@/config/features';
@@ -32,6 +32,16 @@ const HomePage = () => {
 							className='flex-1 flex flex-col items-center justify-center mb-12'
 						>
 							<HomePageSearch />
+						</motion.div>
+
+						{/* Instant Brain Dump */}
+						<motion.div
+							initial={{ opacity: 0, y: 20 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ duration: 0.6, delay: 0.3 }}
+							className='mb-8'
+						>
+							<BrainDumpInput />
 						</motion.div>
 
 						{/* Features Section */}

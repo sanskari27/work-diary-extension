@@ -100,6 +100,12 @@ declare global {
 				callback: (tabs: ChromeTabsTab[]) => void
 			): void;
 		};
+		windows: {
+			create(
+				createData: { url?: string | string[]; [key: string]: any },
+				callback?: (window?: any) => void
+			): void;
+		};
 		notifications: {
 			create(
 				options: ChromeNotificationsOptions | string,

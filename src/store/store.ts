@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { loadStateFromIndexedDB } from './indexedDB';
 import { indexedDBMiddleware } from './middleware/indexedDBMiddleware';
 import bookmarksReducer from './slices/bookmarksSlice';
+import brainDumpReducer from './slices/brainDumpSlice';
 import contentReducer from './slices/contentSlice';
 import prsReducer from './slices/prsSlice';
 import releasesReducer from './slices/releasesSlice';
@@ -12,7 +13,7 @@ import uiReducer from './slices/uiSlice';
 // Load persisted state from IndexedDB
 export const loadPersistedState = async () => {
 	try {
-		const [content, ui, releases, settings, todos, bookmarks, prs] = await Promise.all([
+		const [content, ui, releases, settings, todos, bookmarks, prs, brainDump] = await Promise.all([
 			loadStateFromIndexedDB('content'),
 			loadStateFromIndexedDB('ui'),
 			loadStateFromIndexedDB('releases'),
@@ -20,6 +21,7 @@ export const loadPersistedState = async () => {
 			loadStateFromIndexedDB('todos'),
 			loadStateFromIndexedDB('bookmarks'),
 			loadStateFromIndexedDB('prs'),
+			loadStateFromIndexedDB('brainDump'),
 		]);
 
 		// Ensure searchQuery is not persisted - always reset to empty string
@@ -40,6 +42,7 @@ export const loadPersistedState = async () => {
 			todos: todos || undefined,
 			bookmarks: bookmarks || undefined,
 			prs: prs || undefined,
+			brainDump: brainDump || undefined,
 		};
 	} catch (error) {
 		console.error('Error loading persisted state:', error);
@@ -59,6 +62,7 @@ export const createStore = (preloadedState?: any) => {
 			todos: todosReducer,
 			bookmarks: bookmarksReducer,
 			prs: prsReducer,
+			brainDump: brainDumpReducer,
 		},
 		preloadedState,
 		middleware: (getDefaultMiddleware) =>

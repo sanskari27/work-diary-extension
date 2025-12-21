@@ -1,5 +1,6 @@
 import { LoadingSpinner } from '@/components/atoms';
 import { Button } from '@/components/ui/button';
+import { Collapsible } from '@/components/ui/collapsible';
 import { Input } from '@/components/ui/input';
 import { Bookmark as BookmarkType } from '@/store/slices/bookmarksSlice';
 import { Bookmark, BookmarkPlus } from 'lucide-react';
@@ -57,16 +58,15 @@ const BookmarkForm = ({ title, url, existingBookmark, onSave }: BookmarkFormProp
 	};
 
 	return (
-		<div className='glass-strong rounded-xl p-4 border border-glass-border-strong'>
-			<div className='flex items-start justify-between gap-3 mb-3'>
-				<div className='flex-1 overflow-hidden'>
-					<h3 className='text-white font-semibold mb-1 flex items-center gap-2'>
-						<BookmarkPlus className='w-4 h-4 text-text-accent' />
-						Bookmark Current Tab
-					</h3>
-				</div>
-			</div>
-
+		<Collapsible
+			header={
+				<h3 className='text-white font-semibold flex items-center gap-2'>
+					<BookmarkPlus className='w-4 h-4 text-text-accent' />
+					Bookmark Current Tab
+				</h3>
+			}
+			defaultOpen={false}
+		>
 			<div className='space-y-3'>
 				<Input
 					type='text'
@@ -100,7 +100,7 @@ const BookmarkForm = ({ title, url, existingBookmark, onSave }: BookmarkFormProp
 					)}
 				</Button>
 			</div>
-		</div>
+		</Collapsible>
 	);
 };
 

@@ -70,11 +70,11 @@ export default function BookmarksPage() {
 		dispatch(updateBookmarkGroup({ id: groupId, updates }));
 	};
 
-	const handleOpenGroup = (group: BookmarkGroup, groupBookmarks: Bookmark[]) => {
-		if (groupBookmarks.length === 0) return;
+	const handleOpenGroup = (group: BookmarkGroup) => {
+		if (group.items.length === 0) return;
 
 		// Create a new window and open all bookmarks in it
-		const urls = groupBookmarks.map((b) => b.pageUrl);
+		const urls = group.items.map((item) => item.url);
 		chrome.windows.create({ url: urls }, () => {
 			// Window created successfully
 		});
@@ -199,7 +199,6 @@ export default function BookmarksPage() {
 												>
 													<BookmarkGroupCard
 														group={group}
-														bookmarks={bookmarks}
 														onDelete={handleDeleteGroup}
 														onUpdate={handleUpdateGroup}
 														onOpenGroup={handleOpenGroup}
