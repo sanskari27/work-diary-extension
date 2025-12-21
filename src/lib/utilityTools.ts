@@ -1155,3 +1155,293 @@ export const convertBytes = (
 
 	return { result: result.toFixed(2) };
 };
+
+// ==================== HTTP Tools ====================
+
+export interface ParsedCurl {
+	method: string;
+	url: string;
+	headers: Record<string, string>;
+	authorization?: {
+		type: string;
+		value: string;
+	};
+	body?: string;
+	queryParams?: Record<string, string>;
+	cookies?: Record<string, string>;
+	userAgent?: string;
+	contentType?: string;
+}
+
+export const parseCurl = (curlCommand: string): { result: ParsedCurl | null; error?: string } => {
+	try {
+		// First, extract multi-line data before normalizing
+		// This preserves the structure of JSON arrays/objects in -d flags
+		const originalLines = curlCommand.split('\n');
+
+		// Handle backslash line continuations for processing, but keep original for data extraction
+		let processed = originalLines
+			.map((line, index, array) => {
+				// Remove trailing backslash and whitespace
+				const trimmed = line.trimEnd();
+				if (trimmed.endsWith('\\') && index < array.length - 1) {
+					return trimmed.slice(0, -1).trimEnd() + ' ';
+				}
+				return trimmed;
+			})
+			.join(' ');
+
+		// Normalize whitespace but preserve structure
+		processed = processed.replace(/\s+/g, ' ').trim();
+
+		if (!processed.toLowerCase().startsWith('curl')) {
+			return { result: null, error: 'Not a valid curl command' };
+		}
+
+		const parsed: ParsedCurl = {
+			method: 'GET',
+			url: '',
+			headers: {},
+		};
+
+		// Extract method
+		const methodMatch = processed.match(/-X\s+(\w+)/i);
+		if (methodMatch) {
+			parsed.method = methodMatch[1].toUpperCase();
+		}
+
+		// Extract basic auth (-u or --user)
+		const basicAuthMatch = processed.match(/(?:-u|--user)\s+(['"]?)([^'"\s]+)\1/i);
+		if (basicAuthMatch) {
+			const authValue = basicAuthMatch[2];
+			// Handle command substitution - show it as-is
+			if (authValue.includes('$(')) {
+				parsed.authorization = {
+					type: 'Basic',
+					value: authValue, // Keep command substitution visible
+				};
+			} else {
+				// Decode if it's base64, otherwise use as-is
+				try {
+					const decoded = atob(authValue);
+					if (decoded.includes(':')) {
+						parsed.authorization = {
+							type: 'Basic',
+							value: decoded,
+						};
+					} else {
+						parsed.authorization = {
+							type: 'Basic',
+							value: authValue,
+						};
+					}
+				} catch {
+					parsed.authorization = {
+						type: 'Basic',
+						value: authValue,
+					};
+				}
+			}
+		}
+
+		// Extract URL - handle quoted and unquoted URLs, with or without protocol
+		// Look for URL right after curl or after -X METHOD, before other flags
+		const urlPatterns = [
+			// curl "url" or curl 'url' (quoted, with or without protocol)
+			/curl\s+(?:-X\s+\w+\s+)?['"]([^'"]+)['"]/i,
+			// curl url (unquoted, must come before flags like -u, -H, etc.)
+			/curl\s+(?:-X\s+\w+\s+)?([a-z0-9.-]+\.[a-z]{2,}(?:\/[^\s'"]*)?)(?:\s|$)/i,
+			// Full URL with protocol (anywhere)
+			/(https?:\/\/[^\s'"]+)/i,
+		];
+
+		for (const pattern of urlPatterns) {
+			const match = processed.match(pattern);
+			if (match) {
+				parsed.url = match[1];
+				// Validate it's not a flag value
+				if (!parsed.url.startsWith('-') && parsed.url.length > 0) {
+					break;
+				} else {
+					parsed.url = '';
+				}
+			}
+		}
+
+		// Extract headers (-H or --header) - handle quoted strings properly
+		// This regex handles: -H "Header: value" or -H 'Header: value'
+		const headerPattern = /(?:-H|--header)\s+(['"])([^'"]*?):\s*([^'"]*?)\1/gi;
+		let headerMatch;
+		while ((headerMatch = headerPattern.exec(processed)) !== null) {
+			const key = headerMatch[2].trim();
+			const value = headerMatch[3].trim();
+			if (key) {
+				parsed.headers[key] = value;
+
+				// Extract authorization from headers (overrides basic auth if present)
+				if (key.toLowerCase() === 'authorization') {
+					const authParts = value.split(' ');
+					if (authParts.length >= 2) {
+						parsed.authorization = {
+							type: authParts[0],
+							value: authParts.slice(1).join(' '),
+						};
+					}
+				}
+
+				// Extract user agent
+				if (key.toLowerCase() === 'user-agent') {
+					parsed.userAgent = value;
+				}
+
+				// Extract content type
+				if (key.toLowerCase() === 'content-type') {
+					parsed.contentType = value;
+				}
+			}
+		}
+
+		// Extract user agent from --user-agent flag
+		const userAgentMatch = processed.match(/(?:--user-agent)\s+(['"])([^'"]+)\1/i);
+		if (userAgentMatch) {
+			parsed.userAgent = userAgentMatch[2];
+		}
+
+		// Extract cookies (-b or --cookie)
+		const cookiePattern = /(?:-b|--cookie)\s+(['"]?)([^'"]+)\1/gi;
+		let cookieMatch;
+		while ((cookieMatch = cookiePattern.exec(processed)) !== null) {
+			const cookieString = cookieMatch[2];
+			const cookies = cookieString.split(';').reduce((acc, cookie) => {
+				const [key, value] = cookie.split('=').map((s) => s.trim());
+				if (key && value) {
+					acc[key] = value;
+				}
+				return acc;
+			}, {} as Record<string, string>);
+			parsed.cookies = cookies;
+		}
+
+		// Extract data/body - handle multi-line JSON and quoted strings
+		// Work with original command to preserve multi-line structure
+		const dataFlags = ['-d', '--data', '--data-raw', '--data-binary', '--data-ascii'];
+
+		for (const flag of dataFlags) {
+			let inDataBlock = false;
+			let quoteChar = '';
+			let bodyParts: string[] = [];
+
+			for (let i = 0; i < originalLines.length; i++) {
+				let line = originalLines[i];
+				const trimmedLine = line.trimEnd();
+
+				// Check if this line contains a data flag
+				if (!inDataBlock) {
+					const flagRegex = new RegExp(
+						`(?:^|\\s)${flag.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s+([\'"])`,
+						'i'
+					);
+					const match = trimmedLine.match(flagRegex);
+					if (match) {
+						inDataBlock = true;
+						quoteChar = match[1];
+
+						// Find where the quote starts after the flag
+						const flagIndex = trimmedLine.toLowerCase().indexOf(flag.toLowerCase());
+						if (flagIndex >= 0) {
+							const afterFlag = trimmedLine.substring(flagIndex + flag.length).trim();
+							const quoteStartIndex = afterFlag.indexOf(quoteChar);
+							if (quoteStartIndex >= 0) {
+								const dataStart = afterFlag.substring(quoteStartIndex + 1);
+								// Check if quote closes on same line
+								const closingQuoteIndex = dataStart.indexOf(quoteChar);
+								if (closingQuoteIndex >= 0) {
+									// Single line data
+									parsed.body = dataStart.substring(0, closingQuoteIndex);
+									inDataBlock = false;
+									break;
+								} else {
+									// Multi-line data starts here
+									bodyParts.push(dataStart);
+								}
+							}
+						}
+					}
+				} else {
+					// We're in a data block
+					// Remove trailing backslash if present (line continuation)
+					const lineWithoutBackslash = trimmedLine.endsWith('\\')
+						? trimmedLine.slice(0, -1).trimEnd()
+						: trimmedLine;
+
+					// Check for closing quote
+					const closingQuoteIndex = lineWithoutBackslash.indexOf(quoteChar);
+					if (closingQuoteIndex >= 0) {
+						// Found closing quote
+						bodyParts.push(lineWithoutBackslash.substring(0, closingQuoteIndex));
+						parsed.body = bodyParts.join('\n');
+						inDataBlock = false;
+						break;
+					} else {
+						// Continue collecting data
+						bodyParts.push(lineWithoutBackslash);
+					}
+				}
+			}
+
+			// If we found body, break
+			if (parsed.body) break;
+		}
+
+		// Fallback: try simple regex on normalized string for single-line data
+		if (!parsed.body) {
+			const dataPatterns = [
+				/(?:-d|--data|--data-raw|--data-binary|--data-ascii)\s+(['"])([^'"]*?)\1/gi,
+				/(?:-d|--data|--data-raw|--data-binary|--data-ascii)\s+([^\s-]+)/gi,
+			];
+
+			for (const pattern of dataPatterns) {
+				const matches = [...processed.matchAll(pattern)];
+				if (matches.length > 0) {
+					const lastMatch = matches[matches.length - 1];
+					if (lastMatch) {
+						parsed.body = (lastMatch[2] || lastMatch[1]).trim();
+						break;
+					}
+				}
+			}
+		}
+
+		// Extract query parameters from URL
+		if (parsed.url) {
+			try {
+				// Handle URLs without protocol
+				let urlToParse = parsed.url;
+				if (!urlToParse.startsWith('http://') && !urlToParse.startsWith('https://')) {
+					urlToParse = 'https://' + urlToParse;
+				}
+				const urlObj = new URL(urlToParse);
+				const queryParams: Record<string, string> = {};
+				urlObj.searchParams.forEach((value, key) => {
+					queryParams[key] = value;
+				});
+				if (Object.keys(queryParams).length > 0) {
+					parsed.queryParams = queryParams;
+				}
+			} catch {
+				// URL parsing failed, but we still have the URL string
+			}
+		}
+
+		if (!parsed.url) {
+			return { result: null, error: 'Could not extract URL from curl command' };
+		}
+
+		return { result: parsed };
+	} catch (error) {
+		return {
+			result: null,
+			error: error instanceof Error ? error.message : 'Failed to parse curl command',
+		};
+	}
+};

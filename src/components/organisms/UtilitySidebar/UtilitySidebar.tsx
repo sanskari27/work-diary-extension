@@ -2,6 +2,7 @@ import { Collapsible } from '@/components/ui/custom-collapsible';
 import { TOOL_GROUPS, utilityIconMap } from '@/config/utilities';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
+import { Home } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 interface UtilitySidebarProps {
@@ -23,6 +24,23 @@ const UtilitySidebar = ({ onToolSelect }: UtilitySidebarProps) => {
 
 	return (
 		<div className='p-4 space-y-2'>
+			{/* Back to Home Button */}
+			<motion.button
+				onClick={() => navigate('/')}
+				className={cn(
+					'w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all mb-4',
+					'text-sm font-semibold text-white',
+					'bg-white/5 border border-white/10',
+					'hover:bg-white/10 hover:border-white/20 hover:text-text-accent',
+					'backdrop-blur-sm shadow-sm'
+				)}
+				whileHover={{ x: 4, scale: 1.02 }}
+				whileTap={{ scale: 0.98 }}
+			>
+				<Home className='w-5 h-5 flex-shrink-0 text-current' />
+				<span className='truncate flex-1'>Back to Home</span>
+			</motion.button>
+
 			{TOOL_GROUPS.map((group) => {
 				const GroupIcon = utilityIconMap[group.icon] || utilityIconMap.code;
 				const isGroupActive = activeGroupId === group.id;

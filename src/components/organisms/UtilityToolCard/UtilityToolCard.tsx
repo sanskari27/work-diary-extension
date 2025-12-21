@@ -51,9 +51,9 @@ const UtilityToolCard = ({
 			</div>
 
 			{/* Split View */}
-			<div className='flex gap-4 relative flex-1 min-h-0'>
+			<div className='flex justify-between gap-4 relative flex-1 min-h-0'>
 				{/* Input Section */}
-				<div className='space-y-2 flex-1 flex flex-col min-h-0'>
+				<div className='space-y-2 w-[47.5%] flex flex-col min-h-0'>
 					<Text variant='p' className='text-sm font-semibold text-text-secondary flex-shrink-0'>
 						Input
 					</Text>
@@ -80,7 +80,7 @@ const UtilityToolCard = ({
 					{actions && <div className='flex items-center gap-2'>{actions}</div>}
 				</div>
 				{/* Output Section */}
-				<div className='space-y-2 flex-1 flex flex-col min-h-0'>
+				<div className='space-y-2 w-[47.5%] flex flex-col min-h-0'>
 					<Text variant='p' className='text-sm font-semibold text-text-secondary flex-shrink-0'>
 						Output
 					</Text>

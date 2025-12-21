@@ -251,6 +251,14 @@ export const TOOL_GROUPS: ToolGroup[] = [
 		description: 'HTTP headers, requests, and network utilities',
 		tools: [
 			{
+				id: 'curl-parser',
+				name: 'Curl Parser',
+				icon: 'network',
+				description:
+					'Parse curl commands and extract method, URL, headers, authorization, body, and more',
+				component: 'CurlParser',
+			},
+			{
 				id: 'http-headers-formatter',
 				name: 'Format HTTP headers',
 				icon: 'network',
