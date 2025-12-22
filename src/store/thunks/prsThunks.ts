@@ -1,6 +1,7 @@
-import { getPrsForReposGraphQL } from '@/services/GitHubService';
+import { getPrsForRepos } from '@/services/GitHubService';
 import { setError, setLastSyncedAt, setLoading, setPrsInRepo } from '@/store/slices/prsSlice';
 import type { AppDispatch, RootState } from '@/store/store';
+import type { PullRequest } from '@/types/pr.d';
 
 /**
  * Extracts the repo full name (owner/repo) from a GitHub repository link
@@ -44,6 +45,7 @@ export const fetchPrReport = () => async (dispatch: AppDispatch, getState: () =>
 	}
 
 	dispatch(setLoading(true));
+	dispatch(setPrsInRepo([])); // Clear existing PRs at start
 
 	try {
 		// Extract repo full names from repo links
@@ -57,20 +59,38 @@ export const fetchPrReport = () => async (dispatch: AppDispatch, getState: () =>
 			return;
 		}
 
-		// Fetch PRs for all repositories using GraphQL
-		const { prs, rateLimited } = await getPrsForReposGraphQL({
-			token: githubSettings.personalAccessToken,
-			author: githubSettings.username,
-			repoFullNames,
-		});
+		// Accumulate PRs as they come in
+		const allPrs: PullRequest[] = [];
+		let hasRateLimit = false;
 
-		if (rateLimited) {
+		// Fetch PRs for all repositories with callback-based progress
+		const { rateLimited } = await getPrsForRepos(
+			githubSettings.personalAccessToken,
+			githubSettings.username,
+			repoFullNames,
+			(newPrs, rateLimited) => {
+				// Accumulate new PRs
+				allPrs.push(...newPrs);
+
+				// Update store with accumulated PRs for progressive UI updates
+				dispatch(setPrsInRepo([...allPrs]));
+
+				// Track rate limit status
+				if (rateLimited) {
+					hasRateLimit = true;
+					dispatch(setError('Rate limited. Please try again later.'));
+				}
+			}
+		);
+
+		// Final rate limit check
+		if (rateLimited || hasRateLimit) {
 			dispatch(setError('Rate limited. Please try again later.'));
+		} else {
+			dispatch(setError(null));
 		}
 
-		dispatch(setPrsInRepo(prs));
 		dispatch(setLastSyncedAt(new Date().toISOString()));
-		dispatch(setError(null));
 		dispatch(setLoading(false));
 	} catch (error) {
 		console.error('Error fetching PR report:', error);
