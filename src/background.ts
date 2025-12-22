@@ -31,9 +31,11 @@ function checkAndShowNotifications() {
 	// Get stored state and check if notifications should be shown
 	chrome.storage.local.get(
 		['reminderPreferences', 'notifications', 'browserNotificationsShown'],
-		(data) => {
-			const preferences = data.reminderPreferences || {};
-			const notifications = data.notifications || [];
+		(data: { [key: string]: any }) => {
+			const preferences = (data.reminderPreferences || {}) as {
+				enableBrowserNotification?: boolean;
+			};
+			const notifications = (data.notifications || []) as Array<{ message: string }>;
 			const today = getTodayDateString();
 			const shownKey = `browserNotificationsShown_${today}`;
 
@@ -66,7 +68,7 @@ function checkAndShowNotifications() {
 				});
 
 				// Mark that we've shown notifications today
-				const shownData = data.browserNotificationsShown || {};
+				const shownData = (data.browserNotificationsShown || {}) as { [key: string]: boolean };
 				shownData[shownKey] = true;
 				chrome.storage.local.set({ browserNotificationsShown: shownData }, () => {
 					// Clean up old entries after marking
@@ -353,7 +355,7 @@ function cleanupOldEntries() {
 			const dateString = key.replace('browserNotificationsShown_', '');
 			const entryDate = new Date(dateString);
 			if (entryDate >= sevenDaysAgo) {
-				cleanedData[key] = shownData[key];
+				cleanedData[key] = (shownData as { [key: string]: boolean })[key];
 			}
 		});
 
@@ -385,16 +387,20 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
 		// If there are Redux state changes, broadcast them
 		if (Object.keys(reduxChanges).length > 0) {
 			// Broadcast to all connected extension pages and content scripts
-			chrome.runtime
-				.sendMessage({
+			chrome.runtime.sendMessage(
+				{
 					type: 'STORAGE_CHANGED',
 					changes: reduxChanges,
 					areaName,
-				})
-				.catch(() => {
+				},
+				() => {
 					// Ignore errors if no listeners are available
 					// This is expected when no pages are open
-				});
+					if (chrome.runtime.lastError) {
+						// Silently ignore - no listeners available
+					}
+				}
+			);
 		}
 	}
 });

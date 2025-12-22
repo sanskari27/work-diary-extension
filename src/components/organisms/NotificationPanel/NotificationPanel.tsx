@@ -98,8 +98,8 @@ const NotificationPanel = () => {
 								exit={{ opacity: 0, scale: 0.9, x: 100 }}
 								transition={{ duration: 0.3 }}
 								className={cn(
-									notificationStyles.getTypeColors(notification.type),
-									notificationStyles.notificationPadding,
+									notificationStyles.getTypeColors?.(notification.type) || '',
+									notificationStyles.notificationPadding || '',
 									'rounded-xl',
 									'border relative group'
 								)}

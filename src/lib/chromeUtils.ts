@@ -163,7 +163,7 @@ export function groupTabs(options: {
 			return;
 		}
 
-		chrome.tabs.group(options, (groupId) => {
+		chrome.tabs.group(options as any, (groupId) => {
 			const error = getChromeError();
 			if (error) {
 				reject(new Error(error.message));
@@ -181,7 +181,7 @@ export function getTabGroupIdNone(): number {
 	if (!isChromeAvailable() || !chrome.tabs) {
 		return -1;
 	}
-	return chrome.tabs.TAB_GROUP_ID_NONE;
+	return (chrome.tabs as any).TAB_GROUP_ID_NONE;
 }
 
 // ============================================================================
@@ -229,7 +229,7 @@ export function updateTabGroup(
 			return;
 		}
 
-		chrome.tabGroups.update(groupId, updateProperties, (group) => {
+		chrome.tabGroups.update(groupId, updateProperties as any, (group) => {
 			const error = getChromeError();
 			if (error) {
 				reject(new Error(error.message));
@@ -291,13 +291,14 @@ export function getStorageData<T = any>(
 			return;
 		}
 
-		chrome.storage.local.get(keys, (items: T) => {
+		chrome.storage.local.get(keys, (items: { [key: string]: any }) => {
+			const typedItems = items as T;
 			const error = getChromeError();
 			if (error) {
 				reject(new Error(error.message));
 				return;
 			}
-			resolve(items);
+			resolve(typedItems);
 		});
 	});
 }
@@ -408,7 +409,7 @@ export function createNotification(options: ChromeNotificationsOptions | string)
 			return;
 		}
 
-		chrome.notifications.create(options, (notificationId) => {
+		chrome.notifications.create(options as any, (notificationId) => {
 			const error = getChromeError();
 			if (error) {
 				reject(new Error(error.message));

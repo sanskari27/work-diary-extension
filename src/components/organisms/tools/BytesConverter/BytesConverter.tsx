@@ -31,12 +31,6 @@ const BytesConverter = () => {
 		}
 	};
 
-	const handleClear = () => {
-		setValue('');
-		setOutput('');
-		setError(undefined);
-	};
-
 	return (
 		<UtilityToolCard
 			title='Bytes ↔ KB / MB / GB'

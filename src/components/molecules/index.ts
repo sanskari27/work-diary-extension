@@ -10,6 +10,8 @@ export { default as CopyButton } from './CopyButton/CopyButton';
 export { default as ErrorDisplay } from './ErrorDisplay/ErrorDisplay';
 export { default as FeatureTile } from './FeatureTile/FeatureTile';
 export { default as Greeting } from './Greeting/Greeting';
+export { default as NodeCard } from './NodeCard/NodeCard';
+export { default as NotebookCard } from './NotebookCard/NotebookCard';
 export { default as ReleaseSearchBadge } from './ReleaseSearchBadge/ReleaseSearchBadge';
 export { default as TagAutocomplete } from './TagAutocomplete/TagAutocomplete';
 export { default as TagBadge } from './TagBadge/TagBadge';

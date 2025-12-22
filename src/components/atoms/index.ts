@@ -1,8 +1,10 @@
 export { default as AnimatedBackgroundOrbs } from './AnimatedBackgroundOrbs/AnimatedBackgroundOrbs';
 export { default as DatePicker } from './DatePicker/DatePicker';
 export { default as ExpandableText } from './ExpandableText/ExpandableText';
+export { default as GroupLabel } from './GroupLabel/GroupLabel';
 export { default as Icon } from './Icon/Icon';
 export { default as LoadingSpinner } from './LoadingSpinner/LoadingSpinner';
+export { default as NodeToken } from './NodeToken/NodeToken';
 export { default as PopupHeader } from './PopupHeader/PopupHeader';
 export { default as ProgressBar } from './ProgressBar/ProgressBar';
 export { default as ReminderInput } from './ReminderInput/ReminderInput';

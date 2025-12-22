@@ -22,12 +22,6 @@ const TimeCalculator = () => {
 		}
 	};
 
-	const handleClear = () => {
-		setBaseTime('now');
-		setOffset('');
-		setOutput('');
-		setError(undefined);
-	};
 
 	return (
 		<UtilityToolCard

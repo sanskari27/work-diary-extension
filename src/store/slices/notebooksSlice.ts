@@ -316,13 +316,14 @@ const notebooksSlice = createSlice({
 					break;
 				case 'moveNode':
 					// Get current position before moving
-					const moveIndex = state.nodes.findIndex((n) => n.id === actionItem.data.nodeId);
-					if (moveIndex !== -1) {
-						const currentPos = { ...state.nodes[moveIndex].position };
-						// We'd need the new position stored in actionItem.data
-						// For now, this is a limitation
-						break;
-					}
+					// const moveIndex = state.nodes.findIndex((n) => n.id === actionItem.data.nodeId);
+					// if (moveIndex !== -1) {
+					// currentPos reserved for future use
+					// const currentPos = { ...state.nodes[moveIndex].position };
+					// We'd need the new position stored in actionItem.data
+					// For now, this is a limitation
+					// 	break;
+					// }
 					break;
 				case 'connectNodes':
 					// Connection was deleted in undo, need to restore it

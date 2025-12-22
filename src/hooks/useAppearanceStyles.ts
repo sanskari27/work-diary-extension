@@ -262,7 +262,7 @@ export const useAppearanceStyles = () => {
 	 */
 	const getStyle = (type: ComponentType, property: string, variant?: SizeVariant): string => {
 		const styles = getComponentStyles(type, variant);
-		return styles[property] || '';
+		return (styles[property] as string) || '';
 	};
 
 	/**

@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Collapsible } from '@/components/ui/custom-collapsible';
 import { Input } from '@/components/ui/input';
 import { detectBookmarkType } from '@/lib/bookmarkUtils';
-import { useAppSelector } from '@/store/hooks';
 import { Bookmark as BookmarkType } from '@/store/slices/bookmarksSlice';
 import { Bookmark, BookmarkPlus, Info } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
@@ -19,7 +18,6 @@ interface BookmarkFormProps {
 const BookmarkForm = ({ title, url, existingBookmark, onSave }: BookmarkFormProps) => {
 	const [bookmarkName, setBookmarkName] = useState(title);
 	const [isBookmarking, setIsBookmarking] = useState(false);
-	const groups = useAppSelector((state) => state.bookmarks.groups);
 
 	// Detect bookmark type and suggest group
 	const bookmarkType = useMemo(() => detectBookmarkType(url), [url]);

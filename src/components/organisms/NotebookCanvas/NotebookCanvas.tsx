@@ -3,19 +3,20 @@ import { cn } from '@/lib/utils';
 import { useAppDispatch } from '@/store/hooks';
 import { addConnection, moveNode, resizeNode } from '@/store/slices/notebooksSlice';
 import { Connection, Node } from '@/types/notebooks';
-import { Pin } from 'lucide-react';
-import { useCallback, useEffect, useMemo } from 'react';
-import ReactFlow, {
+import {
+	addEdge,
 	Background,
 	Controls,
 	MiniMap,
 	NodeProps,
+	ReactFlow,
 	Connection as RFConnection,
-	addEdge,
 	useEdgesState,
 	useNodesState,
-} from 'reactflow';
-import 'reactflow/dist/style.css';
+} from '@xyflow/react';
+import '@xyflow/react/dist/style.css';
+import { Pin } from 'lucide-react';
+import { useCallback, useEffect, useMemo } from 'react';
 
 interface NotebookCanvasProps {
 	nodes: Node[];
@@ -102,9 +103,9 @@ const NotebookCanvas = ({
 	nodes,
 	connections,
 	notebookId,
-	onNodeEdit,
 	className,
 }: NotebookCanvasProps) => {
+	// onNodeEdit reserved for future use
 	const dispatch = useAppDispatch();
 
 	// Convert nodes to ReactFlow format
@@ -156,7 +157,7 @@ const NotebookCanvas = ({
 	const onConnect = useCallback(
 		(params: RFConnection) => {
 			if (params.source && params.target && params.source !== params.target) {
-				setEdges((eds) => addEdge(params, eds));
+				setEdges((eds: any[]) => addEdge(params, eds));
 				// Add connection to Redux
 				dispatch(
 					addConnection({
@@ -220,7 +221,7 @@ const NotebookCanvas = ({
 				<Controls className='glass-strong border border-white/20' />
 				<MiniMap
 					className='glass-strong border border-white/20'
-					nodeColor={(node) => {
+					nodeColor={(node: { data?: { node?: Node } }) => {
 						const nodeData = node.data?.node as Node | undefined;
 						if (nodeData?.tag === 'idea') return '#10b981';
 						if (nodeData?.tag === 'bug') return '#ef4444';

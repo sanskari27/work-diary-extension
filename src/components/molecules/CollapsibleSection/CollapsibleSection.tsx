@@ -21,7 +21,7 @@ const CollapsibleSection = ({
 	icon,
 }: CollapsibleSectionProps) => {
 	const [isOpen, setIsOpen] = useState(defaultOpen);
-	const { styles, appearance } = useAppearanceStyles();
+	const { styles } = useAppearanceStyles();
 	const cardStyles = styles.card();
 	const badgeStyles = styles.badge();
 	const iconStyles = styles.icon();

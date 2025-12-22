@@ -1,4 +1,5 @@
-import { Connection, Node, NodeType, Notebook, TagType } from '@/types/notebooks';
+import { Node, NodeType, Notebook, TagType } from '@/types/notebooks';
+import { Connection } from '@xyflow/react';
 
 export interface SearchResult {
 	node: Node;
@@ -50,7 +51,7 @@ function extractWords(content: string): string[] {
 export function searchNodes(
 	nodes: Node[],
 	notebooks: Notebook[],
-	connections: Connection[],
+	_connections: Connection[],
 	filters: SearchFilters
 ): SearchResult[] {
 	let results: Node[] = [...nodes];

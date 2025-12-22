@@ -252,7 +252,7 @@ export default function TodosPage() {
 							className={`flex-1 ${appearance.compactMode ? 'pb-4' : 'pb-8'}`}
 						>
 							{todos.length > 0 ? (
-								<div className={spacing.sectionGap}>
+								<div className={spacing.sectionGap as string || ''}>
 									{/* No Urgent Todos Message */}
 									{urgentCount === 0 && activeTodos.length > 0 && (
 										<motion.div

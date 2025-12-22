@@ -14,11 +14,6 @@ const FileSizeFormatter = () => {
 		setOutput(formatFileSize(bytes));
 	};
 
-	const handleClear = () => {
-		setInput('');
-		setOutput('');
-	};
-
 	return (
 		<UtilityToolCard
 			title='File size formatter'

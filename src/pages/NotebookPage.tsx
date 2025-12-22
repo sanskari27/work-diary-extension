@@ -14,7 +14,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { deleteNode, setSelectedNotebook, updateNode } from '@/store/slices/notebooksSlice';
-import { Node, TagType } from '@/types/notebooks';
+import { Connection, Node, Notebook, TagType } from '@/types/notebooks';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -29,9 +29,8 @@ const NotebookPage = () => {
 	const [editContent, setEditContent] = useState('');
 	const [editTag, setEditTag] = useState<string>('none');
 
-	const currentNotebook = notebooks.find((n) => n.id === notebookId);
-	const notebookNodes = nodes.filter((n) => n.notebookId === notebookId);
-	const notebookConnections = connections.filter((c) => c.notebookId === notebookId);
+	const currentNotebook = notebooks.find((n: Notebook) => n.id === notebookId);
+	const notebookConnections = connections.filter((c: Connection) => c.notebookId === notebookId);
 
 	useEffect(() => {
 		if (notebookId) {
@@ -71,11 +70,13 @@ const NotebookPage = () => {
 		}
 	};
 
-	const handleNodeDelete = (nodeId: string) => {
+	// handleNodeDelete reserved for future use
+	const _handleNodeDelete = (nodeId: string) => {
 		if (confirm('Are you sure you want to delete this node?')) {
 			dispatch(deleteNode(nodeId));
 		}
 	};
+	void _handleNodeDelete;
 
 	const handleNodeClick = (node: Node) => {
 		// Focus on node in canvas (could implement scroll/zoom to node)

@@ -8,7 +8,12 @@ interface CodeViewerProps {
 	language?: string;
 }
 
-const CodeViewer = ({ value, className, showCopyButton = true, language }: CodeViewerProps) => {
+const CodeViewer = ({
+	value,
+	className,
+	showCopyButton = true,
+	language: _language,
+}: CodeViewerProps) => {
 	return (
 		<div className='relative h-full flex flex-col'>
 			<pre

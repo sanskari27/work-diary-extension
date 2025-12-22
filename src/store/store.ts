@@ -4,6 +4,7 @@ import { extensionStorageMiddleware } from './middleware/indexedDBMiddleware';
 import bookmarksReducer from './slices/bookmarksSlice';
 import brainDumpReducer from './slices/brainDumpSlice';
 import contentReducer from './slices/contentSlice';
+import notebooksReducer from './slices/notebooksSlice';
 import prsReducer from './slices/prsSlice';
 import releasesReducer from './slices/releasesSlice';
 import settingsReducer, { defaultSettingsState } from './slices/settingsSlice';
@@ -14,8 +15,18 @@ import visualNotesReducer from './slices/visualNotesSlice';
 // Load persisted state from extension storage
 export const loadPersistedState = async () => {
 	try {
-		const [content, ui, releases, settings, todos, bookmarks, prs, brainDump, visualNotes] =
-			await Promise.all([
+		const [
+			content,
+			ui,
+			releases,
+			settings,
+			todos,
+			bookmarks,
+			prs,
+			brainDump,
+			visualNotes,
+			notebooks,
+		] = await Promise.all([
 			loadStateFromExtensionStorage('content'),
 			loadStateFromExtensionStorage('ui'),
 			loadStateFromExtensionStorage('releases'),
@@ -24,7 +35,8 @@ export const loadPersistedState = async () => {
 			loadStateFromExtensionStorage('bookmarks'),
 			loadStateFromExtensionStorage('prs'),
 			loadStateFromExtensionStorage('brainDump'),
-				loadStateFromExtensionStorage('visualNotes'),
+			loadStateFromExtensionStorage('visualNotes'),
+			loadStateFromExtensionStorage('notebooks'),
 		]);
 
 		// Ensure searchQuery is not persisted - always reset to empty string
@@ -47,6 +59,7 @@ export const loadPersistedState = async () => {
 			prs: prs || undefined,
 			brainDump: brainDump || undefined,
 			visualNotes: visualNotes || undefined,
+			notebooks: notebooks || undefined,
 		};
 	} catch (error) {
 		console.error('Error loading persisted state:', error);
@@ -68,6 +81,7 @@ export const createStore = (preloadedState?: any) => {
 			prs: prsReducer,
 			brainDump: brainDumpReducer,
 			visualNotes: visualNotesReducer,
+			notebooks: notebooksReducer,
 		},
 		preloadedState,
 		middleware: (getDefaultMiddleware) =>

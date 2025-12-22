@@ -26,7 +26,10 @@ export const focusExistingInstance = async (): Promise<boolean> => {
 
 	try {
 		const registration = await navigator.serviceWorker.ready;
-		const clients = await registration.active?.clients.matchAll({
+		if (!registration.active) {
+			return false;
+		}
+		const clients = await (registration.active as any).clients?.matchAll({
 			type: 'window',
 			includeUncontrolled: true,
 		});

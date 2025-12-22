@@ -258,8 +258,8 @@ export class BrowserNotificationService {
 		// Prefer chrome.storage (accessible by background worker)
 		if (typeof chrome !== 'undefined' && chrome.storage) {
 			return new Promise((resolve) => {
-				chrome.storage.local.get(['browserNotificationsShown'], (data) => {
-					const shownData = data.browserNotificationsShown || {};
+				chrome.storage.local.get(['browserNotificationsShown'], (data: { [key: string]: any }) => {
+					const shownData = (data.browserNotificationsShown || {}) as { [key: string]: boolean };
 					resolve(shownData[key] === true);
 				});
 			});
@@ -284,8 +284,8 @@ export class BrowserNotificationService {
 
 		// Prefer chrome.storage (accessible by background worker)
 		if (typeof chrome !== 'undefined' && chrome.storage) {
-			chrome.storage.local.get(['browserNotificationsShown'], (data) => {
-				const shownData = data.browserNotificationsShown || {};
+			chrome.storage.local.get(['browserNotificationsShown'], (data: { [key: string]: any }) => {
+				const shownData = (data.browserNotificationsShown || {}) as { [key: string]: boolean };
 				shownData[key] = true;
 				chrome.storage.local.set({ browserNotificationsShown: shownData }, () => {
 					if (chrome.runtime.lastError) {
@@ -319,8 +319,8 @@ export class BrowserNotificationService {
 
 		// Prefer chrome.storage
 		if (typeof chrome !== 'undefined' && chrome.storage) {
-			chrome.storage.local.get(['browserNotificationsShown'], (data) => {
-				const shownData = data.browserNotificationsShown || {};
+			chrome.storage.local.get(['browserNotificationsShown'], (data: { [key: string]: any }) => {
+				const shownData = (data.browserNotificationsShown || {}) as { [key: string]: boolean };
 				const cleanedData: Record<string, boolean> = {};
 
 				Object.keys(shownData).forEach((key) => {

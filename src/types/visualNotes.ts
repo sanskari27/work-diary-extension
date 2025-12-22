@@ -1,4 +1,4 @@
-export type VisualNodeType = 'text' | 'code';
+export type VisualNodeType = 'text' | 'code' | 'link' | 'image';
 
 export interface VisualNotebook {
 	id: string;
@@ -32,7 +32,7 @@ export interface VisualNode {
 	data: VisualNodeData;
 }
 
-export type VisualNodeData = TextNodeData | CodeNodeData;
+export type VisualNodeData = TextNodeData | CodeNodeData | LinkNodeData | ImageNodeData;
 
 export interface TextNodeData {
 	type: 'text';
@@ -43,6 +43,18 @@ export interface CodeNodeData {
 	type: 'code';
 	content: string;
 	language?: string;
+}
+
+export interface LinkNodeData {
+	type: 'link';
+	url: string;
+	title?: string;
+}
+
+export interface ImageNodeData {
+	type: 'image';
+	url: string;
+	alt?: string;
 }
 
 export interface VisualEdge {

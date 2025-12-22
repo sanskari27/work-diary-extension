@@ -23,7 +23,7 @@ export default function TodoCard({ todo, onClick }: TodoCardProps) {
 	const dispatch = useDispatch();
 	const releases = useSelector((state: RootState) => state.releases.events);
 	const [isHovered, setIsHovered] = useState(false);
-	const { styles, appearance } = useAppearanceStyles();
+	const { styles } = useAppearanceStyles();
 	const cardStyles = styles.card();
 
 	const linkedRelease = todo.linkedReleaseId
