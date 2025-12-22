@@ -75,7 +75,7 @@ const FeatureTile = ({ name, icon, route }: FeatureTileProps) => {
 				<motion.div
 					initial={{ scaleX: 0 }}
 					whileHover={{ scaleX: 1 }}
-					transition={{ duration: 0.4, ease: 'easeOut' }}
+					transition={{ duration: 0.2, ease: 'easeOut' }}
 					className='absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-primary/0 via-primary/70 to-primary/0 origin-left z-20'
 				/>
 

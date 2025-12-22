@@ -17,7 +17,7 @@ const PopupHeader = ({ title, subtitle, className, animate = true }: PageHeaderP
 		<motion.div
 			initial={animate ? { opacity: 0, y: -20 } : false}
 			animate={animate ? { opacity: 1, y: 0 } : false}
-			transition={{ duration: 0.5 }}
+			transition={{ duration: 0.2 }}
 			className={cn('mb-2', className)}
 		>
 			<h1

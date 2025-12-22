@@ -91,7 +91,7 @@ const ActivePrsPage = () => {
 				<motion.div
 					initial={{ opacity: 0 }}
 					animate={{ opacity: 1 }}
-					transition={{ duration: 0.5 }}
+					transition={{ duration: 0.2 }}
 					className='max-w-6xl mx-auto w-full flex-1 flex flex-col gap-6'
 				>
 					{/* Header */}

@@ -20,7 +20,7 @@ const ProgressBar = ({ value, className, barClassName }: ProgressBarProps) => {
 			<motion.div
 				initial={{ width: 0 }}
 				animate={{ width: `${safeValue}%` }}
-				transition={{ duration: 0.5 }}
+				transition={{ duration: 0.2 }}
 				className={cn('h-full bg-progress-gradient', barClassName)}
 			/>
 		</div>

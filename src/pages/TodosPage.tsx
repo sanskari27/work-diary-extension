@@ -165,14 +165,14 @@ export default function TodosPage() {
 					<motion.div
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
-						transition={{ duration: 0.5 }}
+						transition={{ duration: 0.2 }}
 						className='max-w-7xl mx-auto w-full flex-1 flex flex-col'
 					>
 						{/* Page Header */}
 						<motion.div
 							initial={{ opacity: 0, y: -20 }}
 							animate={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.6 }}
+							transition={{ duration: 0.25 }}
 							className={`${spacing.headerMargin} flex items-center justify-between`}
 						>
 							<div className='flex items-center gap-4'>
@@ -183,7 +183,7 @@ export default function TodosPage() {
 											rotate: [0, 5, 0],
 										}}
 										transition={{
-											duration: 3,
+											duration: 2,
 											repeat: Infinity,
 											ease: 'easeInOut',
 										}}
@@ -206,7 +206,7 @@ export default function TodosPage() {
 							<motion.div
 								initial={{ opacity: 0, scale: 0.9 }}
 								animate={{ opacity: 1, scale: 1 }}
-								transition={{ duration: 0.4, delay: 0.2 }}
+								transition={{ duration: 0.2, delay: 0.1 }}
 							>
 								<Button
 									onClick={handleAddNew}
@@ -225,7 +225,7 @@ export default function TodosPage() {
 						<motion.div
 							initial={{ opacity: 0, y: 20 }}
 							animate={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.6, delay: 0.2 }}
+							transition={{ duration: 0.25, delay: 0.1 }}
 							className={`${spacing.headerMargin} flex flex-wrap gap-${
 								appearance.compactMode ? '4' : '6'
 							} items-center`}
@@ -248,11 +248,11 @@ export default function TodosPage() {
 						<motion.div
 							initial={{ opacity: 0, y: 20 }}
 							animate={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.6, delay: 0.3 }}
+							transition={{ duration: 0.25, delay: 0.15 }}
 							className={`flex-1 ${appearance.compactMode ? 'pb-4' : 'pb-8'}`}
 						>
 							{todos.length > 0 ? (
-								<div className={spacing.sectionGap as string || ''}>
+								<div className={(spacing.sectionGap as string) || ''}>
 									{/* No Urgent Todos Message */}
 									{urgentCount === 0 && activeTodos.length > 0 && (
 										<motion.div

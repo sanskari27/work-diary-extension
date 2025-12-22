@@ -128,14 +128,14 @@ const ReleasesPage = () => {
 					<motion.div
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
-						transition={{ duration: 0.5 }}
+						transition={{ duration: 0.2 }}
 						className='max-w-7xl mx-auto w-full flex-1 flex flex-col'
 					>
 						{/* Page Header */}
 						<motion.div
 							initial={{ opacity: 0, y: -20 }}
 							animate={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.6 }}
+							transition={{ duration: 0.25 }}
 							className={`${spacing.headerMargin} flex items-center justify-between`}
 						>
 							<div className='flex items-center gap-4'>
@@ -146,7 +146,7 @@ const ReleasesPage = () => {
 											scale: [1, 1.1, 1],
 										}}
 										transition={{
-											duration: 3,
+											duration: 2,
 											repeat: Infinity,
 											ease: 'easeInOut',
 										}}
@@ -169,7 +169,7 @@ const ReleasesPage = () => {
 							<motion.div
 								initial={{ opacity: 0, scale: 0.9 }}
 								animate={{ opacity: 1, scale: 1 }}
-								transition={{ duration: 0.4, delay: 0.2 }}
+								transition={{ duration: 0.2, delay: 0.1 }}
 							>
 								<Button
 									onClick={() => setShowReleaseForm(true)}
@@ -188,11 +188,11 @@ const ReleasesPage = () => {
 						<motion.div
 							initial={{ opacity: 0, y: 20 }}
 							animate={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.6, delay: 0.2 }}
+							transition={{ duration: 0.25, delay: 0.1 }}
 							className={`flex-1 ${appearance.compactMode ? 'pb-4' : 'pb-8'}`}
 						>
 							{events.length > 0 ? (
-								<div className={spacing.sectionGap as string || ''}>
+								<div className={(spacing.sectionGap as string) || ''}>
 									{/* This Month Section */}
 									{groupedReleases.thisMonth.length > 0 && (
 										<CollapsibleSection

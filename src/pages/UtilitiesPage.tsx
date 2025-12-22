@@ -110,7 +110,7 @@ const UtilitiesPage = () => {
 					<motion.div
 						initial={{ opacity: 0, y: -20 }}
 						animate={{ opacity: 1, y: 0 }}
-						transition={{ duration: 0.6 }}
+						transition={{ duration: 0.25 }}
 						className='space-y-4'
 					>
 						<Text
@@ -129,7 +129,7 @@ const UtilitiesPage = () => {
 					<motion.div
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
-						transition={{ duration: 0.6, delay: 0.2 }}
+						transition={{ duration: 0.25, delay: 0.1 }}
 						className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
 					>
 						{TOOL_GROUPS.map((group, index) => {
@@ -148,7 +148,7 @@ const UtilitiesPage = () => {
 									)}
 									initial={{ opacity: 0, y: 20 }}
 									animate={{ opacity: 1, y: 0 }}
-									transition={{ duration: 0.4, delay: 0.1 * index }}
+									transition={{ duration: 0.2, delay: 0.05 * index }}
 									whileHover={{ scale: 1.02, y: -4 }}
 									whileTap={{ scale: 0.98 }}
 								>

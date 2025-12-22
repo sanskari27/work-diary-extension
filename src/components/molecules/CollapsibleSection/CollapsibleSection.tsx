@@ -52,7 +52,7 @@ const CollapsibleSection = ({
 						</span>
 					</div>
 				</div>
-				<motion.div animate={{ rotate: isOpen ? 0 : -90 }} transition={{ duration: 0.2 }}>
+				<motion.div animate={{ rotate: isOpen ? 0 : -90 }} transition={{ duration: 0.15 }}>
 					<ChevronDown
 						className={cn(iconStyles.iconSize, 'text-white/70 group-hover:text-white/90')}
 					/>
@@ -66,7 +66,7 @@ const CollapsibleSection = ({
 						initial={{ height: 0, opacity: 0 }}
 						animate={{ height: 'auto', opacity: 1 }}
 						exit={{ height: 0, opacity: 0 }}
-						transition={{ duration: 0.3 }}
+						transition={{ duration: 0.15 }}
 						className='overflow-hidden'
 					>
 						<div className={cn(cardStyles.spacing, 'pl-2')}>{children}</div>

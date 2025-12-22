@@ -32,7 +32,7 @@ const UtilityToolCard = ({
 		<motion.div
 			initial={{ opacity: 0, y: 20 }}
 			animate={{ opacity: 1, y: 0 }}
-			transition={{ duration: 0.5 }}
+			transition={{ duration: 0.2 }}
 			className={cn(
 				'glass-strong rounded-2xl border border-glass-border p-6 flex flex-col space-y-4 h-full',
 				className

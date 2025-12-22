@@ -19,7 +19,7 @@ const HomePage = () => {
 					<motion.div
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
-						transition={{ duration: 0.5 }}
+						transition={{ duration: 0.2 }}
 						className='flex-1 flex flex-col'
 					>
 						<Greeting userName={greetingName} />
@@ -28,7 +28,7 @@ const HomePage = () => {
 						<motion.div
 							initial={{ opacity: 0, scale: 0.9 }}
 							animate={{ opacity: 1, scale: 1 }}
-							transition={{ duration: 0.6, delay: 0.2 }}
+							transition={{ duration: 0.25, delay: 0.1 }}
 							className='flex-1 flex flex-col items-center justify-center mb-12'
 						>
 							<HomePageSearch />
@@ -38,7 +38,7 @@ const HomePage = () => {
 						<motion.div
 							initial={{ opacity: 0, y: 20 }}
 							animate={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.6, delay: 0.3 }}
+							transition={{ duration: 0.25, delay: 0.15 }}
 							className='mb-8'
 						>
 							<BrainDumpInput />
@@ -48,7 +48,7 @@ const HomePage = () => {
 						<motion.div
 							initial={{ opacity: 0, y: 20 }}
 							animate={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.6, delay: 0.4 }}
+							transition={{ duration: 0.25, delay: 0.2 }}
 							className='pb-8'
 						>
 							<FeatureGrid features={FEATURES} />
@@ -60,7 +60,7 @@ const HomePage = () => {
 				<motion.div
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.6, delay: 0.4 }}
+					transition={{ duration: 0.25, delay: 0.2 }}
 					className='absolute top-6 right-6 md:top-12 md:right-12 lg:top-16 lg:right-16 z-50'
 				>
 					<NotificationPanel />

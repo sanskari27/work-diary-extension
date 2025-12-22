@@ -114,7 +114,7 @@ const VisualNotesToolbar = ({ noteId }: VisualNotesToolbarProps) => {
 				fitView({
 					nodes: [node],
 					padding: 0.3,
-					duration: 300,
+					duration: 200,
 				});
 			}
 		}
@@ -135,7 +135,7 @@ const VisualNotesToolbar = ({ noteId }: VisualNotesToolbarProps) => {
 				fitView({
 					nodes: [node],
 					padding: 0.3,
-					duration: 300,
+					duration: 200,
 				});
 				setQuery('');
 				setIsSearchOpen(false);

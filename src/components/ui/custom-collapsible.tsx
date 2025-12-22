@@ -38,7 +38,7 @@ export const Collapsible = ({
 				{!hideCollapseButton && (
 					<motion.div
 						animate={{ rotate: isOpen ? 0 : -90 }}
-						transition={{ duration: 0.2 }}
+						transition={{ duration: 0.15 }}
 						className='flex-shrink-0'
 					>
 						<ChevronDown className='w-4 h-4 text-text-accent group-hover:text-text-primary transition-colors' />
@@ -53,7 +53,7 @@ export const Collapsible = ({
 						initial={{ height: 0, opacity: 0 }}
 						animate={{ height: 'auto', opacity: 1 }}
 						exit={{ height: 0, opacity: 0 }}
-						transition={{ duration: 0.3 }}
+						transition={{ duration: 0.15 }}
 						className='overflow-hidden'
 					>
 						<div className={cn('px-4 pb-4', contentClassName)}>{children}</div>

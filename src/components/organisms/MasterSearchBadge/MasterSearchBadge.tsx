@@ -86,7 +86,7 @@ const MasterSearchBadge = ({
 				)}
 			>
 				<Icon className={compactMode ? 'w-2.5 h-2.5' : 'w-3 h-3'} />
-				<span className='font-semibold uppercase tracking-tight'>{config.label}</span>
+				{/* <span className='font-semibold uppercase tracking-tight'>{config.label}</span> */}
 			</div>
 
 			{/* Content */}

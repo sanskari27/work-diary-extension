@@ -262,6 +262,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 					});
 				}
 			});
+			return true; // Keep the message channel open for async response
 		} else if (message.type === 'STORAGE_GET') {
 			// Handle storage get requests
 			getStorageData(message.keys)

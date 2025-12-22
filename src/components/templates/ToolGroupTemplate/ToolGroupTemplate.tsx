@@ -17,7 +17,7 @@ const ToolGroupTemplate = ({ title, description, children, className }: ToolGrou
 			<motion.div
 				initial={{ opacity: 0, y: -20 }}
 				animate={{ opacity: 1, y: 0 }}
-				transition={{ duration: 0.6 }}
+				transition={{ duration: 0.25 }}
 			>
 				<Text
 					variant='h1'
@@ -36,7 +36,7 @@ const ToolGroupTemplate = ({ title, description, children, className }: ToolGrou
 			<motion.div
 				initial={{ opacity: 0, y: 20 }}
 				animate={{ opacity: 1, y: 0 }}
-				transition={{ duration: 0.6, delay: 0.2 }}
+				transition={{ duration: 0.25, delay: 0.1 }}
 				className='space-y-6'
 			>
 				{children}

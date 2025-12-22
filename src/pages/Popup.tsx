@@ -67,7 +67,7 @@ const Popup = () => {
 				<motion.div
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.5, delay: 0.1 }}
+					transition={{ duration: 0.2, delay: 0.05 }}
 					className='flex-1 flex flex-col gap-4 overflow-y-auto'
 				>
 					{/* Instant Brain Dump - Pressure Valve */}

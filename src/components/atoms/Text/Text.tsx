@@ -8,13 +8,7 @@ interface TextProps extends HTMLAttributes<HTMLElement> {
 	animate?: boolean;
 }
 
-const Text = ({
-	variant = 'p',
-	children,
-	className,
-	animate = false,
-	...props
-}: TextProps) => {
+const Text = ({ variant = 'p', children, className, animate = false, ...props }: TextProps) => {
 	const Component = variant;
 
 	const baseClasses = {
@@ -36,7 +30,7 @@ const Text = ({
 			<motion.div
 				initial={{ opacity: 0, y: 20 }}
 				animate={{ opacity: 1, y: 0 }}
-				transition={{ duration: 0.5, ease: 'easeOut' }}
+				transition={{ duration: 0.2, ease: 'easeOut' }}
 			>
 				{content}
 			</motion.div>
@@ -47,4 +41,3 @@ const Text = ({
 };
 
 export default Text;
-

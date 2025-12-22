@@ -43,7 +43,7 @@ const NotificationPanel = () => {
 		<motion.div
 			initial={{ opacity: 0, x: 20 }}
 			animate={{ opacity: 1, x: 0 }}
-			transition={{ duration: 0.5 }}
+			transition={{ duration: 0.2 }}
 			className={notificationStyles.panelWidth + ' flex-shrink-0'}
 		>
 			<div
@@ -58,7 +58,7 @@ const NotificationPanel = () => {
 					{!appearanceSettings.minimalMode && (
 						<motion.div
 							animate={{ rotate: [0, 10, -10, 0] }}
-							transition={{ duration: 2, repeat: Infinity }}
+							transition={{ duration: 1.5, repeat: Infinity }}
 						>
 							<Bell className={`${notificationStyles.iconSize} text-text-primary`} />
 						</motion.div>
@@ -96,7 +96,7 @@ const NotificationPanel = () => {
 								initial={{ opacity: 0, scale: 0.9, y: -10 }}
 								animate={{ opacity: 1, scale: 1, y: 0 }}
 								exit={{ opacity: 0, scale: 0.9, x: 100 }}
-								transition={{ duration: 0.3 }}
+								transition={{ duration: 0.15 }}
 								className={cn(
 									notificationStyles.getTypeColors?.(notification.type) || '',
 									notificationStyles.notificationPadding || '',

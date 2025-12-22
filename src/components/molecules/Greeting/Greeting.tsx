@@ -16,7 +16,7 @@ const Greeting = ({ userName }: GreetingProps) => {
 			className='mb-12 flex items-center justify-center gap-4'
 			initial={{ opacity: 0, y: -20 }}
 			animate={{ opacity: 1, y: 0 }}
-			transition={{ duration: 0.6, ease: 'easeOut' }}
+			transition={{ duration: 0.25, ease: 'easeOut' }}
 		>
 			<motion.div
 				animate={{
@@ -24,7 +24,7 @@ const Greeting = ({ userName }: GreetingProps) => {
 					scale: [1, 1.1, 1],
 				}}
 				transition={{
-					duration: 3,
+					duration: 2,
 					repeat: Infinity,
 					ease: 'easeInOut',
 				}}
