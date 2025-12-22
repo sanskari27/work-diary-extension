@@ -60,6 +60,7 @@ export const fetchPrReport = () => async (dispatch: AppDispatch, getState: () =>
 		// Fetch PRs for all repositories using GraphQL
 		const { prs, rateLimited } = await getPrsForReposGraphQL({
 			token: githubSettings.personalAccessToken,
+			author: githubSettings.username,
 			repoFullNames,
 		});
 

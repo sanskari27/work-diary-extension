@@ -99,7 +99,7 @@ query GetPullRequests($owner: String!, $name: String!, $first: Int!, $after: Str
         baseRefName
         baseRefOid
         reviewDecision
-        reviews(first: 100, states: [APPROVED, CHANGES_REQUESTED, COMMENTED]) {
+        reviews(first: 10, states: [APPROVED, CHANGES_REQUESTED, COMMENTED]) {
           nodes {
             state
             submittedAt
@@ -110,7 +110,7 @@ query GetPullRequests($owner: String!, $name: String!, $first: Int!, $after: Str
             commit {
               statusCheckRollup {
                 state
-                contexts(first: 100) {
+                contexts(first: 20) {
                   nodes {
                     ... on CheckRun {
                       conclusion
@@ -282,6 +282,7 @@ const mapGraphQLPullRequest = (node: GraphQLPullRequestNode, repoFullName: strin
 interface GetPrsForRepoParams {
 	token: string;
 	repoFullName: string;
+	author?: string;
 }
 
 // Helper function to check if a PR's updatedAt is within the last month
@@ -326,7 +327,7 @@ const isRecentlyMergedOrClosed = (node: GraphQLPullRequestNode): boolean => {
 export async function getPrsForRepoGraphQL(
 	params: GetPrsForRepoParams
 ): Promise<{ prs: PullRequest[]; rateLimited: boolean }> {
-	const { token, repoFullName } = params;
+	const { token, repoFullName, author } = params;
 	const [owner, name] = repoFullName.split('/');
 
 	if (!owner || !name) {
@@ -338,13 +339,14 @@ export async function getPrsForRepoGraphQL(
 	let hasNextPage = true;
 	let rateLimited = false;
 
-	while (hasNextPage) {
+	while (hasNextPage && prs.length < 30) {
+		const remaining = 30 - prs.length;
 		const { data, rateLimited: limited } = await githubGraphQLFetch(
 			GRAPHQL_QUERY,
 			{
 				owner,
 				name,
-				first: 100,
+				first: Math.min(remaining * 2, 100), // Fetch more to account for filtering
 				after: cursor,
 			},
 			token
@@ -361,9 +363,22 @@ export async function getPrsForRepoGraphQL(
 
 		const { nodes, pageInfo } = data.repository.pullRequests;
 
+		// Filter PRs by author first (if author is specified)
+		const authorFilteredNodes = author
+			? nodes.filter(
+					(node: GraphQLPullRequestNode) =>
+						node.author?.login?.toLowerCase() === author.toLowerCase()
+			  )
+			: nodes;
+
 		// Filter PRs: include all OPEN (within last month), only recent CLOSED/MERGED (within last day)
 		let foundOldPR = false;
-		for (const node of nodes) {
+		for (const node of authorFilteredNodes) {
+			// Stop if we've reached 30 PRs
+			if (prs.length >= 30) {
+				break;
+			}
+
 			// First check if PR is within the last month - if not, stop paginating
 			if (!isWithinLastMonth(node.updatedAt)) {
 				foundOldPR = true;
@@ -380,9 +395,21 @@ export async function getPrsForRepoGraphQL(
 			}
 		}
 
-		// If we found a PR older than 1 month, stop paginating
+		// If we filtered by author and got no matching results in this batch, continue to next page
+		if (author && authorFilteredNodes.length === 0 && nodes.length > 0) {
+			hasNextPage = pageInfo.hasNextPage;
+			cursor = pageInfo.endCursor;
+			continue;
+		}
+
+		// If we found a PR older than 1 month or reached 30 PRs, stop paginating
 		// since results are ordered by UPDATED_AT DESC
-		if (foundOldPR) {
+		if (foundOldPR || prs.length >= 30) {
+			break;
+		}
+
+		// If we got no nodes at all, stop paginating
+		if (nodes.length === 0) {
 			break;
 		}
 
@@ -395,6 +422,7 @@ export async function getPrsForRepoGraphQL(
 
 interface GetPrsForReposParams {
 	token: string;
+	author: string;
 	repoFullNames: string[];
 }
 
@@ -402,10 +430,10 @@ interface GetPrsForReposParams {
 export async function getPrsForReposGraphQL(
 	params: GetPrsForReposParams
 ): Promise<{ prs: PullRequest[]; rateLimited: boolean }> {
-	const { token, repoFullNames } = params;
+	const { token, repoFullNames, author } = params;
 
 	const results = await Promise.all(
-		repoFullNames.map(async (repoFullName) => getPrsForRepoGraphQL({ token, repoFullName }))
+		repoFullNames.map(async (repoFullName) => getPrsForRepoGraphQL({ token, repoFullName, author }))
 	);
 
 	const prs = results.flatMap((r) => r.prs);
