@@ -7,11 +7,12 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
 	addNote,
 	addNotebook,
+	deleteNote,
 	setSelectedNote,
 	updateNotebook,
 } from '@/store/slices/visualNotesSlice';
 import { motion } from 'framer-motion';
-import { Edit, FileText, Folder, Home, Plus } from 'lucide-react';
+import { Edit, FileText, Folder, Home, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -54,6 +55,11 @@ const VisualNotesSidebar = () => {
 
 	const handleNoteClick = (noteId: string) => {
 		dispatch(setSelectedNote(noteId));
+	};
+
+	const handleDeleteNote = (noteId: string, e: React.MouseEvent) => {
+		e.stopPropagation();
+		dispatch(deleteNote(noteId));
 	};
 
 	const openCreateNoteDialog = (notebookId: string) => {
@@ -162,20 +168,31 @@ const VisualNotesSidebar = () => {
 									const isActive = selectedNoteId === note.id;
 
 									return (
-										<motion.button
+										<div
 											key={note.id}
-											onClick={() => handleNoteClick(note.id)}
 											className={cn(
-												'w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left transition-all',
+												'w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-all group',
 												'text-sm text-text-secondary hover:text-text-accent hover:bg-white/5',
 												isActive && 'bg-primary/20 text-text-accent border border-primary/50'
 											)}
-											whileHover={{ x: 4 }}
-											whileTap={{ scale: 0.98 }}
 										>
-											<FileText className='w-4 h-4 flex-shrink-0 text-current' />
-											<span className='truncate flex-1'>{note.title}</span>
-										</motion.button>
+											<motion.button
+												onClick={() => handleNoteClick(note.id)}
+												className='flex items-center gap-2 flex-1 text-left'
+												whileHover={{ x: 4 }}
+												whileTap={{ scale: 0.98 }}
+											>
+												<FileText className='w-4 h-4 flex-shrink-0 text-current' />
+												<span className='truncate flex-1'>{note.title}</span>
+											</motion.button>
+											<button
+												onClick={(e) => handleDeleteNote(note.id, e)}
+												className='p-1 hover:bg-white/10 rounded transition-colors opacity-0 group-hover:opacity-100'
+												title='Delete Note'
+											>
+												<Trash2 className='w-4 h-4 text-text-accent' />
+											</button>
+										</div>
 									);
 								})}
 								{notebookNotes.length === 0 && (
