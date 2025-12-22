@@ -67,11 +67,10 @@ const TextNode = ({ data, selected }: TextNodeProps) => {
 	return (
 		<div
 			className={cn(
-				'glass-strong rounded-lg border border-white/20 p-3 min-w-[200px] min-h-[100px] relative group text-[0.4rem] ',
+				'glass-strong rounded-lg border border-white/20 p-3 min-w-[200px] min-h-[100px] relative group text-[0.5rem] ',
 				selected && 'ring-2 ring-primary'
 			)}
 		>
-			<Handle type='target' position={Position.Top} />
 			{!isEditing && (
 				<button
 					onClick={handleDelete}
@@ -99,7 +98,8 @@ const TextNode = ({ data, selected }: TextNodeProps) => {
 					{nodeData.content || <span className='text-white/40'>Click to edit</span>}
 				</div>
 			)}
-			<Handle type='source' position={Position.Bottom} />
+			<Handle type='target' position={Position.Left} className='h-4 w-4 bg-red-500' />
+			<Handle type='source' position={Position.Right} className='h-4 w-4 bg-green-500' />
 		</div>
 	);
 };

@@ -1,7 +1,11 @@
 import CodeNode from '@/components/molecules/VisualNodes/CodeNode/CodeNode';
 import TextNode from '@/components/molecules/VisualNodes/TextNode/TextNode';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { addEdgeToNote, updateNodeInNote } from '@/store/slices/visualNotesSlice';
+import {
+	addEdgeToNote,
+	deleteEdgeFromNote,
+	updateNodeInNote,
+} from '@/store/slices/visualNotesSlice';
 import {
 	Background,
 	Connection,
@@ -140,6 +144,26 @@ const VisualNotesCanvas = ({ noteId }: VisualNotesCanvasProps) => {
 		[dispatch, noteId, onNodesChange]
 	);
 
+	// Handle edge changes (additions and deletions)
+	const onEdgesChangeHandler = useCallback(
+		(changes: any[]) => {
+			onEdgesChange(changes);
+
+			// Handle edge deletions
+			changes.forEach((change) => {
+				if (change.type === 'remove') {
+					dispatch(
+						deleteEdgeFromNote({
+							noteId,
+							edgeId: change.id,
+						})
+					);
+				}
+			});
+		},
+		[dispatch, noteId, onEdgesChange]
+	);
+
 	// Handle edge connections
 	const onConnect = useCallback(
 		(connection: Connection) => {
@@ -189,7 +213,7 @@ const VisualNotesCanvas = ({ noteId }: VisualNotesCanvasProps) => {
 				nodes={nodes}
 				edges={edges}
 				onNodesChange={onNodesChangeHandler}
-				onEdgesChange={onEdgesChange}
+				onEdgesChange={onEdgesChangeHandler}
 				onConnect={onConnect}
 				onMove={onMove}
 				onMoveEnd={onMoveEnd}

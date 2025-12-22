@@ -1,9 +1,17 @@
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { useAppDispatch } from '@/store/hooks';
 import { deleteNodeFromNote, updateNodeInNote } from '@/store/slices/visualNotesSlice';
 import { CodeNodeData, VisualNode } from '@/types/visualNotes';
 import { java } from '@codemirror/lang-java';
 import { javascript } from '@codemirror/lang-javascript';
+import { json } from '@codemirror/lang-json';
 import { markdown } from '@codemirror/lang-markdown';
 import { python } from '@codemirror/lang-python';
 import { oneDark } from '@codemirror/theme-one-dark';
@@ -137,7 +145,7 @@ const CodeNode = ({ data, selected }: CodeNodeProps) => {
 		);
 	};
 
-	const commonLanguages = ['javascript', 'jsx', 'java', 'python', 'markdown'];
+	const commonLanguages = ['javascript', 'jsx', 'java', 'python', 'markdown', 'json'];
 
 	// Map language to CodeMirror extension
 	const languageExtension = useMemo(() => {
@@ -151,6 +159,8 @@ const CodeNode = ({ data, selected }: CodeNodeProps) => {
 				return python();
 			case 'markdown':
 				return markdown();
+			case 'json':
+				return json();
 			default:
 				return javascript({ jsx: true });
 		}
@@ -190,21 +200,19 @@ const CodeNode = ({ data, selected }: CodeNodeProps) => {
 				}
 			}}
 		>
-			<Handle type='target' position={Position.Top} />
 			<div className='flex items-center justify-between p-2 border-b border-white/10'>
-				<select
-					value={language}
-					onChange={(e) => handleLanguageChange(e.target.value)}
-					className='bg-transparent text-white text-xs outline-none border border-white/20 rounded px-2 py-1'
-					onClick={(e) => e.stopPropagation()}
-					onMouseDown={(e) => e.stopPropagation()}
-				>
-					{commonLanguages.map((lang) => (
-						<option key={lang} value={lang} className='bg-gray-800'>
-							{lang}
-						</option>
-					))}
-				</select>
+				<Select value={language} onValueChange={(value) => handleLanguageChange(value)}>
+					<SelectTrigger className='bg-transparent text-white text-[0.6rem] outline-none border border-white/20 rounded px-2 py-1 h-6'>
+						<SelectValue placeholder='Language' />
+					</SelectTrigger>
+					<SelectContent>
+						{commonLanguages.map((lang) => (
+							<SelectItem key={lang} value={lang}>
+								{lang}
+							</SelectItem>
+						))}
+					</SelectContent>
+				</Select>
 				<button
 					onClick={handleDelete}
 					onMouseDown={(e) => e.stopPropagation()}
@@ -216,7 +224,7 @@ const CodeNode = ({ data, selected }: CodeNodeProps) => {
 			</div>
 			<div
 				ref={editorContainerRef}
-				className='h-full overflow-hidden'
+				className='h-full overflow-hidden text-[0.5rem]'
 				data-no-drag
 				onFocus={() => setIsEditorFocused(true)}
 				onBlur={() => setIsEditorFocused(false)}
@@ -248,7 +256,8 @@ const CodeNode = ({ data, selected }: CodeNodeProps) => {
 					style={{ height: '100%' }}
 				/>
 			</div>
-			<Handle type='source' position={Position.Bottom} />
+			<Handle type='target' position={Position.Left} className='h-4 w-4 bg-red-500' />
+			<Handle type='source' position={Position.Right} className='h-4 w-4 bg-green-500' />
 		</div>
 	);
 };
