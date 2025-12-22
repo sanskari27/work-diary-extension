@@ -88,10 +88,33 @@ const VisualNotesCanvas = ({ noteId }: VisualNotesCanvasProps) => {
 	// Handle node changes (drag, resize)
 	const onNodesChangeHandler = useCallback(
 		(changes: any[]) => {
-			onNodesChange(changes);
+			// Filter out drag changes that originate from editor areas
+			const filteredChanges = changes.filter((change) => {
+				if (change.type === 'position') {
+					// Check if the change originated from an editor interaction
+					const nodeElement = document.querySelector(`[data-id="${change.id}"]`);
+					if (nodeElement) {
+						// Check if editor is focused
+						if (nodeElement.hasAttribute('data-editor-focused')) {
+							return false; // Filter out this change
+						}
+						const editorArea = nodeElement.querySelector('[data-no-drag]');
+						if (editorArea) {
+							// Check if the active element or event target is within the editor
+							const activeElement = document.activeElement;
+							if (activeElement && editorArea.contains(activeElement)) {
+								return false; // Filter out this change
+							}
+						}
+					}
+				}
+				return true;
+			});
+
+			onNodesChange(filteredChanges);
 
 			// Update Redux state for position and size changes
-			changes.forEach((change) => {
+			filteredChanges.forEach((change) => {
 				if (change.type === 'position' && change.position) {
 					dispatch(
 						updateNodeInNote({
@@ -174,6 +197,7 @@ const VisualNotesCanvas = ({ noteId }: VisualNotesCanvasProps) => {
 				fitView
 				className='bg-transparent'
 				defaultViewport={{ x: note.viewport.x, y: note.viewport.y, zoom: note.viewport.zoom }}
+				nodesDraggable={true}
 			>
 				<Background color='rgba(255, 255, 255, 0.05)' gap={20} />
 				{/* <Controls className='glass-strong border border-white/20' /> */}

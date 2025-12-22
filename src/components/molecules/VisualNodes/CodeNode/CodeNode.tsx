@@ -2,57 +2,15 @@ import { cn } from '@/lib/utils';
 import { useAppDispatch } from '@/store/hooks';
 import { deleteNodeFromNote, updateNodeInNote } from '@/store/slices/visualNotesSlice';
 import { CodeNodeData, VisualNode } from '@/types/visualNotes';
-import { loader } from '@monaco-editor/react';
+import { java } from '@codemirror/lang-java';
+import { javascript } from '@codemirror/lang-javascript';
+import { markdown } from '@codemirror/lang-markdown';
+import { python } from '@codemirror/lang-python';
+import { oneDark } from '@codemirror/theme-one-dark';
+import CodeMirror from '@uiw/react-codemirror';
 import { Handle, NodeProps, Position } from '@xyflow/react';
 import { X } from 'lucide-react';
-import * as monaco from 'monaco-editor';
-import { Suspense, lazy, useEffect, useState } from 'react';
-// Import Monaco workers using Vite's worker syntax
-// These are used in the getWorker function below
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import jsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import cssWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import htmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker';
-
-// Configure loader to use local monaco-editor package (prevents CDN loading)
-// This must be done before @monaco-editor/react initializes
-loader.config({ monaco });
-
-// Configure Monaco Environment at module level (before @monaco-editor/react loads)
-// This must be done before the Editor component is imported
-// @monaco-editor/react will use this environment configuration
-if (typeof window !== 'undefined') {
-	// Set up MonacoEnvironment with getWorker to use Vite-bundled workers
-	// This prevents @monaco-editor/react from trying to load from CDN
-	(window as any).MonacoEnvironment = {
-		getWorker: function (_moduleId: string, label: string) {
-			// Use Vite-bundled workers (imported with ?worker suffix)
-			// This ensures workers are bundled locally and comply with CSP
-			if (label === 'json') {
-				return new jsonWorker();
-			}
-			if (label === 'css' || label === 'scss' || label === 'less') {
-				return new cssWorker();
-			}
-			if (label === 'html' || label === 'handlebars' || label === 'razor') {
-				return new htmlWorker();
-			}
-			if (label === 'typescript' || label === 'javascript') {
-				return new tsWorker();
-			}
-			// Default editor worker
-			return new editorWorker();
-		},
-	};
-}
-
-const Editor = lazy(() => import('@monaco-editor/react'));
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 interface CodeNodeProps extends NodeProps {
 	data: {
@@ -67,34 +25,101 @@ const CodeNode = ({ data, selected }: CodeNodeProps) => {
 	const nodeData = node.data as CodeNodeData;
 	const [content, setContent] = useState(nodeData.content);
 	const [language, setLanguage] = useState(nodeData.language || 'javascript');
+	const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+	const editorContainerRef = useRef<HTMLDivElement>(null);
+	const [isEditorFocused, setIsEditorFocused] = useState(false);
 
 	useEffect(() => {
 		setContent(nodeData.content);
 		setLanguage(nodeData.language || 'javascript');
 	}, [nodeData.content, nodeData.language]);
 
-	const handleEditorChange = (value: string | undefined) => {
-		if (value !== undefined) {
-			setContent(value);
-			// Debounce the save
-			const timeoutId = setTimeout(() => {
-				dispatch(
-					updateNodeInNote({
-						noteId: data.noteId,
-						nodeId: node.id,
-						updates: {
-							data: {
-								...nodeData,
-								content: value,
-								language,
-							},
-						},
-					})
-				);
-			}, 500);
-			return () => clearTimeout(timeoutId);
+	// Expose focus state to parent via data attribute for React Flow to check
+	useEffect(() => {
+		const nodeElement = document.querySelector(`[data-id="${node.id}"]`);
+		if (nodeElement) {
+			if (isEditorFocused) {
+				nodeElement.setAttribute('data-editor-focused', 'true');
+			} else {
+				nodeElement.removeAttribute('data-editor-focused');
+			}
 		}
+	}, [isEditorFocused, node.id]);
+
+	// Add native event listeners to prevent React Flow from capturing events
+	useEffect(() => {
+		const container = editorContainerRef.current;
+		if (!container) return;
+
+		const stopPropagation = (e: Event) => {
+			e.stopPropagation();
+			e.stopImmediatePropagation();
+		};
+
+		// Use capture phase to catch events before React Flow
+		const options = { capture: true, passive: false };
+
+		container.addEventListener('mousedown', stopPropagation, options);
+		container.addEventListener('mouseup', stopPropagation, options);
+		container.addEventListener('mousemove', stopPropagation, options);
+		container.addEventListener('wheel', stopPropagation, options);
+		container.addEventListener('keydown', stopPropagation, options);
+		container.addEventListener('keyup', stopPropagation, options);
+		container.addEventListener('pointerdown', stopPropagation, options);
+		container.addEventListener('pointermove', stopPropagation, options);
+		container.addEventListener('pointerup', stopPropagation, options);
+		container.addEventListener('touchstart', stopPropagation, options);
+		container.addEventListener('touchmove', stopPropagation, options);
+		container.addEventListener('touchend', stopPropagation, options);
+
+		return () => {
+			container.removeEventListener('mousedown', stopPropagation, options);
+			container.removeEventListener('mouseup', stopPropagation, options);
+			container.removeEventListener('mousemove', stopPropagation, options);
+			container.removeEventListener('wheel', stopPropagation, options);
+			container.removeEventListener('keydown', stopPropagation, options);
+			container.removeEventListener('keyup', stopPropagation, options);
+			container.removeEventListener('pointerdown', stopPropagation, options);
+			container.removeEventListener('pointermove', stopPropagation, options);
+			container.removeEventListener('pointerup', stopPropagation, options);
+			container.removeEventListener('touchstart', stopPropagation, options);
+			container.removeEventListener('touchmove', stopPropagation, options);
+			container.removeEventListener('touchend', stopPropagation, options);
+		};
+	}, []);
+
+	const handleEditorChange = (value: string) => {
+		setContent(value);
+		// Clear previous timeout
+		if (saveTimeoutRef.current) {
+			clearTimeout(saveTimeoutRef.current);
+		}
+		// Debounce the save
+		saveTimeoutRef.current = setTimeout(() => {
+			dispatch(
+				updateNodeInNote({
+					noteId: data.noteId,
+					nodeId: node.id,
+					updates: {
+						data: {
+							...nodeData,
+							content: value,
+							language,
+						},
+					},
+				})
+			);
+		}, 500);
 	};
+
+	// Cleanup timeout on unmount
+	useEffect(() => {
+		return () => {
+			if (saveTimeoutRef.current) {
+				clearTimeout(saveTimeoutRef.current);
+			}
+		};
+	}, []);
 
 	const handleLanguageChange = (newLanguage: string) => {
 		setLanguage(newLanguage);
@@ -112,21 +137,24 @@ const CodeNode = ({ data, selected }: CodeNodeProps) => {
 		);
 	};
 
-	const commonLanguages = [
-		'javascript',
-		'typescript',
-		'python',
-		'java',
-		'cpp',
-		'csharp',
-		'go',
-		'rust',
-		'html',
-		'css',
-		'json',
-		'markdown',
-		'sql',
-	];
+	const commonLanguages = ['javascript', 'jsx', 'java', 'python', 'markdown'];
+
+	// Map language to CodeMirror extension
+	const languageExtension = useMemo(() => {
+		switch (language) {
+			case 'java':
+				return java();
+			case 'javascript':
+			case 'jsx':
+				return javascript({ jsx: true });
+			case 'python':
+				return python();
+			case 'markdown':
+				return markdown();
+			default:
+				return javascript({ jsx: true });
+		}
+	}, [language]);
 
 	const handleDelete = (e: React.MouseEvent) => {
 		e.stopPropagation();
@@ -135,12 +163,32 @@ const CodeNode = ({ data, selected }: CodeNodeProps) => {
 		}
 	};
 
+	// Stop event propagation for CodeMirror interactions to prevent React Flow from capturing them
+	const handleEditorInteraction = (e: React.SyntheticEvent) => {
+		e.stopPropagation();
+	};
+
 	return (
 		<div
 			className={cn(
 				'glass-strong rounded-lg border border-white/20 min-w-[300px] min-h-[200px] flex flex-col relative group',
 				selected && 'ring-2 ring-primary'
 			)}
+			data-no-drag
+			onMouseDown={(e) => {
+				// Only stop propagation if clicking inside the editor area
+				const target = e.target as HTMLElement;
+				if (
+					target.closest('.cm-editor') ||
+					target.closest('.cm-scroller') ||
+					target.closest('[data-no-drag]')
+				) {
+					e.stopPropagation();
+					if (e.nativeEvent && 'stopImmediatePropagation' in e.nativeEvent) {
+						e.nativeEvent.stopImmediatePropagation();
+					}
+				}
+			}}
 		>
 			<Handle type='target' position={Position.Top} />
 			<div className='flex items-center justify-between p-2 border-b border-white/10'>
@@ -149,6 +197,7 @@ const CodeNode = ({ data, selected }: CodeNodeProps) => {
 					onChange={(e) => handleLanguageChange(e.target.value)}
 					className='bg-transparent text-white text-xs outline-none border border-white/20 rounded px-2 py-1'
 					onClick={(e) => e.stopPropagation()}
+					onMouseDown={(e) => e.stopPropagation()}
 				>
 					{commonLanguages.map((lang) => (
 						<option key={lang} value={lang} className='bg-gray-800'>
@@ -158,31 +207,46 @@ const CodeNode = ({ data, selected }: CodeNodeProps) => {
 				</select>
 				<button
 					onClick={handleDelete}
+					onMouseDown={(e) => e.stopPropagation()}
 					className='p-1 bg-black/50 rounded hover:bg-red-500/50 transition-colors opacity-0 group-hover:opacity-100'
 					title='Delete node'
 				>
 					<X className='w-3 h-3 text-white' />
 				</button>
 			</div>
-			<div className='h-[500px]'>
-				<Suspense fallback={<div className='p-4 text-white/40 text-sm'>Loading editor...</div>}>
-					<Editor
-						height='500px'
-						language={language}
-						value={content}
-						onChange={handleEditorChange}
-						theme='vs-dark'
-						options={{
-							minimap: { enabled: false },
-							scrollBeyondLastLine: false,
-							fontSize: 12,
-							lineNumbers: 'on',
-							wordWrap: 'on',
-							automaticLayout: true,
-							padding: { top: 8, bottom: 8 },
-						}}
-					/>
-				</Suspense>
+			<div
+				ref={editorContainerRef}
+				className='h-full overflow-hidden'
+				data-no-drag
+				onFocus={() => setIsEditorFocused(true)}
+				onBlur={() => setIsEditorFocused(false)}
+				onMouseDown={handleEditorInteraction}
+				onMouseUp={handleEditorInteraction}
+				onMouseMove={handleEditorInteraction}
+				onWheel={handleEditorInteraction}
+				onKeyDown={handleEditorInteraction}
+				onKeyUp={handleEditorInteraction}
+				onPointerDown={handleEditorInteraction}
+				onPointerMove={handleEditorInteraction}
+				onPointerUp={handleEditorInteraction}
+				onTouchStart={handleEditorInteraction}
+				onTouchMove={handleEditorInteraction}
+				onTouchEnd={handleEditorInteraction}
+			>
+				<CodeMirror
+					value={content}
+					height='500px'
+					theme={oneDark}
+					extensions={[languageExtension]}
+					onChange={(value) => handleEditorChange(value)}
+					basicSetup={{
+						lineNumbers: true,
+						foldGutter: true,
+						dropCursor: false,
+						allowMultipleSelections: false,
+					}}
+					style={{ height: '100%' }}
+				/>
 			</div>
 			<Handle type='source' position={Position.Bottom} />
 		</div>
