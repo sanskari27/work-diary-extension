@@ -51,7 +51,6 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
-				'primary': 'hsl(var(--primary))',
 				'accent-border': 'hsl(var(--accent-border))',
 				'gradient-from': 'hsl(var(--gradient-from))',
 				'gradient-to': 'hsl(var(--gradient-to))',

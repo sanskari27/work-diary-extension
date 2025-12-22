@@ -181,7 +181,7 @@ const CodeNode = ({ data, selected }: CodeNodeProps) => {
 	return (
 		<div
 			className={cn(
-				'glass-strong rounded-lg border border-white/20 min-w-[300px] min-h-[200px] flex flex-col relative group',
+				'glass-strong rounded-lg border border-white/20 min-w-[300px] min-h-[300px] max-h-[800px] flex flex-col relative group',
 				selected && 'ring-2 ring-primary'
 			)}
 			data-no-drag
@@ -224,7 +224,7 @@ const CodeNode = ({ data, selected }: CodeNodeProps) => {
 			</div>
 			<div
 				ref={editorContainerRef}
-				className='h-full overflow-hidden text-[0.5rem]'
+				className='flex-1 overflow-auto text-[0.5rem]'
 				data-no-drag
 				onFocus={() => setIsEditorFocused(true)}
 				onBlur={() => setIsEditorFocused(false)}
@@ -243,7 +243,6 @@ const CodeNode = ({ data, selected }: CodeNodeProps) => {
 			>
 				<CodeMirror
 					value={content}
-					height='500px'
 					theme={oneDark}
 					extensions={[languageExtension]}
 					onChange={(value) => handleEditorChange(value)}
@@ -253,7 +252,6 @@ const CodeNode = ({ data, selected }: CodeNodeProps) => {
 						dropCursor: false,
 						allowMultipleSelections: false,
 					}}
-					style={{ height: '100%' }}
 				/>
 			</div>
 			<Handle type='target' position={Position.Left} className='h-4 w-4 bg-red-500' />

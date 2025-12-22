@@ -25,7 +25,7 @@ function Calendar({
 		<DayPicker
 			showOutsideDays={showOutsideDays}
 			className={cn(
-				'bg-background group/calendar p-3 [--cell-size:--spacing(8)] [[data-slot=card-content]_&]:bg-transparent [[data-slot=popover-content]_&]:bg-transparent',
+				'!bg-[darkgray] group/calendar p-3 [--cell-size:--spacing(8)] [[data-slot=card-content]_&]:bg-transparent [[data-slot=popover-content]_&]:bg-transparent',
 				String.raw`rtl:**:[.rdp-button\_next>svg]:rotate-180`,
 				String.raw`rtl:**:[.rdp-button\_previous>svg]:rotate-180`,
 				className
@@ -105,6 +105,7 @@ function Calendar({
 				),
 				disabled: cn('text-muted-foreground opacity-50', defaultClassNames.disabled),
 				hidden: cn('invisible', defaultClassNames.hidden),
+				selected: cn('text-primary-foreground', defaultClassNames.selected),
 				...classNames,
 			}}
 			components={{
@@ -178,6 +179,3 @@ function CalendarDayButton({
 }
 
 export { Calendar, CalendarDayButton };
-
-
-
