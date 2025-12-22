@@ -8,6 +8,7 @@ import { formatRelativeTime } from '@/lib/dateUtils';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { selectAllPrs } from '@/store/slices/prsSlice';
 import { fetchPrReport } from '@/store/thunks/prsThunks';
+import { PullRequest } from '@/types/pr';
 import { motion } from 'framer-motion';
 import { GitPullRequest } from 'lucide-react';
 import { useCallback } from 'react';
@@ -17,18 +18,69 @@ const ActivePrsPage = () => {
 	const { appearance, page: spacing } = useAppearanceStyles();
 	const { isLoading, error, lastSyncedAt } = useAppSelector((state) => state.prs);
 	const githubSettings = useAppSelector((state) => state.settings.githubSettings || {});
-	const prsToRender = useAppSelector(selectAllPrs);
+	const allPrs = useAppSelector(selectAllPrs);
+
+	// Group and sort PRs by status: open (top), closed (middle), merged (last)
+	// Within each group, sort by updatedAt descendingly
+	const prsToRender = (() => {
+		// Group PRs by status
+		const grouped = allPrs.reduce((acc, pr) => {
+			const status = pr.status;
+			if (!acc[status]) {
+				acc[status] = [];
+			}
+			acc[status].push(pr);
+			return acc;
+		}, {} as Record<string, PullRequest[]>);
+
+		// Sort each group by updatedAt descendingly
+		const sortedGroups: Array<[string, PullRequest[]]> = Object.entries(grouped).map(
+			([status, prs]: [string, PullRequest[]]) => [
+				status,
+				[...prs].sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()),
+			]
+		);
+
+		// Define group order: open, closed, merged (draft can be anywhere, we'll put it after open)
+		const groupOrder: Record<string, number> = {
+			open: 0,
+			draft: 1,
+			closed: 2,
+			merged: 3,
+		};
+
+		// Sort groups by order, then flatten
+		return sortedGroups
+			.sort((entryA: [string, PullRequest[]], entryB: [string, PullRequest[]]) => {
+				const [statusA] = entryA;
+				const [statusB] = entryB;
+				const orderA = groupOrder[statusA] ?? 999;
+				const orderB = groupOrder[statusB] ?? 999;
+				return orderA - orderB;
+			})
+			.flatMap((entry: [string, PullRequest[]]) => {
+				const [, prs] = entry;
+				return prs;
+			});
+	})();
 
 	const handleRefresh = useCallback(() => {
 		if (!githubSettings.username || !githubSettings.personalAccessToken) {
 			return;
 		}
-		dispatch(fetchPrReport());
+		dispatch(fetchPrReport(false)); // false = show loading state
+	}, [dispatch, githubSettings.username, githubSettings.personalAccessToken]);
+
+	const handleBackgroundRefresh = useCallback(() => {
+		if (!githubSettings.username || !githubSettings.personalAccessToken) {
+			return;
+		}
+		dispatch(fetchPrReport(true)); // true = background refresh, no loading state
 	}, [dispatch, githubSettings.username, githubSettings.personalAccessToken]);
 
 	useAutoRefresh({
 		minutes: githubSettings.prRefreshIntervalMinutes,
-		callback: handleRefresh,
+		callback: handleBackgroundRefresh, // Use background refresh for auto-refresh
 		pauseOnBatterySaver: true, // Pause PR refresh when battery saver is active
 	});
 

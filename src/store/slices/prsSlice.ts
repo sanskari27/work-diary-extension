@@ -39,6 +39,18 @@ const prsSlice = createSlice({
 			state.prsInRepo = action.payload;
 		},
 
+		mergePrs: (state, action: PayloadAction<PullRequest[]>) => {
+			// Intelligently merge new PRs with existing ones
+			// Update existing PRs if they exist, add new ones if they don't
+			const existingPrsMap = new Map(state.prsInRepo.map((pr) => [pr.id, pr]));
+
+			action.payload.forEach((newPr) => {
+				existingPrsMap.set(newPr.id, newPr);
+			});
+
+			state.prsInRepo = Array.from(existingPrsMap.values());
+		},
+
 		updatePullRequest: (
 			state,
 			action: PayloadAction<{ id: string; updates: Partial<PullRequest> }>
@@ -50,7 +62,7 @@ const prsSlice = createSlice({
 	},
 });
 
-export const { setLoading, setError, setLastSyncedAt, setPrsInRepo, updatePullRequest } =
+export const { setLoading, setError, setLastSyncedAt, setPrsInRepo, mergePrs, updatePullRequest } =
 	prsSlice.actions;
 
 export default prsSlice.reducer;

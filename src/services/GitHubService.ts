@@ -7,7 +7,7 @@ const MAX_RETRIES = 3;
 const RETRY_DELAY_MS = 1000; // Start with 1 second delay
 const MAX_PR_PER_REPO = 30;
 const CONCURRENCY_LIMIT = 5; // parallel repo processing
-const PER_PAGE = 30;
+const PER_PAGE = 100;
 
 // REST API Types
 interface GitHubPullRequest {
@@ -180,9 +180,11 @@ async function fetchPrsForRepo(
 	const prs: PullRequest[] = [];
 	let page = 1;
 	let rateLimited = false;
+	let totalPrsChecked = 0; // Track total PRs checked (before author filtering)
 
-	while (prs.length < MAX_PR_PER_REPO) {
-		// Build URL with query parameters
+	// Continue until we've checked MAX_PR_PER_REPO total PRs from the repo
+	while (totalPrsChecked < MAX_PR_PER_REPO) {
+		// Build URL with query parameters (no author filter - we'll filter client-side)
 		const params = new URLSearchParams({
 			state: 'all', // Get all states (open, closed)
 			per_page: PER_PAGE.toString(),
@@ -190,11 +192,6 @@ async function fetchPrsForRepo(
 			sort: 'updated',
 			direction: 'desc',
 		});
-
-		// Add author filter if specified (REST API supports creator parameter)
-		if (author) {
-			params.append('creator', author);
-		}
 
 		const url = `${GITHUB_REST_API}/repos/${owner}/${name}/pulls?${params.toString()}`;
 
@@ -212,10 +209,12 @@ async function fetchPrsForRepo(
 		// Filter PRs: include all OPEN (within last month), only recent CLOSED/MERGED (within last day)
 		let foundOldPR = false;
 		for (const pr of data) {
-			// Stop if we've reached max PRs
-			if (prs.length >= MAX_PR_PER_REPO) {
+			// Stop if we've checked enough total PRs
+			if (totalPrsChecked >= MAX_PR_PER_REPO) {
 				break;
 			}
+
+			totalPrsChecked++; // Count this PR as checked
 
 			// First check if PR is within the last month - if not, stop paginating
 			if (!isWithinLastMonth(pr.updated_at)) {
@@ -223,9 +222,9 @@ async function fetchPrsForRepo(
 				break; // Stop processing this batch and stop pagination
 			}
 
-			// Additional author filter (in case REST API creator filter doesn't work as expected)
+			// Filter by author
 			if (author && pr.user?.login?.toLowerCase() !== author.toLowerCase()) {
-				continue;
+				continue; // Skip PRs not by the author, but still count them as checked
 			}
 
 			// For OPEN PRs within last month, include them
@@ -238,9 +237,9 @@ async function fetchPrsForRepo(
 			}
 		}
 
-		// If we found a PR older than 1 month or reached max PRs, stop paginating
+		// If we found a PR older than 1 month or checked enough total PRs, stop paginating
 		// since results are ordered by UPDATED_AT DESC
-		if (foundOldPR || prs.length >= MAX_PR_PER_REPO) {
+		if (foundOldPR || totalPrsChecked >= MAX_PR_PER_REPO) {
 			break;
 		}
 
