@@ -70,6 +70,9 @@ export default defineConfig({
 			'@components': path.resolve(__dirname, './src/components'),
 		},
 	},
+	build: {
+		chunkSizeWarningLimit: 1000,
+	},
 	server: {
 		headers: {
 			'Access-Control-Allow-Origin': '*',
